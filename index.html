@@ -1,81 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta 
-        name="viewport" 
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
-    <title>Video</title>
+<meta charset="UTF-8">
+<meta 
+  name="viewport" 
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+<title>Video UI</title>
 
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: black;
-            overflow: hidden;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        font-family: Arial, Helvetica, sans-serif;
+        overflow: hidden;
+    }
 
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            text-align: center;
-            padding: 10px 0;
-            color: white;
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 10;
-        }
+    /* Header */
+    header {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+    }
 
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            padding: 8px 0;
-            color: #aaa;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 10;
-        }
+    /* Video */
+    .video-container {
+        position: fixed;
+        inset: 0;
+    }
 
-        .video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-        }
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    /* Control Bar */
+    .controls {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        background: rgba(0,0,0,0.65);
+        padding: 10px 14px;
+        border-radius: 30px;
+        backdrop-filter: blur(8px);
+        z-index: 10;
+    }
+
+    .controls button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 20px;
+        transition: background 0.2s, transform 0.15s;
+    }
+
+    .controls button:hover {
+        background: rgba(255,255,255,0.15);
+        transform: scale(1.1);
+    }
+
+    /* Footer */
+    footer {
+        position: fixed;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+        color: #aaa;
+        font-size: 11px;
+        z-index: 10;
+    }
+</style>
 </head>
 <body>
 
-<header>
-    Made for fun
-</header>
+<header>Made for fun</header>
 
 <div class="video-container">
     <iframe
-        src="https://www.youtube.com/embed/pMzt_up3Wk0?playsinline=1&autoplay=1&mute=1&controls=1&rel=0"
+        id="player"
+        src="https://www.youtube.com/embed/pMzt_up3Wk0?enablejsapi=1&playsinline=1&autoplay=1&mute=1&controls=0&rel=0"
         allow="autoplay; fullscreen; encrypted-media"
         allowfullscreen
         playsinline>
     </iframe>
 </div>
 
-<footer>
-    © Peakframe Studios
-</footer>
+<div class="controls">
+    <button onclick="playPause()">▶️ / ⏸</button>
+    <button onclick="toggleMute()">🔊</button>
+    <button onclick="goFullscreen()">⛶</button>
+</div>
+
+<footer>© Peakframe Studios</footer>
+
+<script>
+    let player;
+    let isMuted = true;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player');
+    }
+
+    function playPause() {
+        const state = player.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+        } else {
+            player.playVideo();
+        }
+    }
+
+    function toggleMute() {
+        if (isMuted) {
+            player.unMute();
+        } else {
+            player.mute();
+        }
+        isMuted = !isMuted;
+    }
+
+    function goFullscreen() {
+        const iframe = document.getElementById("player");
+        if (iframe.requestFullscreen) iframe.requestFullscreen();
+        else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+    }
+
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+</script>
 
 </body>
 </html>
