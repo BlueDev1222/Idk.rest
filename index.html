@@ -1,151 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta 
-  name="viewport" 
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-<title>WEEEEEE</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peakframe Studios – Testing Environment</title>
 
 <style>
-    html, body {
+    :root {
+        --bg: #020617;
+        --card: #0f172a;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #f59e0b; /* testing = amber */
+    }
+
+    * {
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
         margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background: black;
-        font-family: Arial, Helvetica, sans-serif;
-        overflow: hidden;
-    }
-
-    /* Header */
-    header {
-        position: fixed;
-        top: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.6);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        z-index: 10;
-        backdrop-filter: blur(6px);
-    }
-
-    /* Video */
-    .video-container {
-        position: fixed;
-        inset: 0;
-    }
-
-    iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-    }
-
-    /* Control Bar */
-    .controls {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #0b1220, #000);
         display: flex;
-        gap: 12px;
-        background: rgba(0,0,0,0.65);
-        padding: 10px 14px;
-        border-radius: 30px;
-        backdrop-filter: blur(8px);
-        z-index: 10;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
     }
 
-    .controls button {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 6px 10px;
-        border-radius: 20px;
-        transition: background 0.2s, transform 0.15s;
-    }
-
-    .controls button:hover {
-        background: rgba(255,255,255,0.15);
-        transform: scale(1.1);
-    }
-
-    /* Footer */
-    footer {
-        position: fixed;
-        bottom: 8px;
-        width: 100%;
+    .card {
+        background: linear-gradient(180deg, var(--card), #020617);
+        border: 1px solid #1e293b;
+        border-radius: 18px;
+        padding: 45px;
+        max-width: 540px;
+        width: 90%;
         text-align: center;
-        color: #aaa;
-        font-size: 11px;
-        z-index: 10;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
+
+    .badge {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        margin-bottom: 18px;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    h1 {
+        margin: 0 0 12px;
+        font-size: 1.8rem;
+    }
+
+    p {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    .divider {
+        margin: 28px auto;
+        width: 70px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        border-radius: 999px;
+    }
+
+    footer {
+        margin-top: 22px;
+        font-size: 0.85rem;
+        color: #64748b;
     }
 </style>
 </head>
 <body>
 
-<header>Made for fun</header>
+<div class="card">
+    <div class="badge">TESTING WEBSITE</div>
 
-<div class="video-container">
-    <iframe
-        id="player"
-        src="https://www.youtube.com/embed/pMzt_up3Wk0?enablejsapi=1&playsinline=1&autoplay=1&mute=1&controls=0&rel=0"
-        allow="autoplay; fullscreen; encrypted-media"
-        allowfullscreen
-        playsinline>
-    </iframe>
+    <h1>This website is a testing environment</h1>
+
+    <div class="divider"></div>
+
+    <p>
+        This domain is owned and operated by <strong>Peakframe Studios</strong>.<br>
+        It is currently being used for development, testing, and experimental features.
+    </p>
+
+    <footer>
+        © <span id="year"></span> Peakframe Studios. All rights reserved.
+    </footer>
 </div>
-
-<div class="controls">
-    <button onclick="playPause()">▶️ / ⏸</button>
-    <button onclick="toggleMute()">🔊</button>
-    <button onclick="goFullscreen()">⛶</button>
-</div>
-
-<footer>© Peakframe Studios</footer>
 
 <script>
-    let player;
-    let isMuted = true;
-
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player');
-    }
-
-    function playPause() {
-        const state = player.getPlayerState();
-        if (state === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-        }
-    }
-
-    function toggleMute() {
-        if (isMuted) {
-            player.unMute();
-        } else {
-            player.mute();
-        }
-        isMuted = !isMuted;
-    }
-
-    function goFullscreen() {
-        const iframe = document.getElementById("player");
-        if (iframe.requestFullscreen) iframe.requestFullscreen();
-        else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-    }
-
-    const tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
+    document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
 </body>
