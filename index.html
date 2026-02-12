@@ -82,13 +82,32 @@ h1 {
     opacity: 0.7;
 }
 
+/* Footer */
 .footer {
     position: absolute;
-    bottom: 10px;
+    bottom: 15px;
     width: 100%;
+    text-align: center;
+    z-index: 1;
+}
+
+.footer a {
+    display: inline-block;
+    margin-bottom: 6px;
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.3s;
+}
+
+.footer a:hover {
+    color: #22d3ee;
+    transform: scale(1.05);
+}
+
+.footer .copyright {
     font-size: 0.7rem;
     opacity: 0.6;
-    z-index: 1;
 }
 </style>
 </head>
@@ -109,7 +128,12 @@ h1 {
 </div>
 
 <div class="footer">
-    © 2026 Peakframe Studios
+    <a href="https://x.com/peakframes9376?s=21" target="_blank">
+        Follow us on Twitter (X)
+    </a>
+    <div class="copyright">
+        © 2026 Peakframe Studios
+    </div>
 </div>
 
 <script>
