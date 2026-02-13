@@ -1,262 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LB Files Release</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peakframe Studios – Testing Environment</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
+    :root {
+        --bg: #020617;
+        --card: #0f172a;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #f59e0b; /* testing = amber */
+    }
 
-body {
-    height: 100vh;
-    background: #020617;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    overflow: hidden;
-}
+    * {
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-/* Background canvas */
-#particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #0b1220, #000);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+    }
 
-.container {
-    position: relative;
-    z-index: 1;
-    padding: 20px;
-    width: 100%;
-    max-width: 900px;
-}
+    .card {
+        background: linear-gradient(180deg, var(--card), #020617);
+        border: 1px solid #1e293b;
+        border-radius: 18px;
+        padding: 45px;
+        max-width: 540px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    }
 
-h1 {
-    font-size: clamp(2rem, 6vw, 3rem);
-    margin-bottom: 10px;
-    background: linear-gradient(90deg, #38bdf8, #22d3ee);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+    .badge {
+        display: inline-block;
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        margin-bottom: 18px;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+    }
 
-.release-date {
-    font-size: clamp(0.9rem, 3vw, 1.2rem);
-    margin-bottom: 30px;
-    opacity: 0.8;
-}
+    h1 {
+        margin: 0 0 12px;
+        font-size: 1.8rem;
+    }
 
-.countdown {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+    p {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--muted);
+        line-height: 1.6;
+    }
 
-.time-box {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    min-width: 80px;
-    flex: 1 1 90px;
-    max-width: 150px;
-}
+    .divider {
+        margin: 28px auto;
+        width: 70px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        border-radius: 999px;
+    }
 
-.time-box h2 {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-}
-
-.time-box span {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-/* Footer */
-.footer {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-    z-index: 1;
-}
-
-.social-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    color: white;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: 0.3s ease;
-}
-
-.social-link svg {
-    width: 18px;
-    height: 18px;
-    fill: white;
-    transition: 0.3s ease;
-}
-
-.social-link:hover {
-    color: #38bdf8;
-}
-
-.social-link:hover svg {
-    fill: #38bdf8;
-    transform: scale(1.1);
-}
-
-.copyright {
-    font-size: 0.7rem;
-    opacity: 0.6;
-}
+    footer {
+        margin-top: 22px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
 </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
+<div class="card">
+    <div class="badge">TESTING WEBSITE</div>
 
-<div class="container">
-    <h1>LB Files</h1>
-    <div class="release-date">Releasing on 2/20/2026</div>
+    <h1>This website is a testing environment</h1>
 
-    <div class="countdown">
-        <div class="time-box"><h2 id="days">00</h2><span>Days</span></div>
-        <div class="time-box"><h2 id="hours">00</h2><span>Hours</span></div>
-        <div class="time-box"><h2 id="minutes">00</h2><span>Minutes</span></div>
-        <div class="time-box"><h2 id="seconds">00</h2><span>Seconds</span></div>
-    </div>
-</div>
+    <div class="divider"></div>
 
-<div class="footer">
-    <a class="social-link" href="https://x.com/peakframes9376?s=21" target="_blank">
-        <svg viewBox="0 0 24 24">
-            <path d="M18.244 2H21.5l-7.6 8.68L22 22h-6.828l-5.35-6.993L3.6 22H.34l8.13-9.29L0 2h6.828l4.84 6.33L18.244 2Zm-1.2 18h1.9L6.02 3.9H4.02l13.024 16.1Z"/>
-        </svg>
-        Follow us on X
-    </a>
-    <div class="copyright">
-        © 2026 Peakframe Studios
-    </div>
+    <p>
+        This domain is owned and operated by <strong>Peakframe Studios</strong>.<br>
+        It is currently being used for development, testing, and experimental features.
+    </p>
+
+    <footer>
+        © <span id="year"></span> Peakframe Studios. All rights reserved.
+    </footer>
 </div>
 
 <script>
-/* Countdown */
-const releaseDate = new Date("February 20, 2026 00:00:00").getTime();
-
-setInterval(function() {
-    const now = new Date().getTime();
-    const distance = releaseDate - now;
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("days").innerHTML = days;
-    document.getElementById("hours").innerHTML = hours;
-    document.getElementById("minutes").innerHTML = minutes;
-    document.getElementById("seconds").innerHTML = seconds;
-
-    if (distance < 0) {
-        document.querySelector(".countdown").innerHTML =
-        "<h2>LB Files Has Released 🚀</h2>";
-    }
-}, 1000);
-
-
-/* Particle Background with Connecting Lines */
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let particles = [];
-let particleCount = window.innerWidth < 600 ? 50 : 100;
-
-class Particle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-    }
-
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x <= 0 || this.x >= canvas.width) this.speedX *= -1;
-        if (this.y <= 0 || this.y >= canvas.height) this.speedY *= -1;
-    }
-
-    draw() {
-        ctx.fillStyle = "rgba(56,189,248,0.8)";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function initParticles() {
-    particles = [];
-    particleCount = window.innerWidth < 600 ? 50 : 100;
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
-}
-initParticles();
-window.addEventListener("resize", initParticles);
-
-function connectParticles() {
-    for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-            let dx = particles[a].x - particles[b].x;
-            let dy = particles[a].y - particles[b].y;
-            let distance = dx * dx + dy * dy;
-
-            if (distance < 12000) {
-                ctx.strokeStyle = "rgba(56,189,248,0.15)";
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(particles[a].x, particles[a].y);
-                ctx.lineTo(particles[b].x, particles[b].y);
-                ctx.stroke();
-            }
-        }
-    }
-}
-
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    particles.forEach(p => {
-        p.update();
-        p.draw();
-    });
-
-    connectParticles();
-    requestAnimationFrame(animate);
-}
-animate();
+    document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
 </body>
