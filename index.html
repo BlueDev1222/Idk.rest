@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kimi K2.5 – Next Gen AI</title>
+<title>Kimi K2.5 – Advanced AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
@@ -11,28 +11,47 @@
   --bg:#020617;
   --accent:#7c3aed;
   --accent2:#22d3ee;
+  --glass:rgba(255,255,255,0.06);
   --text:#e2e8f0;
-  --glass:rgba(255,255,255,0.05);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
+body{background:var(--bg);color:var(--text);overflow-x:hidden;}
+canvas{position:fixed;top:0;left:0;z-index:-1;}
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  overflow-x:hidden;
-}
-
-canvas{
+/* Floating Glass Navbar */
+nav{
   position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--glass);
+  backdrop-filter:blur(15px);
+  padding:12px 30px;
+  border-radius:40px;
+  display:flex;
+  gap:30px;
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 30px rgba(124,58,237,.3);
+  z-index:1000;
 }
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition:.3s;
+}
+nav a:hover{color:var(--accent2);}
 
+/* Hero */
 header{
-  padding:100px 20px;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
   text-align:center;
+  padding:0 20px;
 }
 
 header h1{
@@ -40,74 +59,36 @@ header h1{
   background:linear-gradient(90deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  text-shadow:0 0 30px rgba(124,58,237,0.7);
+  text-shadow:0 0 40px rgba(124,58,237,.7);
 }
 
-header p{
-  margin-top:20px;
-  opacity:.8;
+#typing{
+  margin-top:25px;
+  font-size:1.2rem;
+  opacity:.85;
+  min-height:30px;
 }
 
+/* Section */
 section{
-  padding:80px 10%;
+  padding:100px 10%;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:30px;
-}
-
-.card{
-  background:var(--glass);
-  padding:30px;
-  border-radius:20px;
-  backdrop-filter:blur(12px);
-  transition:.4s;
-  transform-style:preserve-3d;
-  box-shadow:0 0 0 rgba(0,0,0,0);
-}
-
-.card:hover{
-  transform:rotateY(8deg) rotateX(6deg) scale(1.05);
-  box-shadow:0 20px 60px rgba(124,58,237,.4);
-}
-
-.card h3{
-  color:var(--accent2);
-  margin-bottom:15px;
-}
-
-.stats{
-  display:flex;
-  justify-content:space-around;
-  flex-wrap:wrap;
-  gap:30px;
-  text-align:center;
-}
-
-.stat{
-  font-size:2.5rem;
-  font-weight:800;
-  color:var(--accent);
-  text-shadow:0 0 20px rgba(124,58,237,0.7);
-}
-
-.stat-label{
-  margin-top:10px;
-  opacity:.7;
+.chart-container{
+  max-width:700px;
+  margin:auto;
 }
 
 footer{
   text-align:center;
-  padding:40px;
+  padding:50px;
   opacity:.6;
   border-top:1px solid rgba(255,255,255,.1);
 }
 
 @media(max-width:768px){
   header h1{font-size:2.2rem;}
-  section{padding:60px 5%;}
+  section{padding:70px 5%;}
 }
 </style>
 </head>
@@ -115,105 +96,101 @@ footer{
 
 <canvas id="particles"></canvas>
 
+<nav>
+  <a href="#">Overview</a>
+  <a href="#performance">Performance</a>
+  <a href="#">Capabilities</a>
+</nav>
+
 <header>
   <h1>Kimi K2.5</h1>
-  <p>Advanced Large Language Model by Moonshot AI</p>
+  <div id="typing"></div>
 </header>
 
-<section>
-  <h2>⚡ Core Capabilities</h2>
-  <div class="grid">
-    <div class="card">
-      <h3>Long Context</h3>
-      <p>Handles massive documents and extended conversations efficiently.</p>
-    </div>
-    <div class="card">
-      <h3>Advanced Reasoning</h3>
-      <p>Structured logic, complex tasks, and analytical problem solving.</p>
-    </div>
-    <div class="card">
-      <h3>Code Generation</h3>
-      <p>Multi-language coding with optimized outputs.</p>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>📊 Model Performance</h2>
-  <div class="stats">
-    <div>
-      <div class="stat" data-target="200">0</div>
-      <div class="stat-label">Billion Parameters*</div>
-    </div>
-    <div>
-      <div class="stat" data-target="100">0</div>
-      <div class="stat-label">Languages Supported</div>
-    </div>
-    <div>
-      <div class="stat" data-target="1000000">0</div>
-      <div class="stat-label">Token Context Window*</div>
-    </div>
+<section id="performance">
+  <h2 style="text-align:center;margin-bottom:40px;">📊 Performance Benchmarks</h2>
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
   </div>
 </section>
 
 <footer>
-© 2026 Informational Site about Kimi K2.5 • Not affiliated with Moonshot AI
+© 2026 Informational Site • Not affiliated with Moonshot AI
 </footer>
 
 <script>
-/* ================= PARTICLES ================= */
+/* ================= TYPING ANIMATION ================= */
+
+const text = "Advanced long-context reasoning • Code generation • Enterprise-grade intelligence";
+let i = 0;
+function type(){
+  if(i < text.length){
+    document.getElementById("typing").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(type,30);
+  }
+}
+type();
+
+/* ================= PARTICLES WITH MOUSE ATTRACTION ================= */
 
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
-
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let particlesArray = [];
-const numberOfParticles = 90;
+let mouse = {x:null,y:null};
+window.addEventListener("mousemove",(e)=>{
+  mouse.x = e.x;
+  mouse.y = e.y;
+});
 
 class Particle{
   constructor(){
-    this.x = Math.random()*canvas.width;
-    this.y = Math.random()*canvas.height;
-    this.size = 2;
-    this.speedX = (Math.random()-.5)*1;
-    this.speedY = (Math.random()-.5)*1;
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.size=2;
+    this.dx=(Math.random()-.5)*1;
+    this.dy=(Math.random()-.5)*1;
   }
   update(){
-    this.x += this.speedX;
-    this.y += this.speedY;
-    if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
-    if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
+    this.x+=this.dx;
+    this.y+=this.dy;
+
+    // Mouse attraction
+    let dx = mouse.x - this.x;
+    let dy = mouse.y - this.y;
+    let distance = Math.sqrt(dx*dx+dy*dy);
+    if(distance < 120){
+      this.x -= dx/15;
+      this.y -= dy/15;
+    }
+
+    if(this.x<0||this.x>canvas.width) this.dx*=-1;
+    if(this.y<0||this.y>canvas.height) this.dy*=-1;
   }
   draw(){
-    ctx.fillStyle = "#7c3aed";
+    ctx.fillStyle="#7c3aed";
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
     ctx.fill();
   }
 }
 
-function init(){
-  particlesArray = [];
-  for(let i=0;i<numberOfParticles;i++){
-    particlesArray.push(new Particle());
-  }
-}
-init();
+let particles=[];
+for(let i=0;i<90;i++){particles.push(new Particle());}
 
 function connect(){
-  for(let a=0;a<particlesArray.length;a++){
-    for(let b=a;b<particlesArray.length;b++){
-      let dx = particlesArray[a].x - particlesArray[b].x;
-      let dy = particlesArray[a].y - particlesArray[b].y;
-      let distance = dx*dx + dy*dy;
-      if(distance < 12000){
-        ctx.strokeStyle = "rgba(124,58,237,0.15)";
-        ctx.lineWidth = 1;
+  for(let a=0;a<particles.length;a++){
+    for(let b=a;b<particles.length;b++){
+      let dx=particles[a].x-particles[b].x;
+      let dy=particles[a].y-particles[b].y;
+      let dist=dx*dx+dy*dy;
+      if(dist<10000){
+        ctx.strokeStyle="rgba(124,58,237,0.15)";
         ctx.beginPath();
-        ctx.moveTo(particlesArray[a].x,particlesArray[a].y);
-        ctx.lineTo(particlesArray[b].x,particlesArray[b].y);
+        ctx.moveTo(particles[a].x,particles[a].y);
+        ctx.lineTo(particles[b].x,particles[b].y);
         ctx.stroke();
       }
     }
@@ -222,54 +199,59 @@ function connect(){
 
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  particlesArray.forEach(p=>{
-    p.update();
-    p.draw();
-  });
+  particles.forEach(p=>{p.update();p.draw();});
   connect();
   requestAnimationFrame(animate);
 }
 animate();
 
-window.addEventListener("resize",()=>{
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  init();
+/* ================= PERFORMANCE CHART ================= */
+
+const chartCanvas = document.getElementById("chart");
+const chartCtx = chartCanvas.getContext("2d");
+chartCanvas.width = chartCanvas.parentElement.offsetWidth;
+chartCanvas.height = 400;
+
+const values = [85, 92, 88, 95];
+const labels = ["Reasoning","Coding","Context","Multilingual"];
+
+function drawChart(){
+  const width = chartCanvas.width;
+  const height = chartCanvas.height;
+  const barWidth = width / values.length - 40;
+
+  chartCtx.clearRect(0,0,width,height);
+
+  values.forEach((val,index)=>{
+    let x = index*(barWidth+40)+40;
+    let barHeight = (val/100)*300;
+    chartCtx.fillStyle="#22d3ee";
+    chartCtx.fillRect(x,height-barHeight-50,barWidth,barHeight);
+
+    chartCtx.fillStyle="#e2e8f0";
+    chartCtx.fillText(labels[index],x,height-20);
+  });
+}
+
+let animated = false;
+window.addEventListener("scroll",()=>{
+  const rect = chartCanvas.getBoundingClientRect();
+  if(rect.top < window.innerHeight && !animated){
+    animated=true;
+    let grow=0;
+    const interval=setInterval(()=>{
+      grow+=2;
+      chartCtx.clearRect(0,0,chartCanvas.width,chartCanvas.height);
+      values.forEach((val,index)=>{
+        let x=index*(chartCanvas.width/values.length)+40;
+        let barHeight=Math.min(grow,val)/100*300;
+        chartCtx.fillStyle="#22d3ee";
+        chartCtx.fillRect(x,chartCanvas.height-barHeight-50,80,barHeight);
+      });
+      if(grow>=100) clearInterval(interval);
+    },20);
+  }
 });
-
-/* ================= COUNTERS ================= */
-
-const counters = document.querySelectorAll(".stat");
-const speed = 200;
-
-const animateCounters = () => {
-  counters.forEach(counter=>{
-    const update = () => {
-      const target = +counter.getAttribute("data-target");
-      const count = +counter.innerText;
-      const inc = target / speed;
-
-      if(count < target){
-        counter.innerText = Math.ceil(count + inc);
-        setTimeout(update,10);
-      } else {
-        counter.innerText = target.toLocaleString();
-      }
-    };
-    update();
-  });
-};
-
-const observer = new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      animateCounters();
-      observer.disconnect();
-    }
-  });
-},{threshold:0.6});
-
-observer.observe(document.querySelector(".stats"));
 </script>
 
 </body>
