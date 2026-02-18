@@ -3,231 +3,273 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kimi K2.5 – Advanced AI Model</title>
-<meta name="description" content="Kimi K2.5 by Moonshot AI – Advanced large language model with long context understanding, coding power, and research capabilities.">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>Kimi K2.5 – Next Gen AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg1: #0f172a;
-  --bg2: #020617;
-  --accent: #7c3aed;
-  --accent2: #22d3ee;
-  --text: #e2e8f0;
-  --card: rgba(255,255,255,0.05);
-  --glass: rgba(255,255,255,0.07);
-  --border: rgba(255,255,255,0.1);
+:root{
+  --bg:#020617;
+  --accent:#7c3aed;
+  --accent2:#22d3ee;
+  --text:#e2e8f0;
+  --glass:rgba(255,255,255,0.05);
 }
 
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
 
-body {
-  background: linear-gradient(135deg, var(--bg1), var(--bg2));
-  color: var(--text);
+body{
+  background:var(--bg);
+  color:var(--text);
   overflow-x:hidden;
 }
 
-/* Animated background */
-body::before {
-  content:"";
+canvas{
   position:fixed;
-  width:200%;
-  height:200%;
-  background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.3), transparent 50%),
-              radial-gradient(circle at 70% 70%, rgba(34,211,238,0.2), transparent 50%);
-  animation: moveBG 15s linear infinite alternate;
+  top:0;
+  left:0;
   z-index:-1;
 }
 
-@keyframes moveBG {
-  from { transform:translate(-10%,-10%); }
-  to { transform:translate(10%,10%); }
-}
-
-header {
-  padding:60px 20px;
+header{
+  padding:100px 20px;
   text-align:center;
 }
 
-header h1 {
-  font-size:3rem;
-  background: linear-gradient(90deg,var(--accent),var(--accent2));
+header h1{
+  font-size:3.5rem;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  text-shadow:0 0 30px rgba(124,58,237,0.7);
 }
 
-header p {
-  margin-top:15px;
-  opacity:0.8;
-  font-size:1.1rem;
+header p{
+  margin-top:20px;
+  opacity:.8;
 }
 
-section {
-  padding:60px 10%;
+section{
+  padding:80px 10%;
 }
 
-.card-grid {
+.grid{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
-  gap:25px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:30px;
 }
 
-.card {
-  background: var(--glass);
-  border:1px solid var(--border);
-  backdrop-filter: blur(10px);
-  padding:25px;
-  border-radius:15px;
-  transition:0.3s ease;
-}
-
-.card:hover {
-  transform:translateY(-8px);
-  border-color:var(--accent);
-}
-
-.card h3 {
-  margin-bottom:10px;
-  color:var(--accent2);
-}
-
-.tabs {
-  display:flex;
-  gap:15px;
-  margin-bottom:20px;
-  flex-wrap:wrap;
-}
-
-.tab-btn {
-  padding:10px 20px;
+.card{
   background:var(--glass);
-  border:1px solid var(--border);
+  padding:30px;
   border-radius:20px;
-  cursor:pointer;
-  transition:0.3s;
+  backdrop-filter:blur(12px);
+  transition:.4s;
+  transform-style:preserve-3d;
+  box-shadow:0 0 0 rgba(0,0,0,0);
 }
 
-.tab-btn.active {
-  background:var(--accent);
+.card:hover{
+  transform:rotateY(8deg) rotateX(6deg) scale(1.05);
+  box-shadow:0 20px 60px rgba(124,58,237,.4);
 }
 
-.tab-content {
-  display:none;
-  background:var(--card);
-  padding:25px;
-  border-radius:15px;
+.card h3{
+  color:var(--accent2);
+  margin-bottom:15px;
 }
 
-.tab-content.active {
-  display:block;
-}
-
-footer {
+.stats{
+  display:flex;
+  justify-content:space-around;
+  flex-wrap:wrap;
+  gap:30px;
   text-align:center;
-  padding:40px 20px;
-  opacity:0.7;
-  font-size:0.9rem;
-  border-top:1px solid var(--border);
+}
+
+.stat{
+  font-size:2.5rem;
+  font-weight:800;
+  color:var(--accent);
+  text-shadow:0 0 20px rgba(124,58,237,0.7);
+}
+
+.stat-label{
+  margin-top:10px;
+  opacity:.7;
+}
+
+footer{
+  text-align:center;
+  padding:40px;
+  opacity:.6;
+  border-top:1px solid rgba(255,255,255,.1);
 }
 
 @media(max-width:768px){
-  header h1 { font-size:2.2rem; }
-  section { padding:40px 5%; }
+  header h1{font-size:2.2rem;}
+  section{padding:60px 5%;}
 }
 </style>
 </head>
-
 <body>
+
+<canvas id="particles"></canvas>
 
 <header>
   <h1>Kimi K2.5</h1>
-  <p>Advanced Large Language Model developed by Moonshot AI</p>
+  <p>Advanced Large Language Model by Moonshot AI</p>
 </header>
 
 <section>
-  <h2>🚀 Overview</h2>
-  <p style="margin-top:15px; opacity:0.85;">
-    Kimi K2.5 is a powerful AI model designed for long-context understanding, complex reasoning,
-    advanced coding, document analysis, and research tasks. It focuses on high-context memory
-    capacity and strong multilingual performance.
-  </p>
-</section>
-
-<section>
-  <h2>⚡ Core Features</h2>
-  <div class="card-grid">
+  <h2>⚡ Core Capabilities</h2>
+  <div class="grid">
     <div class="card">
-      <h3>Long Context Window</h3>
-      <p>Designed to handle extremely large documents and extended conversations efficiently.</p>
+      <h3>Long Context</h3>
+      <p>Handles massive documents and extended conversations efficiently.</p>
     </div>
     <div class="card">
       <h3>Advanced Reasoning</h3>
-      <p>Improved problem-solving, logical thinking, and structured output generation.</p>
+      <p>Structured logic, complex tasks, and analytical problem solving.</p>
     </div>
     <div class="card">
-      <h3>Strong Coding Abilities</h3>
-      <p>Supports multiple programming languages with optimized code generation.</p>
-    </div>
-    <div class="card">
-      <h3>Multilingual Support</h3>
-      <p>High performance in English and Chinese, with broad language understanding.</p>
+      <h3>Code Generation</h3>
+      <p>Multi-language coding with optimized outputs.</p>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>📊 Model Capabilities</h2>
-  <div class="tabs">
-    <div class="tab-btn active" onclick="showTab(0)">Reasoning</div>
-    <div class="tab-btn" onclick="showTab(1)">Coding</div>
-    <div class="tab-btn" onclick="showTab(2)">Research</div>
-  </div>
-
-  <div class="tab-content active">
-    Excels in structured reasoning, step-by-step logic, and knowledge-based responses.
-  </div>
-  <div class="tab-content">
-    Generates optimized code, debug suggestions, and multi-language support.
-  </div>
-  <div class="tab-content">
-    Capable of summarizing long documents and extracting detailed insights.
-  </div>
-</section>
-
-<section>
-  <h2>🌍 Use Cases</h2>
-  <div class="card-grid">
-    <div class="card">
-      <h3>Enterprise AI</h3>
-      <p>Knowledge base automation and document analysis.</p>
+  <h2>📊 Model Performance</h2>
+  <div class="stats">
+    <div>
+      <div class="stat" data-target="200">0</div>
+      <div class="stat-label">Billion Parameters*</div>
     </div>
-    <div class="card">
-      <h3>Education</h3>
-      <p>Research assistance and tutoring applications.</p>
+    <div>
+      <div class="stat" data-target="100">0</div>
+      <div class="stat-label">Languages Supported</div>
     </div>
-    <div class="card">
-      <h3>Software Development</h3>
-      <p>Code generation, debugging, and documentation.</p>
+    <div>
+      <div class="stat" data-target="1000000">0</div>
+      <div class="stat-label">Token Context Window*</div>
     </div>
   </div>
 </section>
 
 <footer>
-  © 2026 Kimi K2.5 Informational Website • Not affiliated with Moonshot AI
+© 2026 Informational Site about Kimi K2.5 • Not affiliated with Moonshot AI
 </footer>
 
 <script>
-function showTab(index){
-  const tabs = document.querySelectorAll('.tab-content');
-  const btns = document.querySelectorAll('.tab-btn');
+/* ================= PARTICLES ================= */
 
-  tabs.forEach(tab => tab.classList.remove('active'));
-  btns.forEach(btn => btn.classList.remove('active'));
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
 
-  tabs[index].classList.add('active');
-  btns[index].classList.add('active');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particlesArray = [];
+const numberOfParticles = 90;
+
+class Particle{
+  constructor(){
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.size = 2;
+    this.speedX = (Math.random()-.5)*1;
+    this.speedY = (Math.random()-.5)*1;
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
+    if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
+  }
+  draw(){
+    ctx.fillStyle = "#7c3aed";
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fill();
+  }
 }
+
+function init(){
+  particlesArray = [];
+  for(let i=0;i<numberOfParticles;i++){
+    particlesArray.push(new Particle());
+  }
+}
+init();
+
+function connect(){
+  for(let a=0;a<particlesArray.length;a++){
+    for(let b=a;b<particlesArray.length;b++){
+      let dx = particlesArray[a].x - particlesArray[b].x;
+      let dy = particlesArray[a].y - particlesArray[b].y;
+      let distance = dx*dx + dy*dy;
+      if(distance < 12000){
+        ctx.strokeStyle = "rgba(124,58,237,0.15)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particlesArray[a].x,particlesArray[a].y);
+        ctx.lineTo(particlesArray[b].x,particlesArray[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particlesArray.forEach(p=>{
+    p.update();
+    p.draw();
+  });
+  connect();
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener("resize",()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  init();
+});
+
+/* ================= COUNTERS ================= */
+
+const counters = document.querySelectorAll(".stat");
+const speed = 200;
+
+const animateCounters = () => {
+  counters.forEach(counter=>{
+    const update = () => {
+      const target = +counter.getAttribute("data-target");
+      const count = +counter.innerText;
+      const inc = target / speed;
+
+      if(count < target){
+        counter.innerText = Math.ceil(count + inc);
+        setTimeout(update,10);
+      } else {
+        counter.innerText = target.toLocaleString();
+      }
+    };
+    update();
+  });
+};
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      animateCounters();
+      observer.disconnect();
+    }
+  });
+},{threshold:0.6});
+
+observer.observe(document.querySelector(".stats"));
 </script>
 
 </body>
