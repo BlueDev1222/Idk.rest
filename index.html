@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kimi K2.5 – Advanced AI</title>
+<title>Kimi K2.5 – AI Research Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 :root{
@@ -17,9 +18,25 @@
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
 body{background:var(--bg);color:var(--text);overflow-x:hidden;}
-canvas{position:fixed;top:0;left:0;z-index:-1;}
 
-/* Floating Glass Navbar */
+#globe{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:-2;
+}
+
+#network{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+
 nav{
   position:fixed;
   top:20px;
@@ -38,12 +55,10 @@ nav{
 nav a{
   color:var(--text);
   text-decoration:none;
-  font-weight:500;
   transition:.3s;
 }
 nav a:hover{color:var(--accent2);}
 
-/* Hero */
 header{
   height:100vh;
   display:flex;
@@ -69,14 +84,9 @@ header h1{
   min-height:30px;
 }
 
-/* Section */
 section{
   padding:100px 10%;
-}
-
-.chart-container{
-  max-width:700px;
-  margin:auto;
+  background:rgba(2,6,23,.8);
 }
 
 footer{
@@ -85,20 +95,16 @@ footer{
   opacity:.6;
   border-top:1px solid rgba(255,255,255,.1);
 }
-
-@media(max-width:768px){
-  header h1{font-size:2.2rem;}
-  section{padding:70px 5%;}
-}
 </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
+<div id="globe"></div>
+<canvas id="network"></canvas>
 
 <nav>
   <a href="#">Overview</a>
-  <a href="#performance">Performance</a>
+  <a href="#">Performance</a>
   <a href="#">Capabilities</a>
 </nav>
 
@@ -107,11 +113,11 @@ footer{
   <div id="typing"></div>
 </header>
 
-<section id="performance">
-  <h2 style="text-align:center;margin-bottom:40px;">📊 Performance Benchmarks</h2>
-  <div class="chart-container">
-    <canvas id="chart"></canvas>
-  </div>
+<section>
+  <h2 style="text-align:center;">Next-Generation AI Intelligence</h2>
+  <p style="margin-top:20px;text-align:center;opacity:.8;">
+    Advanced long-context reasoning • Coding intelligence • Enterprise AI systems
+  </p>
 </section>
 
 <footer>
@@ -119,139 +125,104 @@ footer{
 </footer>
 
 <script>
-/* ================= TYPING ANIMATION ================= */
+/* ================= 3D ROTATING GLOBE ================= */
 
-const text = "Advanced long-context reasoning • Code generation • Enterprise-grade intelligence";
-let i = 0;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({alpha:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById("globe").appendChild(renderer.domElement);
+
+const geometry = new THREE.SphereGeometry(5, 64, 64);
+const material = new THREE.MeshBasicMaterial({
+  color:0x7c3aed,
+  wireframe:true,
+  transparent:true,
+  opacity:0.25
+});
+const globe = new THREE.Mesh(geometry, material);
+scene.add(globe);
+
+camera.position.z = 12;
+
+function animateGlobe(){
+  requestAnimationFrame(animateGlobe);
+  globe.rotation.y += 0.002;
+  globe.rotation.x += 0.001;
+  renderer.render(scene,camera);
+}
+animateGlobe();
+
+window.addEventListener("resize",()=>{
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+/* ================= NEURAL NETWORK ANIMATION ================= */
+
+const canvas = document.getElementById("network");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let nodes=[];
+for(let i=0;i<70;i++){
+  nodes.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    dx:(Math.random()-.5)*0.6,
+    dy:(Math.random()-.5)*0.6
+  });
+}
+
+function animateNetwork(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  nodes.forEach(node=>{
+    node.x+=node.dx;
+    node.y+=node.dy;
+
+    if(node.x<0||node.x>canvas.width) node.dx*=-1;
+    if(node.y<0||node.y>canvas.height) node.dy*=-1;
+
+    ctx.fillStyle="#22d3ee";
+    ctx.beginPath();
+    ctx.arc(node.x,node.y,2,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  for(let a=0;a<nodes.length;a++){
+    for(let b=a;b<nodes.length;b++){
+      let dx=nodes[a].x-nodes[b].x;
+      let dy=nodes[a].y-nodes[b].y;
+      let dist=dx*dx+dy*dy;
+      if(dist<15000){
+        ctx.strokeStyle="rgba(34,211,238,0.08)";
+        ctx.beginPath();
+        ctx.moveTo(nodes[a].x,nodes[a].y);
+        ctx.lineTo(nodes[b].x,nodes[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(animateNetwork);
+}
+animateNetwork();
+
+/* ================= TYPING ================= */
+
+const text="Global-scale AI reasoning • Neural architecture visualization • Advanced intelligence";
+let i=0;
 function type(){
-  if(i < text.length){
-    document.getElementById("typing").innerHTML += text.charAt(i);
+  if(i<text.length){
+    document.getElementById("typing").innerHTML+=text.charAt(i);
     i++;
     setTimeout(type,30);
   }
 }
 type();
-
-/* ================= PARTICLES WITH MOUSE ATTRACTION ================= */
-
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let mouse = {x:null,y:null};
-window.addEventListener("mousemove",(e)=>{
-  mouse.x = e.x;
-  mouse.y = e.y;
-});
-
-class Particle{
-  constructor(){
-    this.x=Math.random()*canvas.width;
-    this.y=Math.random()*canvas.height;
-    this.size=2;
-    this.dx=(Math.random()-.5)*1;
-    this.dy=(Math.random()-.5)*1;
-  }
-  update(){
-    this.x+=this.dx;
-    this.y+=this.dy;
-
-    // Mouse attraction
-    let dx = mouse.x - this.x;
-    let dy = mouse.y - this.y;
-    let distance = Math.sqrt(dx*dx+dy*dy);
-    if(distance < 120){
-      this.x -= dx/15;
-      this.y -= dy/15;
-    }
-
-    if(this.x<0||this.x>canvas.width) this.dx*=-1;
-    if(this.y<0||this.y>canvas.height) this.dy*=-1;
-  }
-  draw(){
-    ctx.fillStyle="#7c3aed";
-    ctx.beginPath();
-    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-    ctx.fill();
-  }
-}
-
-let particles=[];
-for(let i=0;i<90;i++){particles.push(new Particle());}
-
-function connect(){
-  for(let a=0;a<particles.length;a++){
-    for(let b=a;b<particles.length;b++){
-      let dx=particles[a].x-particles[b].x;
-      let dy=particles[a].y-particles[b].y;
-      let dist=dx*dx+dy*dy;
-      if(dist<10000){
-        ctx.strokeStyle="rgba(124,58,237,0.15)";
-        ctx.beginPath();
-        ctx.moveTo(particles[a].x,particles[a].y);
-        ctx.lineTo(particles[b].x,particles[b].y);
-        ctx.stroke();
-      }
-    }
-  }
-}
-
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{p.update();p.draw();});
-  connect();
-  requestAnimationFrame(animate);
-}
-animate();
-
-/* ================= PERFORMANCE CHART ================= */
-
-const chartCanvas = document.getElementById("chart");
-const chartCtx = chartCanvas.getContext("2d");
-chartCanvas.width = chartCanvas.parentElement.offsetWidth;
-chartCanvas.height = 400;
-
-const values = [85, 92, 88, 95];
-const labels = ["Reasoning","Coding","Context","Multilingual"];
-
-function drawChart(){
-  const width = chartCanvas.width;
-  const height = chartCanvas.height;
-  const barWidth = width / values.length - 40;
-
-  chartCtx.clearRect(0,0,width,height);
-
-  values.forEach((val,index)=>{
-    let x = index*(barWidth+40)+40;
-    let barHeight = (val/100)*300;
-    chartCtx.fillStyle="#22d3ee";
-    chartCtx.fillRect(x,height-barHeight-50,barWidth,barHeight);
-
-    chartCtx.fillStyle="#e2e8f0";
-    chartCtx.fillText(labels[index],x,height-20);
-  });
-}
-
-let animated = false;
-window.addEventListener("scroll",()=>{
-  const rect = chartCanvas.getBoundingClientRect();
-  if(rect.top < window.innerHeight && !animated){
-    animated=true;
-    let grow=0;
-    const interval=setInterval(()=>{
-      grow+=2;
-      chartCtx.clearRect(0,0,chartCanvas.width,chartCanvas.height);
-      values.forEach((val,index)=>{
-        let x=index*(chartCanvas.width/values.length)+40;
-        let barHeight=Math.min(grow,val)/100*300;
-        chartCtx.fillStyle="#22d3ee";
-        chartCtx.fillRect(x,chartCanvas.height-barHeight-50,80,barHeight);
-      });
-      if(grow>=100) clearInterval(interval);
-    },20);
-  }
-});
 </script>
 
 </body>
