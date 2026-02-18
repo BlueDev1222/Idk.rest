@@ -3,177 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ChatGPT – The Future of AI</title>
+<title>Kimi K2.5 – Advanced AI Model</title>
+<meta name="description" content="Kimi K2.5 by Moonshot AI – Advanced large language model with long context understanding, coding power, and research capabilities.">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+:root {
+  --bg1: #0f172a;
+  --bg2: #020617;
+  --accent: #7c3aed;
+  --accent2: #22d3ee;
+  --text: #e2e8f0;
+  --card: rgba(255,255,255,0.05);
+  --glass: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.1);
 }
+
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
 
 body {
-    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #0f2027);
-    background-size: 400% 400%;
-    animation: gradientMove 15s ease infinite;
-    color: white;
-    overflow-x: hidden;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  color: var(--text);
+  overflow-x:hidden;
 }
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Animated background */
+body::before {
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.3), transparent 50%),
+              radial-gradient(circle at 70% 70%, rgba(34,211,238,0.2), transparent 50%);
+  animation: moveBG 15s linear infinite alternate;
+  z-index:-1;
+}
+
+@keyframes moveBG {
+  from { transform:translate(-10%,-10%); }
+  to { transform:translate(10%,10%); }
 }
 
 header {
-    padding: 100px 20px;
-    text-align: center;
+  padding:60px 20px;
+  text-align:center;
 }
 
 header h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #00ffcc, #00aaff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  font-size:3rem;
+  background: linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
 header p {
-    margin-top: 20px;
-    font-size: 1.2rem;
-    opacity: 0.8;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+  margin-top:15px;
+  opacity:0.8;
+  font-size:1.1rem;
 }
 
 section {
-    padding: 80px 20px;
-    max-width: 1200px;
-    margin: auto;
+  padding:60px 10%;
 }
 
-.section-title {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 60px;
-    font-weight: 700;
-}
-
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+.card-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap:25px;
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 30px;
-    transition: 0.4s ease;
-    border: 1px solid rgba(255,255,255,0.1);
+  background: var(--glass);
+  border:1px solid var(--border);
+  backdrop-filter: blur(10px);
+  padding:25px;
+  border-radius:15px;
+  transition:0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-10px);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  transform:translateY(-8px);
+  border-color:var(--accent);
 }
 
 .card h3 {
-    margin-bottom: 15px;
-    font-size: 1.5rem;
+  margin-bottom:10px;
+  color:var(--accent2);
 }
 
-.card p {
-    opacity: 0.8;
-    line-height: 1.6;
+.tabs {
+  display:flex;
+  gap:15px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
 }
 
-.why {
-    text-align: center;
-    max-width: 800px;
-    margin: auto;
-    line-height: 1.8;
-    font-size: 1.1rem;
-    opacity: 0.9;
+.tab-btn {
+  padding:10px 20px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
-.footer {
-    text-align: center;
-    padding: 40px 20px;
-    opacity: 0.6;
-    font-size: 0.9rem;
+.tab-btn.active {
+  background:var(--accent);
 }
-@media(max-width: 600px){
-    header h1 {
-        font-size: 2.5rem;
-    }
+
+.tab-content {
+  display:none;
+  background:var(--card);
+  padding:25px;
+  border-radius:15px;
+}
+
+.tab-content.active {
+  display:block;
+}
+
+footer {
+  text-align:center;
+  padding:40px 20px;
+  opacity:0.7;
+  font-size:0.9rem;
+  border-top:1px solid var(--border);
+}
+
+@media(max-width:768px){
+  header h1 { font-size:2.2rem; }
+  section { padding:40px 5%; }
 }
 </style>
 </head>
+
 <body>
 
 <header>
-    <h1>ChatGPT</h1>
-    <p>The next generation AI assistant designed to help you create, learn, build, and innovate faster than ever before.</p>
+  <h1>Kimi K2.5</h1>
+  <p>Advanced Large Language Model developed by Moonshot AI</p>
 </header>
 
 <section>
-    <h2 class="section-title">Powerful Features</h2>
-    <div class="features">
-        <div class="card">
-            <h3>⚡ Instant Answers</h3>
-            <p>Get fast, intelligent responses to almost any question — from coding help to creative writing and business ideas.</p>
-        </div>
-
-        <div class="card">
-            <h3>🧠 Advanced Intelligence</h3>
-            <p>Understands context, remembers conversation flow, and provides human-like responses with impressive accuracy.</p>
-        </div>
-
-        <div class="card">
-            <h3>💻 Coding Assistant</h3>
-            <p>Write, debug, and improve code in multiple programming languages with clean explanations and examples.</p>
-        </div>
-
-        <div class="card">
-            <h3>🎨 Creative Power</h3>
-            <p>Generate stories, scripts, game ideas, website layouts, and more — perfect for creators and developers.</p>
-        </div>
-
-        <div class="card">
-            <h3>📈 Productivity Boost</h3>
-            <p>Summarize documents, write emails, brainstorm strategies, and automate tasks in seconds.</p>
-        </div>
-
-        <div class="card">
-            <h3>🌍 Always Improving</h3>
-            <p>Powered by cutting-edge AI research and continuously refined to be smarter, faster, and more helpful.</p>
-        </div>
-    </div>
+  <h2>🚀 Overview</h2>
+  <p style="margin-top:15px; opacity:0.85;">
+    Kimi K2.5 is a powerful AI model designed for long-context understanding, complex reasoning,
+    advanced coding, document analysis, and research tasks. It focuses on high-context memory
+    capacity and strong multilingual performance.
+  </p>
 </section>
 
 <section>
-    <h2 class="section-title">Why It’s One of the Best</h2>
-    <div class="why">
-        ChatGPT combines advanced artificial intelligence with ease of use, making powerful technology accessible to everyone. 
-        It adapts to your needs — whether you're a developer building your next project, a student learning something new, 
-        or a creator bringing ideas to life. 
-        
-        With speed, accuracy, creativity, and versatility all in one place, ChatGPT stands out as one of the most powerful 
-        and user-friendly AI tools available today.
+  <h2>⚡ Core Features</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>Long Context Window</h3>
+      <p>Designed to handle extremely large documents and extended conversations efficiently.</p>
     </div>
+    <div class="card">
+      <h3>Advanced Reasoning</h3>
+      <p>Improved problem-solving, logical thinking, and structured output generation.</p>
+    </div>
+    <div class="card">
+      <h3>Strong Coding Abilities</h3>
+      <p>Supports multiple programming languages with optimized code generation.</p>
+    </div>
+    <div class="card">
+      <h3>Multilingual Support</h3>
+      <p>High performance in English and Chinese, with broad language understanding.</p>
+    </div>
+  </div>
 </section>
 
-<div class="footer">
-    © 2026 ChatGPT Showcase Website
-</div>
+<section>
+  <h2>📊 Model Capabilities</h2>
+  <div class="tabs">
+    <div class="tab-btn active" onclick="showTab(0)">Reasoning</div>
+    <div class="tab-btn" onclick="showTab(1)">Coding</div>
+    <div class="tab-btn" onclick="showTab(2)">Research</div>
+  </div>
+
+  <div class="tab-content active">
+    Excels in structured reasoning, step-by-step logic, and knowledge-based responses.
+  </div>
+  <div class="tab-content">
+    Generates optimized code, debug suggestions, and multi-language support.
+  </div>
+  <div class="tab-content">
+    Capable of summarizing long documents and extracting detailed insights.
+  </div>
+</section>
+
+<section>
+  <h2>🌍 Use Cases</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>Enterprise AI</h3>
+      <p>Knowledge base automation and document analysis.</p>
+    </div>
+    <div class="card">
+      <h3>Education</h3>
+      <p>Research assistance and tutoring applications.</p>
+    </div>
+    <div class="card">
+      <h3>Software Development</h3>
+      <p>Code generation, debugging, and documentation.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Kimi K2.5 Informational Website • Not affiliated with Moonshot AI
+</footer>
+
+<script>
+function showTab(index){
+  const tabs = document.querySelectorAll('.tab-content');
+  const btns = document.querySelectorAll('.tab-btn');
+
+  tabs.forEach(tab => tab.classList.remove('active'));
+  btns.forEach(btn => btn.classList.remove('active'));
+
+  tabs[index].classList.add('active');
+  btns[index].classList.add('active');
+}
+</script>
 
 </body>
 </html>
