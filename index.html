@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orb Collector: Ultimate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Orb Collector: God Mode</title>
 
 <style>
 body {
@@ -12,31 +12,31 @@ body {
     font-family: Arial, sans-serif;
     background: #020617;
     color: white;
+    touch-action: manipulation;
 }
 
-/* 🌌 Particle Canvas */
-#particles {
+canvas {
     position: fixed;
     inset: 0;
     z-index: -1;
 }
 
-/* UI */
 #ui {
     position: fixed;
     top: 15px;
     left: 15px;
     z-index: 10;
+    font-size: 18px;
 }
 
 #shop {
     position: fixed;
     right: 15px;
     top: 15px;
-    background: rgba(15,23,42,0.9);
+    background: rgba(15,23,42,0.95);
     padding: 15px;
     border-radius: 12px;
-    width: 200px;
+    width: 220px;
 }
 
 button {
@@ -52,203 +52,264 @@ button {
 .orb, .boss {
     position: absolute;
     border-radius: 50%;
-    cursor: pointer;
 }
 
 .orb {
-    width: 60px;
-    height: 60px;
+    width: 12vw;
+    height: 12vw;
+    max-width: 70px;
+    max-height: 70px;
     background: radial-gradient(circle, #38bdf8, #0ea5e9);
     box-shadow: 0 0 20px #38bdf8;
 }
 
 .boss {
-    width: 140px;
-    height: 140px;
+    width: 25vw;
+    height: 25vw;
+    max-width: 160px;
+    max-height: 160px;
     background: radial-gradient(circle, #ef4444, #7f1d1d);
-    box-shadow: 0 0 30px red;
+    box-shadow: 0 0 40px red;
 }
 
 #leaderboard {
     position: fixed;
     bottom: 15px;
     left: 15px;
-    background: rgba(15,23,42,0.9);
+    background: rgba(15,23,42,0.95);
     padding: 10px;
     border-radius: 10px;
-    width: 200px;
+    width: 220px;
     font-size: 14px;
+}
+
+.rage {
+    animation: rageFlash 0.4s infinite alternate;
+}
+
+@keyframes rageFlash {
+    from { box-shadow: 0 0 20px #facc15; }
+    to { box-shadow: 0 0 40px #ef4444; }
+}
+
+.comboText {
+    position: absolute;
+    font-size: 22px;
+    font-weight: bold;
+    color: #facc15;
+    pointer-events: none;
+    animation: floatUp 1s forwards;
+}
+
+@keyframes floatUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-60px); }
 }
 </style>
 </head>
 <body>
 
-<canvas id="particles"></canvas>
+<canvas id="bg"></canvas>
 
 <div id="ui">
 <div>Score: <span id="score">0</span></div>
 <div>💎 Currency: <span id="currency">0</span></div>
 <div>Combo: <span id="combo">0</span></div>
+<button onclick="toggleMusic()">🎵 Toggle Music</button>
 </div>
 
 <div id="shop">
 <b>🛒 Upgrades</b>
-<button onclick="buyUpgrade('power')">+Click Power (50)</button>
-<button onclick="buyUpgrade('speed')">Faster Spawns (75)</button>
-<button onclick="buyUpgrade('auto')">Auto Clicker (100)</button>
+<button onclick="buy('power')">+Click Power (50)</button>
+<button onclick="buy('speed')">Faster Spawns (75)</button>
+<button onclick="buy('auto')">Auto Clicker (100)</button>
 </div>
 
 <div id="leaderboard">
 <b>🏆 Leaderboard</b>
+<input id="username" placeholder="Your name">
+<button onclick="saveScore()">Submit Score</button>
 <div id="scores"></div>
 </div>
 
 <script>
-// 🔊 Sound
-const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+// 🎵 Background Music
+let music = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b5e1f.mp3");
+music.loop = true;
+let musicPlaying = false;
 
-// Game Variables
-let score = 0;
-let currency = 0;
-let combo = 0;
-let clickPower = 10;
-let spawnSpeed = 1200;
-let autoClick = false;
-let bossActive = false;
-let bossHealth = 0;
-
-// UI update
-function updateUI() {
-    scoreEl.textContent = score;
-    currencyEl.textContent = currency;
-    comboEl.textContent = combo;
+function toggleMusic(){
+    if(musicPlaying){ music.pause(); }
+    else { music.play(); }
+    musicPlaying = !musicPlaying;
 }
 
-const scoreEl = document.getElementById("score");
-const currencyEl = document.getElementById("currency");
-const comboEl = document.getElementById("combo");
+// 🔊 Click Sound
+const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
 
-// 🌀 Spawn Orb
-function spawnOrb() {
-    const orb = document.createElement("div");
-    orb.className = "orb";
-    orb.style.left = Math.random() * (window.innerWidth - 60) + "px";
-    orb.style.top = Math.random() * (window.innerHeight - 60) + "px";
+// Game State
+let score=0, currency=0, combo=0;
+let clickPower=10, spawnSpeed=1000;
+let bossActive=false, bossHP=0;
 
-    orb.onclick = () => {
+// Load Save
+function loadProgress(){
+    let data = JSON.parse(localStorage.getItem("orbSave"));
+    if(data){
+        score=data.score;
+        currency=data.currency;
+        clickPower=data.clickPower;
+        spawnSpeed=data.spawnSpeed;
+    }
+}
+function saveProgress(){
+    localStorage.setItem("orbSave", JSON.stringify({
+        score,currency,clickPower,spawnSpeed
+    }));
+}
+loadProgress();
+
+// UI
+function updateUI(){
+    scoreEl.textContent=score;
+    currencyEl.textContent=currency;
+    comboEl.textContent=combo;
+    saveProgress();
+}
+const scoreEl=document.getElementById("score");
+const currencyEl=document.getElementById("currency");
+const comboEl=document.getElementById("combo");
+
+// Spawn Orb
+function spawnOrb(){
+    const orb=document.createElement("div");
+    orb.className="orb";
+    orb.style.left=Math.random()*(window.innerWidth-80)+"px";
+    orb.style.top=Math.random()*(window.innerHeight-80)+"px";
+
+    orb.onclick=()=>{
         clickSound.play();
-        score += clickPower;
-        currency += 5;
+        score+=clickPower;
+        currency+=5;
         combo++;
+
+        if(combo>10) activateRage(orb);
+
+        showComboText(orb);
         updateUI();
         orb.remove();
 
-        if(score > 200 && !bossActive) spawnBoss();
+        if(score>300 && !bossActive) spawnBoss();
     };
 
     document.body.appendChild(orb);
 
-    setTimeout(() => {
-        if(document.body.contains(orb)) {
-            combo = 0;
+    setTimeout(()=>{
+        if(document.body.contains(orb)){
+            combo=0;
             orb.remove();
+            updateUI();
         }
-    }, spawnSpeed);
+    },spawnSpeed);
 }
 
-// 🧠 Boss Mode
-function spawnBoss() {
-    bossActive = true;
-    bossHealth = 100;
-    const boss = document.createElement("div");
-    boss.className = "boss";
-    boss.style.left = "40%";
-    boss.style.top = "30%";
+// Rage Mode
+function activateRage(orb){
+    orb.classList.add("rage");
+    clickPower=20;
+}
 
-    boss.onclick = () => {
-        bossHealth -= clickPower;
-        if(bossHealth <= 0) {
-            currency += 200;
-            score += 100;
+// Combo Animation
+function showComboText(orb){
+    const txt=document.createElement("div");
+    txt.className="comboText";
+    txt.textContent="+"+combo+" COMBO!";
+    txt.style.left=orb.style.left;
+    txt.style.top=orb.style.top;
+    document.body.appendChild(txt);
+    setTimeout(()=>txt.remove(),1000);
+}
+
+// Boss
+function spawnBoss(){
+    bossActive=true;
+    bossHP=150;
+    const boss=document.createElement("div");
+    boss.className="boss";
+    boss.style.left="40%";
+    boss.style.top="30%";
+
+    boss.onclick=()=>{
+        bossHP-=clickPower;
+        if(bossHP<=0){
+            score+=200;
+            currency+=200;
             boss.remove();
-            bossActive = false;
+            bossActive=false;
             saveScore();
         }
+        updateUI();
     };
 
     document.body.appendChild(boss);
 }
 
-// 💎 Upgrades
-function buyUpgrade(type) {
-    if(type === "power" && currency >= 50) {
-        currency -= 50;
-        clickPower += 5;
+// Upgrades
+function buy(type){
+    if(type==="power" && currency>=50){
+        currency-=50; clickPower+=5;
     }
-    if(type === "speed" && currency >= 75) {
-        currency -= 75;
-        spawnSpeed -= 200;
+    if(type==="speed" && currency>=75){
+        currency-=75; spawnSpeed-=150;
     }
-    if(type === "auto" && currency >= 100) {
-        currency -= 100;
-        autoClick = true;
-        setInterval(()=> score+=clickPower/2,1000);
+    if(type==="auto" && currency>=100){
+        currency-=100;
+        setInterval(()=>{ score+=clickPower/2; updateUI(); },1000);
     }
     updateUI();
 }
 
-// 🏆 Leaderboard
-function saveScore() {
-    let scores = JSON.parse(localStorage.getItem("orbScores")) || [];
-    scores.push(score);
-    scores.sort((a,b)=>b-a);
-    scores = scores.slice(0,5);
-    localStorage.setItem("orbScores", JSON.stringify(scores));
+// Leaderboard
+function saveScore(){
+    let name=document.getElementById("username").value||"Player";
+    let scores=JSON.parse(localStorage.getItem("orbScores"))||[];
+    scores.push({name,score});
+    scores.sort((a,b)=>b.score-a.score);
+    scores=scores.slice(0,5);
+    localStorage.setItem("orbScores",JSON.stringify(scores));
     loadScores();
 }
-
-function loadScores() {
-    let scores = JSON.parse(localStorage.getItem("orbScores")) || [];
-    scoresDiv.innerHTML = scores.map(s=>`<div>${s}</div>`).join("");
+function loadScores(){
+    let scores=JSON.parse(localStorage.getItem("orbScores"))||[];
+    scoresDiv.innerHTML=scores.map(s=>`<div>${s.name}: ${s.score}</div>`).join("");
 }
-const scoresDiv = document.getElementById("scores");
+const scoresDiv=document.getElementById("scores");
 loadScores();
 
-// 🌌 Particle Background
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-for(let i=0;i<80;i++){
-    particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        size: Math.random()*2,
-        speedX: (Math.random()-0.5)*0.5,
-        speedY: (Math.random()-0.5)*0.5
-    });
+// Background particles
+const canvas=document.getElementById("bg");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let parts=[];
+for(let i=0;i<70;i++){
+    parts.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,s:Math.random()*2});
 }
-
-function animateParticles(){
+function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-        p.x+=p.speedX;
-        p.y+=p.speedY;
-        if(p.x<0||p.x>canvas.width) p.speedX*=-1;
-        if(p.y<0||p.y>canvas.height) p.speedY*=-1;
+    parts.forEach(p=>{
         ctx.fillStyle="white";
-        ctx.fillRect(p.x,p.y,p.size,p.size);
+        ctx.fillRect(p.x,p.y,p.s,p.s);
+        p.y+=0.3;
+        if(p.y>canvas.height)p.y=0;
     });
-    requestAnimationFrame(animateParticles);
+    requestAnimationFrame(animate);
 }
-animateParticles();
+animate();
 
-// Game Loop
-setInterval(spawnOrb, spawnSpeed);
+// Loop
+setInterval(spawnOrb,spawnSpeed);
 updateUI();
 </script>
-
 </body>
 </html>
