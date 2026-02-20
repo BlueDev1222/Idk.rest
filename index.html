@@ -3,162 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orb Collector</title>
+<title>Orb Collector: Ultimate</title>
 
 <style>
 body {
     margin: 0;
     overflow: hidden;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at center, #0f172a, #020617);
+    background: #020617;
     color: white;
 }
 
+/* 🌌 Particle Canvas */
+#particles {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+}
+
+/* UI */
 #ui {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 15px;
+    left: 15px;
     z-index: 10;
 }
 
-#score, #timer, #combo {
-    font-size: 18px;
-    margin-bottom: 5px;
-}
-
-.orb {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #38bdf8, #0ea5e9);
-    box-shadow: 0 0 20px #38bdf8;
-    cursor: pointer;
-    animation: pulse 1s infinite alternate;
-}
-
-@keyframes pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.15); }
-}
-
-#startScreen, #gameOver {
+#shop {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-size: 24px;
+    right: 15px;
+    top: 15px;
+    background: rgba(15,23,42,0.9);
+    padding: 15px;
+    border-radius: 12px;
+    width: 200px;
 }
 
 button {
-    padding: 12px 24px;
-    font-size: 18px;
-    margin-top: 20px;
     background: #38bdf8;
     border: none;
-    color: black;
-    border-radius: 8px;
+    padding: 8px;
+    margin-top: 6px;
+    width: 100%;
+    border-radius: 6px;
     cursor: pointer;
+}
+
+.orb, .boss {
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.orb {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #38bdf8, #0ea5e9);
+    box-shadow: 0 0 20px #38bdf8;
+}
+
+.boss {
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, #ef4444, #7f1d1d);
+    box-shadow: 0 0 30px red;
+}
+
+#leaderboard {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(15,23,42,0.9);
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+    font-size: 14px;
 }
 </style>
 </head>
 <body>
 
+<canvas id="particles"></canvas>
+
 <div id="ui">
-    <div id="score">Score: 0</div>
-    <div id="timer">Time: 30</div>
-    <div id="combo">Combo: 0</div>
+<div>Score: <span id="score">0</span></div>
+<div>💎 Currency: <span id="currency">0</span></div>
+<div>Combo: <span id="combo">0</span></div>
 </div>
 
-<div id="startScreen">
-    <div>🎯 Orb Collector</div>
-    <button onclick="startGame()">Start Game</button>
+<div id="shop">
+<b>🛒 Upgrades</b>
+<button onclick="buyUpgrade('power')">+Click Power (50)</button>
+<button onclick="buyUpgrade('speed')">Faster Spawns (75)</button>
+<button onclick="buyUpgrade('auto')">Auto Clicker (100)</button>
 </div>
 
-<div id="gameOver" style="display:none;">
-    <div id="finalScore"></div>
-    <button onclick="restartGame()">Play Again</button>
+<div id="leaderboard">
+<b>🏆 Leaderboard</b>
+<div id="scores"></div>
 </div>
 
 <script>
+// 🔊 Sound
+const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
+
+// Game Variables
 let score = 0;
-let time = 30;
+let currency = 0;
 let combo = 0;
-let gameInterval;
-let orbSpeed = 1200;
+let clickPower = 10;
+let spawnSpeed = 1200;
+let autoClick = false;
+let bossActive = false;
+let bossHealth = 0;
 
-function startGame() {
-    document.getElementById("startScreen").style.display = "none";
-    score = 0;
-    time = 30;
-    combo = 0;
-    orbSpeed = 1200;
-    updateUI();
-    spawnOrb();
-    gameInterval = setInterval(updateGame, 1000);
+// UI update
+function updateUI() {
+    scoreEl.textContent = score;
+    currencyEl.textContent = currency;
+    comboEl.textContent = combo;
 }
 
-function restartGame() {
-    document.getElementById("gameOver").style.display = "none";
-    startGame();
-}
+const scoreEl = document.getElementById("score");
+const currencyEl = document.getElementById("currency");
+const comboEl = document.getElementById("combo");
 
-function updateGame() {
-    time--;
-    updateUI();
-
-    if (time <= 0) {
-        endGame();
-    }
-
-    if (orbSpeed > 400) {
-        orbSpeed -= 30; // increases difficulty
-    }
-}
-
+// 🌀 Spawn Orb
 function spawnOrb() {
-    if (time <= 0) return;
-
     const orb = document.createElement("div");
-    orb.classList.add("orb");
-
+    orb.className = "orb";
     orb.style.left = Math.random() * (window.innerWidth - 60) + "px";
     orb.style.top = Math.random() * (window.innerHeight - 60) + "px";
 
     orb.onclick = () => {
-        score += 10 + combo * 2;
+        clickSound.play();
+        score += clickPower;
+        currency += 5;
         combo++;
         updateUI();
         orb.remove();
-        spawnOrb();
+
+        if(score > 200 && !bossActive) spawnBoss();
     };
 
     document.body.appendChild(orb);
 
     setTimeout(() => {
-        if (document.body.contains(orb)) {
+        if(document.body.contains(orb)) {
             combo = 0;
             orb.remove();
-            spawnOrb();
         }
-    }, orbSpeed);
+    }, spawnSpeed);
 }
 
-function updateUI() {
-    document.getElementById("score").innerText = "Score: " + score;
-    document.getElementById("timer").innerText = "Time: " + time;
-    document.getElementById("combo").innerText = "Combo: " + combo;
+// 🧠 Boss Mode
+function spawnBoss() {
+    bossActive = true;
+    bossHealth = 100;
+    const boss = document.createElement("div");
+    boss.className = "boss";
+    boss.style.left = "40%";
+    boss.style.top = "30%";
+
+    boss.onclick = () => {
+        bossHealth -= clickPower;
+        if(bossHealth <= 0) {
+            currency += 200;
+            score += 100;
+            boss.remove();
+            bossActive = false;
+            saveScore();
+        }
+    };
+
+    document.body.appendChild(boss);
 }
 
-function endGame() {
-    clearInterval(gameInterval);
-    document.querySelectorAll(".orb").forEach(o => o.remove());
-    document.getElementById("finalScore").innerText = "Game Over! Final Score: " + score;
-    document.getElementById("gameOver").style.display = "flex";
+// 💎 Upgrades
+function buyUpgrade(type) {
+    if(type === "power" && currency >= 50) {
+        currency -= 50;
+        clickPower += 5;
+    }
+    if(type === "speed" && currency >= 75) {
+        currency -= 75;
+        spawnSpeed -= 200;
+    }
+    if(type === "auto" && currency >= 100) {
+        currency -= 100;
+        autoClick = true;
+        setInterval(()=> score+=clickPower/2,1000);
+    }
+    updateUI();
 }
+
+// 🏆 Leaderboard
+function saveScore() {
+    let scores = JSON.parse(localStorage.getItem("orbScores")) || [];
+    scores.push(score);
+    scores.sort((a,b)=>b-a);
+    scores = scores.slice(0,5);
+    localStorage.setItem("orbScores", JSON.stringify(scores));
+    loadScores();
+}
+
+function loadScores() {
+    let scores = JSON.parse(localStorage.getItem("orbScores")) || [];
+    scoresDiv.innerHTML = scores.map(s=>`<div>${s}</div>`).join("");
+}
+const scoresDiv = document.getElementById("scores");
+loadScores();
+
+// 🌌 Particle Background
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+for(let i=0;i<80;i++){
+    particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        size: Math.random()*2,
+        speedX: (Math.random()-0.5)*0.5,
+        speedY: (Math.random()-0.5)*0.5
+    });
+}
+
+function animateParticles(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        p.x+=p.speedX;
+        p.y+=p.speedY;
+        if(p.x<0||p.x>canvas.width) p.speedX*=-1;
+        if(p.y<0||p.y>canvas.height) p.speedY*=-1;
+        ctx.fillStyle="white";
+        ctx.fillRect(p.x,p.y,p.size,p.size);
+    });
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// Game Loop
+setInterval(spawnOrb, spawnSpeed);
+updateUI();
 </script>
 
 </body>
