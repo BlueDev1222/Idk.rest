@@ -3,226 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kimi K2.5 – AI Research Lab</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<title>Orb Collector</title>
 
 <style>
-:root{
-  --bg:#020617;
-  --accent:#7c3aed;
-  --accent2:#22d3ee;
-  --glass:rgba(255,255,255,0.06);
-  --text:#e2e8f0;
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at center, #0f172a, #020617);
+    color: white;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif;}
-body{background:var(--bg);color:var(--text);overflow-x:hidden;}
-
-#globe{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:-2;
+#ui {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
 }
 
-#network{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  z-index:-1;
+#score, #timer, #combo {
+    font-size: 18px;
+    margin-bottom: 5px;
 }
 
-nav{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--glass);
-  backdrop-filter:blur(15px);
-  padding:12px 30px;
-  border-radius:40px;
-  display:flex;
-  gap:30px;
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 0 30px rgba(124,58,237,.3);
-  z-index:1000;
-}
-nav a{
-  color:var(--text);
-  text-decoration:none;
-  transition:.3s;
-}
-nav a:hover{color:var(--accent2);}
-
-header{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:0 20px;
+.orb {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #38bdf8, #0ea5e9);
+    box-shadow: 0 0 20px #38bdf8;
+    cursor: pointer;
+    animation: pulse 1s infinite alternate;
 }
 
-header h1{
-  font-size:3.5rem;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-shadow:0 0 40px rgba(124,58,237,.7);
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
 }
 
-#typing{
-  margin-top:25px;
-  font-size:1.2rem;
-  opacity:.85;
-  min-height:30px;
+#startScreen, #gameOver {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 24px;
 }
 
-section{
-  padding:100px 10%;
-  background:rgba(2,6,23,.8);
-}
-
-footer{
-  text-align:center;
-  padding:50px;
-  opacity:.6;
-  border-top:1px solid rgba(255,255,255,.1);
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    margin-top: 20px;
+    background: #38bdf8;
+    border: none;
+    color: black;
+    border-radius: 8px;
+    cursor: pointer;
 }
 </style>
 </head>
 <body>
 
-<div id="globe"></div>
-<canvas id="network"></canvas>
+<div id="ui">
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 30</div>
+    <div id="combo">Combo: 0</div>
+</div>
 
-<nav>
-  <a href="#">Overview</a>
-  <a href="#">Performance</a>
-  <a href="#">Capabilities</a>
-</nav>
+<div id="startScreen">
+    <div>🎯 Orb Collector</div>
+    <button onclick="startGame()">Start Game</button>
+</div>
 
-<header>
-  <h1>Kimi K2.5</h1>
-  <div id="typing"></div>
-</header>
-
-<section>
-  <h2 style="text-align:center;">Next-Generation AI Intelligence</h2>
-  <p style="margin-top:20px;text-align:center;opacity:.8;">
-    Advanced long-context reasoning • Coding intelligence • Enterprise AI systems
-  </p>
-</section>
-
-<footer>
-© 2026 Informational Site • Not affiliated with Moonshot AI
-</footer>
+<div id="gameOver" style="display:none;">
+    <div id="finalScore"></div>
+    <button onclick="restartGame()">Play Again</button>
+</div>
 
 <script>
-/* ================= 3D ROTATING GLOBE ================= */
+let score = 0;
+let time = 30;
+let combo = 0;
+let gameInterval;
+let orbSpeed = 1200;
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({alpha:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById("globe").appendChild(renderer.domElement);
-
-const geometry = new THREE.SphereGeometry(5, 64, 64);
-const material = new THREE.MeshBasicMaterial({
-  color:0x7c3aed,
-  wireframe:true,
-  transparent:true,
-  opacity:0.25
-});
-const globe = new THREE.Mesh(geometry, material);
-scene.add(globe);
-
-camera.position.z = 12;
-
-function animateGlobe(){
-  requestAnimationFrame(animateGlobe);
-  globe.rotation.y += 0.002;
-  globe.rotation.x += 0.001;
-  renderer.render(scene,camera);
-}
-animateGlobe();
-
-window.addEventListener("resize",()=>{
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-});
-
-/* ================= NEURAL NETWORK ANIMATION ================= */
-
-const canvas = document.getElementById("network");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let nodes=[];
-for(let i=0;i<70;i++){
-  nodes.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    dx:(Math.random()-.5)*0.6,
-    dy:(Math.random()-.5)*0.6
-  });
+function startGame() {
+    document.getElementById("startScreen").style.display = "none";
+    score = 0;
+    time = 30;
+    combo = 0;
+    orbSpeed = 1200;
+    updateUI();
+    spawnOrb();
+    gameInterval = setInterval(updateGame, 1000);
 }
 
-function animateNetwork(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function restartGame() {
+    document.getElementById("gameOver").style.display = "none";
+    startGame();
+}
 
-  nodes.forEach(node=>{
-    node.x+=node.dx;
-    node.y+=node.dy;
+function updateGame() {
+    time--;
+    updateUI();
 
-    if(node.x<0||node.x>canvas.width) node.dx*=-1;
-    if(node.y<0||node.y>canvas.height) node.dy*=-1;
-
-    ctx.fillStyle="#22d3ee";
-    ctx.beginPath();
-    ctx.arc(node.x,node.y,2,0,Math.PI*2);
-    ctx.fill();
-  });
-
-  for(let a=0;a<nodes.length;a++){
-    for(let b=a;b<nodes.length;b++){
-      let dx=nodes[a].x-nodes[b].x;
-      let dy=nodes[a].y-nodes[b].y;
-      let dist=dx*dx+dy*dy;
-      if(dist<15000){
-        ctx.strokeStyle="rgba(34,211,238,0.08)";
-        ctx.beginPath();
-        ctx.moveTo(nodes[a].x,nodes[a].y);
-        ctx.lineTo(nodes[b].x,nodes[b].y);
-        ctx.stroke();
-      }
+    if (time <= 0) {
+        endGame();
     }
-  }
 
-  requestAnimationFrame(animateNetwork);
+    if (orbSpeed > 400) {
+        orbSpeed -= 30; // increases difficulty
+    }
 }
-animateNetwork();
 
-/* ================= TYPING ================= */
+function spawnOrb() {
+    if (time <= 0) return;
 
-const text="Global-scale AI reasoning • Neural architecture visualization • Advanced intelligence";
-let i=0;
-function type(){
-  if(i<text.length){
-    document.getElementById("typing").innerHTML+=text.charAt(i);
-    i++;
-    setTimeout(type,30);
-  }
+    const orb = document.createElement("div");
+    orb.classList.add("orb");
+
+    orb.style.left = Math.random() * (window.innerWidth - 60) + "px";
+    orb.style.top = Math.random() * (window.innerHeight - 60) + "px";
+
+    orb.onclick = () => {
+        score += 10 + combo * 2;
+        combo++;
+        updateUI();
+        orb.remove();
+        spawnOrb();
+    };
+
+    document.body.appendChild(orb);
+
+    setTimeout(() => {
+        if (document.body.contains(orb)) {
+            combo = 0;
+            orb.remove();
+            spawnOrb();
+        }
+    }, orbSpeed);
 }
-type();
+
+function updateUI() {
+    document.getElementById("score").innerText = "Score: " + score;
+    document.getElementById("timer").innerText = "Time: " + time;
+    document.getElementById("combo").innerText = "Combo: " + combo;
+}
+
+function endGame() {
+    clearInterval(gameInterval);
+    document.querySelectorAll(".orb").forEach(o => o.remove());
+    document.getElementById("finalScore").innerText = "Game Over! Final Score: " + score;
+    document.getElementById("gameOver").style.display = "flex";
+}
 </script>
 
 </body>
