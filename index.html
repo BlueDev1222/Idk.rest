@@ -3,112 +3,147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlueDev | Official Site</title>
+<title>BlueDev | Hacker Terminal</title>
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
-        color: white;
-        text-align: center;
-    }
+body {
+    margin: 0;
+    background: black;
+    color: #00ff88;
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
+}
 
-    header {
-        padding: 60px 20px;
-        background: linear-gradient(90deg, #00f5ff, #0066ff);
-        color: black;
-    }
+/* Matrix background effect */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
 
-    h1 {
-        font-size: 3rem;
-        margin: 0;
-    }
+/* Terminal container */
+.terminal {
+    padding: 40px;
+    max-width: 900px;
+    margin: auto;
+}
 
-    .subtitle {
-        font-size: 1.2rem;
-        margin-top: 10px;
-        opacity: 0.8;
-    }
+h1 {
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px #00ff88;
+}
 
-    section {
-        padding: 50px 20px;
-        max-width: 800px;
-        margin: auto;
-    }
+.glow {
+    text-shadow: 0 0 5px #00ff88, 0 0 15px #00ff88;
+}
 
-    .card {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 30px;
-        border-radius: 15px;
-        margin-bottom: 30px;
-        backdrop-filter: blur(10px);
-        transition: 0.3s;
-    }
+.section {
+    margin-top: 40px;
+    padding: 20px;
+    border-left: 3px solid #00ff88;
+    background: rgba(0, 255, 136, 0.05);
+}
 
-    .card:hover {
-        transform: scale(1.05);
-        background: rgba(0, 255, 255, 0.1);
-    }
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    cursor: pointer;
+    font-family: inherit;
+}
 
-    button {
-        padding: 12px 25px;
-        border: none;
-        border-radius: 25px;
-        background: #00f5ff;
-        color: black;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #0066ff;
-        color: white;
-    }
-
-    footer {
-        padding: 20px;
-        background: #000;
-        font-size: 0.9rem;
-        opacity: 0.7;
-    }
+button:hover {
+    background: #00ff88;
+    color: black;
+    box-shadow: 0 0 15px #00ff88;
+}
 </style>
 </head>
 
 <body>
 
-<header>
-    <h1>BlueDev</h1>
-    <p class="subtitle">Game Developer • Server Owner • Creator</p>
-</header>
+<canvas id="matrix"></canvas>
 
-<section>
-    <div class="card">
-        <h2>About Me</h2>
-        <p>
-            I'm BlueDev — I build Minecraft servers, Roblox games, and creative digital projects.
-            I love creating custom systems, cool UIs, and bringing big ideas to life.
-        </p>
+<div class="terminal">
+    <h1 class="glow">> BlueDev.exe</h1>
+    <p id="typing"></p>
+
+    <div class="section">
+        <h2>> Coding_Stats</h2>
+        <p>• HTML / CSS / JS Systems</p>
+        <p>• Custom Minecraft Server Development</p>
+        <p>• Advanced Plugin Configuration</p>
+        <p>• Roblox Game Systems</p>
     </div>
 
-    <div class="card">
-        <h2>Projects</h2>
-        <p>🎮 Custom Minecraft Servers</p>
-        <p>🚔 GTA-Style Roblox Game</p>
-        <p>💻 Interactive Terminal UI Systems</p>
+    <div class="section">
+        <h2>> Minecraft_Projects</h2>
+        <p>• Custom SMP Networks</p>
+        <p>• Anarchy Infrastructure</p>
+        <p>• Highway Systems</p>
+        <p>• Server Optimization + Anti-Hack Patching</p>
+        <button onclick="alert('Access Granted 🔓')">Run Server Scan</button>
     </div>
 
-    <div class="card">
-        <h2>Contact</h2>
-        <p>Want to collaborate or join a project?</p>
-        <button onclick="alert('Coming Soon 👀')">Contact Me</button>
+    <div class="section">
+        <h2>> Status</h2>
+        <p class="glow">SYSTEM ONLINE</p>
+        <p>Building. Coding. Expanding.</p>
     </div>
-</section>
+</div>
 
-<footer>
-    © 2026 BlueDev. All Rights Reserved.
-</footer>
+<script>
+// Typing effect
+const text = "> Initializing BlueDev system...\n> Loading Minecraft infrastructure...\n> Deploying custom code...\n> System Ready.";
+let i = 0;
+function typeWriter() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 40);
+    }
+}
+typeWriter();
+
+// Matrix Rain
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+const letters = "01BLUEDEVMCODE";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+for (let x = 0; x < columns; x++) {
+    drops[x] = 1;
+}
+
+function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff88";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+
+setInterval(draw, 35);
+</script>
 
 </body>
 </html>
