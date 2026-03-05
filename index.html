@@ -3,101 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlueDev | Hacker Terminal</title>
+
+<title>V4MP | Minecraft Team</title>
 
 <style>
-body {
-    margin: 0;
-    background: black;
-    color: #00ff88;
-    font-family: "Courier New", monospace;
-    overflow-x: hidden;
+
+body{
+margin:0;
+background:black;
+color:#00ff9d;
+font-family:Courier New, monospace;
 }
 
-/* Terminal container */
-.terminal {
-    padding: 40px;
-    max-width: 900px;
-    margin: auto;
+/* header */
+
+header{
+text-align:center;
+padding:40px;
+font-size:50px;
+letter-spacing:4px;
+text-shadow:0 0 15px #00ff9d;
 }
 
-h1 {
-    font-size: 2.5rem;
-    text-shadow: 0 0 10px #00ff88;
+/* sections */
+
+section{
+max-width:900px;
+margin:auto;
+padding:30px;
 }
 
-.glow {
-    text-shadow: 0 0 5px #00ff88, 0 0 15px #00ff88;
+/* panels */
+
+.panel{
+border:1px solid #00ff9d;
+padding:25px;
+margin-bottom:30px;
+box-shadow:0 0 10px #00ff9d;
 }
 
-.section {
-    margin-top: 40px;
-    padding: 20px;
-    border-left: 3px solid #00ff88;
-    background: rgba(0, 255, 136, 0.05);
+/* button */
+
+button{
+background:black;
+color:#00ff9d;
+border:1px solid #00ff9d;
+padding:12px 25px;
+font-size:16px;
+cursor:pointer;
 }
 
-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid #00ff88;
-    color: #00ff88;
-    cursor: pointer;
-    font-family: inherit;
+button:hover{
+background:#00ff9d;
+color:black;
 }
 
-button:hover {
-    background: #00ff88;
-    color: black;
-    box-shadow: 0 0 15px #00ff88;
+/* terminal */
+
+#terminal{
+background:#050505;
+height:220px;
+overflow:auto;
+padding:15px;
+margin-bottom:10px;
 }
+
+#cmd{
+width:100%;
+background:black;
+border:none;
+color:#00ff9d;
+font-family:Courier New;
+padding:10px;
+}
+
+/* footer */
+
+footer{
+text-align:center;
+padding:20px;
+opacity:0.6;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="terminal">
-    <h1 class="glow">> BlueDev.exe</h1>
-    <p id="typing"></p>
+<header>
+V4MP
+</header>
 
-    <div class="section">
-        <h2>> Coding_Stats</h2>
-        <p>• HTML / CSS / JS Systems</p>
-        <p>• Custom Minecraft Server Development</p>
-        <p>• Advanced Plugin Configuration</p>
-        <p>• Roblox Game Systems</p>
-    </div>
+<section>
 
-    <div class="section">
-        <h2>> Minecraft_Projects</h2>
-        <p>• Custom SMP Networks</p>
-        <p>• Anarchy Infrastructure</p>
-        <p>• Highway Systems</p>
-        <p>• Server Optimization + Anti-Hack Patching</p>
-        <button onclick="alert('Access Granted 🔓')">Run Server Scan</button>
-    </div>
+<div class="panel">
 
-    <div class="section">
-        <h2>> Status</h2>
-        <p class="glow">SYSTEM ONLINE</p>
-        <p>Building. Coding. Expanding.</p>
-    </div>
+<h2>About The Team</h2>
+
+<p>
+<b>V4MP</b> is a Minecraft team focused on domination, strategy,
+and building powerful projects across different worlds.
+</p>
+
+<p>
+We work together to conquer servers, build massive structures,
+and push Minecraft gameplay to the next level.
+</p>
+
 </div>
 
-<script>
-// Typing effect
-const text = "> Initializing BlueDev system...\n> Loading Minecraft infrastructure...\n> Deploying custom code...\n> System Ready.";
-let i = 0;
+<div class="panel">
 
-function typeWriter() {
-    if (i < text.length) {
-        document.getElementById("typing").innerHTML += text.charAt(i);
-        i++;
-        setTimeout(typeWriter, 40);
-    }
+<h2>Join V4MP</h2>
+
+<p>
+Want to be part of the team? Join our Discord and run with us.
+</p>
+
+<button onclick="window.open('https://discord.gg/YdfYBkQcyB')">
+Join Discord
+</button>
+
+</div>
+
+<div class="panel">
+
+<h2>Team Terminal</h2>
+
+<div id="terminal">
+<p>> V4MP system booting...</p>
+<p>> Terminal ready</p>
+</div>
+
+<input id="cmd" placeholder="type a command..." onkeydown="runCommand(event)">
+
+</div>
+
+</section>
+
+<footer>
+V4MP Minecraft Team
+</footer>
+
+<script>
+
+function runCommand(e){
+
+if(e.key === "Enter"){
+
+let input = e.target.value
+let terminal = document.getElementById("terminal")
+
+terminal.innerHTML += "<p>> " + input + "</p>"
+
+if(input === "help"){
+terminal.innerHTML += "<p>Commands: help, team, discord</p>"
 }
-typeWriter();
+
+else if(input === "team"){
+terminal.innerHTML += "<p>V4MP is a Minecraft team focused on strategy, builds, and power.</p>"
+}
+
+else if(input === "discord"){
+terminal.innerHTML += "<p>discord.gg/YdfYBkQcyB</p>"
+}
+
+else{
+terminal.innerHTML += "<p>Unknown command</p>"
+}
+
+terminal.scrollTop = terminal.scrollHeight
+e.target.value=""
+
+}
+
+}
+
 </script>
 
 </body>
