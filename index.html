@@ -9,97 +9,81 @@
 <style>
 
 body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#f4f6f8;
-color:#333;
+  margin:0;
+  background:black;
+  color:#00ff9d;
+  font-family:Courier New, monospace;
 }
-
-/* HEADER */
 
 header{
-background:#1f2933;
-color:white;
-padding:40px;
-text-align:center;
-font-size:40px;
-font-weight:bold;
+  text-align:center;
+  padding:40px;
+  font-size:50px;
+  letter-spacing:4px;
+  text-shadow:0 0 15px #00ff9d;
 }
-
-/* MAIN */
 
 section{
-max-width:1000px;
-margin:auto;
-padding:40px 20px;
+  max-width:1000px;
+  margin:auto;
+  padding:30px;
 }
 
-/* PANELS */
-
 .panel{
-background:white;
-padding:30px;
-margin-bottom:30px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  border:1px solid #00ff9d;
+  padding:25px;
+  margin-bottom:30px;
+  box-shadow:0 0 10px #00ff9d;
 }
 
 /* TEAM GRID */
 
 .team-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+  margin-top:20px;
 }
 
-/* MEMBER CARD */
-
 .member{
-background:#fafafa;
-border-radius:10px;
-padding:25px;
-text-align:center;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-transition:0.2s;
+  border:1px solid #00ff9d;
+  padding:20px;
+  text-align:center;
+  background:#050505;
+  box-shadow:0 0 10px #00ff9d;
+  transition:0.3s;
 }
 
 .member:hover{
-transform:translateY(-5px);
+  transform:scale(1.05);
+  box-shadow:0 0 20px #00ff9d;
 }
 
 .member h3{
-margin-bottom:5px;
+  margin:10px 0 5px 0;
 }
 
 .member p{
-color:#666;
+  opacity:0.8;
 }
 
-/* BUTTON */
-
 button{
-background:#2563eb;
-color:white;
-border:none;
-padding:12px 24px;
-border-radius:6px;
-font-size:16px;
-cursor:pointer;
+  background:black;
+  color:#00ff9d;
+  border:1px solid #00ff9d;
+  padding:12px 25px;
+  cursor:pointer;
 }
 
 button:hover{
-background:#1d4ed8;
+  background:#00ff9d;
+  color:black;
 }
 
-/* FOOTER */
-
 footer{
-text-align:center;
-padding:20px;
-background:#1f2933;
-color:white;
-margin-top:40px;
+  text-align:center;
+  padding:20px;
+  opacity:0.6;
 }
 
 </style>
@@ -108,25 +92,22 @@ margin-top:40px;
 <body>
 
 <header>
-V4MP Minecraft Team
+V4MP
 </header>
 
 <section>
 
 <div class="panel">
-<h2>About V4MP</h2>
-
+<h2>About The Team</h2>
 <p>
-V4MP is a Minecraft team focused on strategy, collaboration, and building large-scale projects across different Minecraft worlds.  
-Our team works together to explore, create, and push the limits of Minecraft gameplay.
+V4MP is a Minecraft team focused on strategy, creative builds, and competitive gameplay.
+Our members collaborate across multiple servers to deliver impressive projects
+and bring unique experiences to the Minecraft community.
 </p>
-
 </div>
 
 <div class="panel">
-
 <h2>Team Members</h2>
-
 <div class="team-grid">
 
 <div class="member">
@@ -141,31 +122,51 @@ Our team works together to explore, create, and push the limits of Minecraft gam
 
 <div class="member">
 <h3>BlueDev</h3>
-<p>Co-Owner (Web Developer)</p>
+<p>Co-Owner (Web Dev)</p>
 </div>
 
 </div>
-
 </div>
 
 <div class="panel">
+<h2>Achievements</h2>
+<ul>
+<li>Successfully built and managed multiple collaborative servers</li>
+<li>Completed large-scale community builds and events</li>
+<li>Maintained active presence in Minecraft communities and Discord</li>
+<li>Known for teamwork, strategy, and creative innovation</li>
+</ul>
+</div>
 
-<h2>Join the Team</h2>
+<div class="panel">
+<h2>Our Goals</h2>
+<ul>
+<li>Expand our Minecraft projects and reach new audiences</li>
+<li>Organize events and competitions for the community</li>
+<li>Continuously improve our building, strategy, and coding skills</li>
+<li>Foster a friendly and welcoming team environment</li>
+</ul>
+</div>
 
-<p>
-Interested in joining or learning more about V4MP? Join our Discord community.
-</p>
-
+<div class="panel">
+<h2>Join V4MP</h2>
+<p>Want to be part of our team or just chat with us? Join our Discord!</p>
 <button onclick="window.open('https://discord.gg/YdfYBkQcyB')">
-Join Our Discord
+Join Discord
 </button>
+</div>
 
+<div class="panel">
+<h2>Contact</h2>
+<p>Email: contact@v4mp.com</p>
+<p>Discord: discord.gg/YdfYBkQcyB</p>
+<p>Follow us for updates on upcoming projects and events.</p>
 </div>
 
 </section>
 
 <footer>
-© V4MP Minecraft Team
+V4MP Minecraft Team
 </footer>
 
 </body>
