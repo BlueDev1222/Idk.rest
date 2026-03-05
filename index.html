@@ -15,8 +15,6 @@ color:#00ff9d;
 font-family:Courier New, monospace;
 }
 
-/* header */
-
 header{
 text-align:center;
 padding:40px;
@@ -25,15 +23,11 @@ letter-spacing:4px;
 text-shadow:0 0 15px #00ff9d;
 }
 
-/* sections */
-
 section{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 padding:30px;
 }
-
-/* panels */
 
 .panel{
 border:1px solid #00ff9d;
@@ -42,14 +36,42 @@ margin-bottom:30px;
 box-shadow:0 0 10px #00ff9d;
 }
 
-/* button */
+/* TEAM GRID */
+
+.team-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin-top:20px;
+}
+
+.member{
+border:1px solid #00ff9d;
+padding:20px;
+text-align:center;
+background:#050505;
+box-shadow:0 0 10px #00ff9d;
+transition:0.3s;
+}
+
+.member:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #00ff9d;
+}
+
+.member h3{
+margin:10px 0 5px 0;
+}
+
+.member p{
+opacity:0.8;
+}
 
 button{
 background:black;
 color:#00ff9d;
 border:1px solid #00ff9d;
 padding:12px 25px;
-font-size:16px;
 cursor:pointer;
 }
 
@@ -62,7 +84,7 @@ color:black;
 
 #terminal{
 background:#050505;
-height:220px;
+height:200px;
 overflow:auto;
 padding:15px;
 margin-bottom:10px;
@@ -73,11 +95,9 @@ width:100%;
 background:black;
 border:none;
 color:#00ff9d;
-font-family:Courier New;
 padding:10px;
+font-family:Courier New;
 }
-
-/* footer */
 
 footer{
 text-align:center;
@@ -97,28 +117,41 @@ V4MP
 <section>
 
 <div class="panel">
-
 <h2>About The Team</h2>
-
 <p>
-<b>V4MP</b> is a Minecraft team focused on domination, strategy,
-and building powerful projects across different worlds.
+V4MP is a Minecraft team focused on strategy, builds, and domination.
+We work together across different worlds to create powerful projects
+and conquer Minecraft servers.
 </p>
-
-<p>
-We work together to conquer servers, build massive structures,
-and push Minecraft gameplay to the next level.
-</p>
-
 </div>
 
 <div class="panel">
 
-<h2>Join V4MP</h2>
+<h2>Team Members</h2>
 
-<p>
-Want to be part of the team? Join our Discord and run with us.
-</p>
+<div class="team-grid">
+
+<div class="member">
+<h3>ilblixil</h3>
+<p>Owner</p>
+</div>
+
+<div class="member">
+<h3>Clap</h3>
+<p>Co-Owner</p>
+</div>
+
+<div class="member">
+<h3>BlueDev</h3>
+<p>Co-Owner (Web Dev)</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="panel">
+<h2>Join V4MP</h2>
 
 <button onclick="window.open('https://discord.gg/YdfYBkQcyB')">
 Join Discord
@@ -131,11 +164,11 @@ Join Discord
 <h2>Team Terminal</h2>
 
 <div id="terminal">
-<p>> V4MP system booting...</p>
-<p>> Terminal ready</p>
+<p>> V4MP system online...</p>
+<p>> type help</p>
 </div>
 
-<input id="cmd" placeholder="type a command..." onkeydown="runCommand(event)">
+<input id="cmd" placeholder="type command..." onkeydown="runCommand(event)">
 
 </div>
 
@@ -161,7 +194,7 @@ terminal.innerHTML += "<p>Commands: help, team, discord</p>"
 }
 
 else if(input === "team"){
-terminal.innerHTML += "<p>V4MP is a Minecraft team focused on strategy, builds, and power.</p>"
+terminal.innerHTML += "<p>Members: ilblixil, Clap, BlueDev</p>"
 }
 
 else if(input === "discord"){
