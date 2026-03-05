@@ -14,21 +14,8 @@ body {
     overflow-x: hidden;
 }
 
-/* Matrix background effect */
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;              /* Behind everything */
-    pointer-events: none;    /* Allows clicking buttons */
-}
-
 /* Terminal container */
 .terminal {
-    position: relative;
-    z-index: 2;              /* Above canvas */
     padding: 40px;
     max-width: 900px;
     margin: auto;
@@ -69,8 +56,6 @@ button:hover {
 </head>
 
 <body>
-
-<canvas id="matrix"></canvas>
 
 <div class="terminal">
     <h1 class="glow">> BlueDev.exe</h1>
@@ -113,51 +98,6 @@ function typeWriter() {
     }
 }
 typeWriter();
-
-// Matrix Rain
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-
-function resizeCanvas() {
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-const letters = "01BLUEDEVMCODE";
-const fontSize = 14;
-let columns = canvas.width / fontSize;
-let drops = [];
-
-function initDrops() {
-    columns = canvas.width / fontSize;
-    drops = [];
-    for (let x = 0; x < columns; x++) {
-        drops[x] = 1;
-    }
-}
-initDrops();
-
-function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.15)"; // darker fade for readability
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#00ff88";
-    ctx.font = fontSize + "px monospace";
-
-    for (let i = 0; i < drops.length; i++) {
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-        }
-        drops[i]++;
-    }
-}
-
-setInterval(draw, 35);
 </script>
 
 </body>
