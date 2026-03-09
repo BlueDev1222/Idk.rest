@@ -3,171 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>V4MP | Minecraft Team</title>
+<title>BlueDev | Hacker Terminal</title>
 
 <style>
-
-body{
-  margin:0;
-  background:black;
-  color:#00ff9d;
-  font-family:Courier New, monospace;
+body {
+    margin: 0;
+    background: black;
+    color: #00ff88;
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
 }
 
-header{
-  text-align:center;
-  padding:40px;
-  font-size:50px;
-  letter-spacing:4px;
-  text-shadow:0 0 15px #00ff9d;
+/* Terminal container */
+.terminal {
+    padding: 40px;
+    max-width: 900px;
+    margin: auto;
 }
 
-section{
-  max-width:1000px;
-  margin:auto;
-  padding:30px;
+h1 {
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px #00ff88;
 }
 
-.panel{
-  border:1px solid #00ff9d;
-  padding:25px;
-  margin-bottom:30px;
-  box-shadow:0 0 10px #00ff9d;
+.glow {
+    text-shadow: 0 0 5px #00ff88, 0 0 15px #00ff88;
 }
 
-/* TEAM GRID */
-
-.team-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-  margin-top:20px;
+.section {
+    margin-top: 40px;
+    padding: 20px;
+    border-left: 3px solid #00ff88;
+    background: rgba(0, 255, 136, 0.05);
 }
 
-.member{
-  border:1px solid #00ff9d;
-  padding:20px;
-  text-align:center;
-  background:#050505;
-  box-shadow:0 0 10px #00ff9d;
-  transition:0.3s;
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    cursor: pointer;
+    font-family: inherit;
 }
 
-.member:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 20px #00ff9d;
+button:hover {
+    background: #00ff88;
+    color: black;
+    box-shadow: 0 0 15px #00ff88;
 }
-
-.member h3{
-  margin:10px 0 5px 0;
-}
-
-.member p{
-  opacity:0.8;
-}
-
-button{
-  background:black;
-  color:#00ff9d;
-  border:1px solid #00ff9d;
-  padding:12px 25px;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#00ff9d;
-  color:black;
-}
-
-footer{
-  text-align:center;
-  padding:20px;
-  opacity:0.6;
-}
-
 </style>
 </head>
 
 <body>
 
-<header>
-V4MP
-</header>
+<div class="terminal">
+    <h1 class="glow">> BlueDev.exe</h1>
+    <p id="typing"></p>
 
-<section>
+    <div class="section">
+        <h2>> Coding_Stats</h2>
+        <p>• HTML / CSS / JS Systems</p>
+        <p>• Custom Minecraft Server Development</p>
+        <p>• Advanced Plugin Configuration</p>
+        <p>• Roblox Game Systems</p>
+    </div>
 
-<div class="panel">
-<h2>About The Team</h2>
-<p>
-V4MP is a Minecraft team focused on strategy, creative builds, and competitive gameplay.
-Our members collaborate across multiple servers to deliver impressive projects
-and bring unique experiences to the Minecraft community.
-</p>
+    <div class="section">
+        <h2>> Minecraft_Projects</h2>
+        <p>• Custom SMP Networks</p>
+        <p>• Anarchy Infrastructure</p>
+        <p>• Highway Systems</p>
+        <p>• Server Optimization + Anti-Hack Patching</p>
+        <button onclick="alert('Access Granted 🔓')">Run Server Scan</button>
+    </div>
+
+    <div class="section">
+        <h2>> Status</h2>
+        <p class="glow">SYSTEM ONLINE</p>
+        <p>Building. Coding. Expanding.</p>
+    </div>
 </div>
 
-<div class="panel">
-<h2>Team Members</h2>
-<div class="team-grid">
+<script>
+// Typing effect
+const text = "> Initializing BlueDev system...\n> Loading Minecraft infrastructure...\n> Deploying custom code...\n> System Ready.";
+let i = 0;
 
-<div class="member">
-<h3>ilblixil</h3>
-<p>Owner</p>
-</div>
-
-<div class="member">
-<h3>Clap</h3>
-<p>Co-Owner</p>
-</div>
-
-<div class="member">
-<h3>BlueDev</h3>
-<p>Co-Owner (Web Dev)</p>
-</div>
-
-</div>
-</div>
-
-<div class="panel">
-<h2>Achievements</h2>
-<ul>
-<li>Successfully built and managed multiple collaborative servers</li>
-<li>Completed large-scale community builds and events</li>
-<li>Maintained active presence in Minecraft communities and Discord</li>
-<li>Known for teamwork, strategy, and creative innovation</li>
-</ul>
-</div>
-
-<div class="panel">
-<h2>Our Goals</h2>
-<ul>
-<li>Expand our Minecraft projects and reach new audiences</li>
-<li>Organize events and competitions for the community</li>
-<li>Continuously improve our building, strategy, and coding skills</li>
-<li>Foster a friendly and welcoming team environment</li>
-</ul>
-</div>
-
-<div class="panel">
-<h2>Join V4MP</h2>
-<p>Want to be part of our team or just chat with us? Join our Discord!</p>
-<button onclick="window.open('https://discord.gg/YdfYBkQcyB')">
-Join Discord
-</button>
-</div>
-
-<div class="panel">
-<h2>Contact</h2>
-<p>Email: contact@v4mp.com</p>
-<p>Discord: discord.gg/YdfYBkQcyB</p>
-<p>Follow us for updates on upcoming projects and events.</p>
-</div>
-
-</section>
-
-<footer>
-V4MP Minecraft Team
-</footer>
+function typeWriter() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 40);
+    }
+}
+typeWriter();
+</script>
 
 </body>
 </html>
