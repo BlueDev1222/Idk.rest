@@ -11,16 +11,14 @@ body {
     height: 100vh;
     overflow: hidden;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at top, #0b0f2a, #000);
+    background: radial-gradient(circle at top, #050816, #000);
 }
 
-/* STAR BACKGROUND */
+/* stars */
 .stars {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: transparent;
-    overflow: hidden;
     z-index: 0;
 }
 
@@ -30,16 +28,74 @@ body {
     height: 2px;
     background: white;
     border-radius: 50%;
-    opacity: 0.8;
-    animation: twinkle 2s infinite ease-in-out alternate;
+    animation: twinkle 2s infinite alternate;
 }
 
 @keyframes twinkle {
-    from { opacity: 0.2; transform: scale(1); }
-    to { opacity: 1; transform: scale(1.8); }
+    from { opacity: 0.2; }
+    to { opacity: 1; }
 }
 
-/* MAIN BOX */
+/* moon */
+.moon {
+    position: absolute;
+    top: 80px;
+    left: -100px;
+    width: 70px;
+    height: 70px;
+    background: #f5f3ce;
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(255,255,200,0.6);
+    animation: moveMoon 25s linear infinite;
+}
+
+@keyframes moveMoon {
+    0% { left: -100px; }
+    100% { left: 110vw; }
+}
+
+/* ENVELOPE WRAPPER */
+.envelope {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+/* FRONT OF ENVELOPE */
+.envelope-box {
+    width: 220px;
+    height: 150px;
+    background: #ff4d6d;
+    border-radius: 10px;
+    position: relative;
+    transform-origin: top;
+    transition: transform 1s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* FLAP (FLIP ANIMATION) */
+.flap {
+    position: absolute;
+    width: 220px;
+    height: 150px;
+    background: #ff2e55;
+    border-radius: 10px;
+    top: 0;
+    left: 0;
+    transform-origin: top;
+    transition: transform 1s ease;
+    z-index: 2;
+}
+
+/* OPEN STATE */
+.envelope.open .flap {
+    transform: rotateX(-180deg);
+}
+
+/* LETTER */
 .box {
     position: absolute;
     top: 50%;
@@ -51,49 +107,25 @@ body {
     padding: 25px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    display: none;
     z-index: 2;
 }
 
-/* NEON NAME */
 .neon {
-    font-size: 28px;
+    font-size: 30px;
     color: #fff;
     text-shadow:
         0 0 5px #ff4d6d,
         0 0 10px #ff4d6d,
-        0 0 20px #ff1e4d,
-        0 0 40px #ff1e4d;
-    margin-bottom: 10px;
+        0 0 20px #ff1e4d;
 }
 
-/* typing text */
-#message {
-    font-size: 16px;
-    color: #333;
-    min-height: 100px;
+/* letter text */
+#letter {
+    font-size: 15px;
     white-space: pre-wrap;
     border-right: 2px solid #ff4d6d;
-}
-
-/* hearts */
-.heart {
-    position: absolute;
-    color: #ff4d6d;
-    font-size: 20px;
-    animation: floatUp 4s linear forwards;
-    z-index: 1;
-}
-
-@keyframes floatUp {
-    0% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-100vh); opacity: 0; }
-}
-
-/* mobile */
-@media (max-width: 600px) {
-    .neon { font-size: 22px; }
-    #message { font-size: 14px; }
+    min-height: 120px;
 }
 </style>
 </head>
@@ -101,79 +133,61 @@ body {
 <body>
 
 <div class="stars" id="stars"></div>
+<div class="moon"></div>
 
-<div class="box">
-    <div class="neon">YOUR GIRLFRIEND NAME 💍</div>
-    <div id="message"></div>
+<!-- ENVELOPE -->
+<div class="envelope" id="envelope" onclick="openEnvelope()">
+    <div class="envelope-box"></div>
+    <div class="flap"></div>
+</div>
+
+<!-- LETTER -->
+<div class="box" id="box">
+    <div class="neon">LB 💍</div>
+    <div id="letter"></div>
 </div>
 
 <script>
-/* STAR CREATION */
+/* stars */
 function createStars() {
-    const starsContainer = document.getElementById("stars");
-
+    const c = document.getElementById("stars");
     for (let i = 0; i < 120; i++) {
-        let star = document.createElement("div");
-        star.classList.add("star");
-
-        star.style.left = Math.random() * 100 + "vw";
-        star.style.top = Math.random() * 100 + "vh";
-        star.style.animationDuration = (1 + Math.random() * 3) + "s";
-        star.style.opacity = Math.random();
-
-        starsContainer.appendChild(star);
+        let s = document.createElement("div");
+        s.classList.add("star");
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.top = Math.random() * 100 + "vh";
+        c.appendChild(s);
     }
 }
 createStars();
 
-/* typing text */
+/* OPEN ENVELOPE WITH FLIP */
+function openEnvelope() {
+    const env = document.getElementById("envelope");
+    env.classList.add("open");
+
+    setTimeout(() => {
+        env.style.display = "none";
+        document.getElementById("box").style.display = "block";
+        typeText();
+    }, 1200); // wait for flip animation
+}
+
+/* TYPE LETTER */
 const text =
-"I love you more than anything in this world. You are my peace, my happiness, and my favorite person. " +
-"No matter where life takes us, I want you by my side. Always. 💖";
+"Dear LB 💖\n\n" +
+"You are my moon in the dark sky, my peace, and my forever person.\n" +
+"I don’t just love you… I choose you every single day.\n\n" +
+"Always yours. 💍";
 
 let i = 0;
 function typeText() {
     if (i < text.length) {
-        document.getElementById("message").innerHTML += text.charAt(i);
+        document.getElementById("letter").innerHTML += text.charAt(i);
         i++;
         setTimeout(typeText, 35);
     }
 }
-typeText();
-
-/* floating hearts */
-function createHeart(x, y) {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "💖";
-
-    heart.style.left = x + "px";
-    heart.style.top = y + "px";
-
-    document.body.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 4000);
-}
-
-/* swipe / touch hearts */
-let lastX = 0;
-let lastY = 0;
-
-document.addEventListener("touchmove", (e) => {
-    let t = e.touches[0];
-    if (Math.abs(t.clientX - lastX) > 10 || Math.abs(t.clientY - lastY) > 10) {
-        createHeart(t.clientX, t.clientY);
-        lastX = t.clientX;
-        lastY = t.clientY;
-    }
-});
-
-/* click hearts */
-document.addEventListener("click", (e) => {
-    for (let i = 0; i < 5; i++) {
-        createHeart(e.clientX, e.clientY);
-    }
-});
 </script>
 
 </body>
