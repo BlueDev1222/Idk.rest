@@ -9,78 +9,95 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #0f2027, #0b141a);
   color: white;
+  background: url('wilden_bg.png') no-repeat center center/cover;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.75);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .container {
+  position: relative;
+  z-index: 2;
   width: 90%;
   max-width: 900px;
-  background: rgba(16, 24, 32, 0.9);
-  border: 2px solid #2ecc71;
+  background: rgba(10, 20, 10, 0.9);
+  border: 2px solid #7CFF00;
   border-radius: 16px;
   padding: 30px;
-  box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 0 35px rgba(124,255,0,0.4);
+  text-align: center;
 }
 
-h1, h2, h3 {
-  margin-top: 0;
+.logo {
+  width: 280px;
+  margin-bottom: 10px;
 }
 
-.title {
+h1 {
+  margin: 10px 0;
   font-size: 28px;
-  color: #2ecc71;
 }
 
 .progress-bar {
   width: 100%;
-  background: #263238;
+  background: #1e2d1e;
   border-radius: 20px;
   overflow: hidden;
   margin: 15px 0;
-  border: 1px solid #3c4a50;
+  border: 1px solid #3cff00;
 }
 
 .progress-fill {
   height: 28px;
   width: 0%;
-  background: linear-gradient(90deg, #2ecc71, #27ae60);
-  text-align: center;
+  background: linear-gradient(90deg, #7CFF00, #2ecc71);
   line-height: 28px;
   font-weight: bold;
   transition: width 1.5s ease;
 }
 
 ul {
+  text-align: left;
   line-height: 1.8;
 }
 
 .note {
-  background: #1f2d36;
-  border-left: 5px solid #f1c40f;
+  background: rgba(255, 200, 0, 0.1);
+  border-left: 5px solid #ffd700;
   padding: 12px;
   border-radius: 8px;
   margin-top: 15px;
+  text-align: left;
 }
 
 .footer {
   margin-top: 20px;
-  color: #b8c7cc;
+  color: #ccc;
 }
 </style>
 </head>
 
 <body>
 
+<div class="overlay"></div>
+
 <div class="container">
 
-  <h2 class="title">📢 Site Notice</h2>
+  <!-- LOGO -->
+  <img src="WILDEN_LOGO_FULL_QUALITY_OFFICIAL.png" class="logo">
 
+  <h2>📢 Site Notice</h2>
   <h1>A New Wiki Experience is Coming Soon!</h1>
 
   <p>
@@ -112,14 +129,13 @@ ul {
     🗓️ <b>Last Updated:</b> April 2026
   </div>
 
-  <p style="color:#2ecc71; font-weight:bold;">
+  <p style="color:#7CFF00; font-weight:bold;">
     Thank you for your patience while we build a better experience for everyone!
   </p>
 
 </div>
 
 <script>
-// Easy edit value
 const progressValue = 10;
 
 const bar = document.getElementById("progress");
