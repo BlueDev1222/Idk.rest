@@ -1,48 +1,134 @@
-<div style="background:#101820; color:#ffffff; border:2px solid #2ecc71; border-radius:14px; padding:22px; max-width:850px; margin:20px auto; font-family:Arial, sans-serif; box-shadow:0 0 18px rgba(46,204,113,0.35);">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wilden Wiki Notice</title>
 
-  <h2 style="margin-top:0; color:#2ecc71;">📢 Site Notice</h2>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #0f2027, #0b141a);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-  <h1 style="font-size:28px; margin-bottom:10px;">
-    A New Wiki Experience is Coming Soon!
-  </h1>
+.container {
+  width: 90%;
+  max-width: 900px;
+  background: rgba(16, 24, 32, 0.9);
+  border: 2px solid #2ecc71;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+  backdrop-filter: blur(10px);
+}
 
-  <p style="font-size:16px; line-height:1.6; color:#e6e6e6;">
-    We’re currently working on a brand-new and improved <strong>Wilden Wiki</strong>
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+.title {
+  font-size: 28px;
+  color: #2ecc71;
+}
+
+.progress-bar {
+  width: 100%;
+  background: #263238;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #3c4a50;
+}
+
+.progress-fill {
+  height: 28px;
+  width: 0%;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  text-align: center;
+  line-height: 28px;
+  font-weight: bold;
+  transition: width 1.5s ease;
+}
+
+ul {
+  line-height: 1.8;
+}
+
+.note {
+  background: #1f2d36;
+  border-left: 5px solid #f1c40f;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.footer {
+  margin-top: 20px;
+  color: #b8c7cc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2 class="title">📢 Site Notice</h2>
+
+  <h1>A New Wiki Experience is Coming Soon!</h1>
+
+  <p>
+    We’re currently working on a brand-new and improved <b>Wilden Wiki</b>
     to make it easier to navigate, more detailed, and better for all players.
   </p>
 
-  <h3 style="color:#2ecc71;">🔄 Development Progress</h3>
+  <h3>🔄 Development Progress</h3>
+  <p><b>Overall Completion:</b> <span id="percent">65%</span></p>
 
-  <p><strong>Overall Completion:</strong> 65%</p>
-
-  <div style="background:#263238; border-radius:20px; overflow:hidden; height:28px; border:1px solid #3c4a50;">
-    <div style="width:65%; height:100%; background:linear-gradient(90deg,#2ecc71,#27ae60); text-align:center; line-height:28px; font-weight:bold; color:#ffffff;">
-      65%
-    </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress">65%</div>
   </div>
 
-  <h3 style="color:#2ecc71; margin-top:24px;">🔧 What’s Being Worked On</h3>
-
-  <ul style="line-height:1.8; color:#e6e6e6;">
+  <h3>🔧 What’s Being Worked On</h3>
+  <ul>
     <li>✅ Improved page organization & navigation</li>
     <li>🔄 More detailed guides and tutorials</li>
     <li>🔄 Dedicated sections for Events, Skills, Claims, and more</li>
     <li>⏳ Cleaner design for both desktop and mobile users</li>
   </ul>
 
-  <div style="background:#1f2d36; border-left:5px solid #f1c40f; padding:14px; border-radius:8px; margin-top:20px;">
-    <strong>⚠️ Please Note:</strong>
-    <p style="margin-bottom:0;">
-      This wiki may be incomplete or missing information while we continue development.
-    </p>
+  <div class="note">
+    <b>⚠️ Please Note:</b><br>
+    This wiki may be incomplete or missing information while we continue development.
   </div>
 
-  <p style="margin-top:20px; color:#b8c7cc;">
-    🗓️ <strong>Last Updated:</strong> April 2026
-  </p>
+  <div class="footer">
+    🗓️ <b>Last Updated:</b> April 2026
+  </div>
 
-  <p style="font-weight:bold; color:#2ecc71;">
+  <p style="color:#2ecc71; font-weight:bold;">
     Thank you for your patience while we build a better experience for everyone!
   </p>
 
 </div>
+
+<script>
+// Change this value to update progress easily
+const progressValue = 65;
+
+const bar = document.getElementById("progress");
+const percent = document.getElementById("percent");
+
+bar.style.width = progressValue + "%";
+bar.textContent = progressValue + "%";
+percent.textContent = progressValue + "%";
+</script>
+
+</body>
+</html>
