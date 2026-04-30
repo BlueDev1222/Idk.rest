@@ -1,248 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LB 💖</title>
+<div style="background:#101820; color:#ffffff; border:2px solid #2ecc71; border-radius:14px; padding:22px; max-width:850px; margin:20px auto; font-family:Arial, sans-serif; box-shadow:0 0 18px rgba(46,204,113,0.35);">
 
-<style>
-body {
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background: black;
-}
+  <h2 style="margin-top:0; color:#2ecc71;">📢 Site Notice</h2>
 
-/* GALAXY BACKGROUND */
-.galaxy {
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, #1b1f3a, #000);
-    animation: zoomGalaxy 8s ease forwards;
-    z-index: 0;
-}
+  <h1 style="font-size:28px; margin-bottom:10px;">
+    A New Wiki Experience is Coming Soon!
+  </h1>
 
-@keyframes zoomGalaxy {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.4); }
-}
+  <p style="font-size:16px; line-height:1.6; color:#e6e6e6;">
+    We’re currently working on a brand-new and improved <strong>Wilden Wiki</strong>
+    to make it easier to navigate, more detailed, and better for all players.
+  </p>
 
-/* STARS */
-.star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: white;
-    border-radius: 50%;
-    animation: twinkle 2s infinite alternate;
-}
+  <h3 style="color:#2ecc71;">🔄 Development Progress</h3>
 
-@keyframes twinkle {
-    from { opacity: 0.2; }
-    to { opacity: 1; }
-}
+  <p><strong>Overall Completion:</strong> 65%</p>
 
-/* MOON */
-.moon {
-    position: absolute;
-    top: 60px;
-    left: -80px;
-    width: 80px;
-    height: 80px;
-    background: #f5f3ce;
-    border-radius: 50%;
-    box-shadow: 0 0 50px rgba(255,255,200,0.7);
-    animation: moveMoon 20s linear infinite;
-    z-index: 1;
-}
+  <div style="background:#263238; border-radius:20px; overflow:hidden; height:28px; border:1px solid #3c4a50;">
+    <div style="width:65%; height:100%; background:linear-gradient(90deg,#2ecc71,#27ae60); text-align:center; line-height:28px; font-weight:bold; color:#ffffff;">
+      65%
+    </div>
+  </div>
 
-@keyframes moveMoon {
-    0% { left: -100px; }
-    100% { left: 110vw; }
-}
+  <h3 style="color:#2ecc71; margin-top:24px;">🔧 What’s Being Worked On</h3>
 
-/* ENVELOPE 3D DEPTH */
-.envelope {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    perspective: 1200px;
-    cursor: pointer;
-    z-index: 5;
-}
+  <ul style="line-height:1.8; color:#e6e6e6;">
+    <li>✅ Improved page organization & navigation</li>
+    <li>🔄 More detailed guides and tutorials</li>
+    <li>🔄 Dedicated sections for Events, Skills, Claims, and more</li>
+    <li>⏳ Cleaner design for both desktop and mobile users</li>
+  </ul>
 
-/* BODY */
-.env-body {
-    width: 240px;
-    height: 160px;
-    background: linear-gradient(145deg, #ff4d6d, #d81b3a);
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-    position: relative;
-}
+  <div style="background:#1f2d36; border-left:5px solid #f1c40f; padding:14px; border-radius:8px; margin-top:20px;">
+    <strong>⚠️ Please Note:</strong>
+    <p style="margin-bottom:0;">
+      This wiki may be incomplete or missing information while we continue development.
+    </p>
+  </div>
 
-/* FLAP (paper tear illusion) */
-.env-flap {
-    position: absolute;
-    width: 240px;
-    height: 160px;
-    background: #ff2e55;
-    border-radius: 12px;
-    top: 0;
-    left: 0;
-    transform-origin: top;
-    clip-path: polygon(0 0, 100% 0, 50% 60%);
-    transition: transform 1s ease, opacity 1s ease;
-    z-index: 2;
-}
+  <p style="margin-top:20px; color:#b8c7cc;">
+    🗓️ <strong>Last Updated:</strong> April 2026
+  </p>
 
-/* tear effect */
-.envelope.open .env-flap {
-    transform: rotateX(160deg) translateY(-20px);
-    opacity: 0;
-}
+  <p style="font-weight:bold; color:#2ecc71;">
+    Thank you for your patience while we build a better experience for everyone!
+  </p>
 
-/* LETTER */
-.box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    width: 90%;
-    max-width: 520px;
-    background: rgba(255,255,255,0.95);
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    display: none;
-    z-index: 10;
-    animation: popIn 1s ease forwards;
-}
-
-@keyframes popIn {
-    from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-
-/* NEON LB */
-.neon {
-    font-size: 34px;
-    color: #fff;
-    text-shadow:
-        0 0 10px #ff4d6d,
-        0 0 20px #ff1e4d,
-        0 0 40px #ff1e4d;
-}
-
-/* LETTER TEXT */
-#letter {
-    font-size: 15px;
-    white-space: pre-wrap;
-    border-right: 2px solid #ff4d6d;
-    min-height: 120px;
-}
-
-/* LB PARTICLES */
-.particle {
-    position: absolute;
-    color: #ff4d6d;
-    font-weight: bold;
-    font-size: 18px;
-    animation: fly 2s linear forwards;
-    z-index: 20;
-}
-
-@keyframes fly {
-    0% { transform: translate(0,0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
-}
-</style>
-</head>
-
-<body>
-
-<div class="galaxy" id="galaxy"></div>
-<div class="moon"></div>
-
-<!-- ENVELOPE -->
-<div class="envelope" id="env" onclick="openEnvelope()">
-    <div class="env-body"></div>
-    <div class="env-flap"></div>
 </div>
-
-<!-- LETTER -->
-<div class="box" id="box">
-    <div class="neon" id="neon">LB 💍</div>
-    <div id="letter"></div>
-</div>
-
-<script>
-/* STARS */
-function createStars() {
-    const g = document.getElementById("galaxy");
-    for (let i = 0; i < 150; i++) {
-        let s = document.createElement("div");
-        s.classList.add("star");
-        s.style.left = Math.random() * 100 + "vw";
-        s.style.top = Math.random() * 100 + "vh";
-        g.appendChild(s);
-    }
-}
-createStars();
-
-/* ENVELOPE OPEN */
-function openEnvelope() {
-    const env = document.getElementById("env");
-    env.classList.add("open");
-
-    setTimeout(() => {
-        env.style.display = "none";
-        document.getElementById("box").style.display = "block";
-
-        explodeLB();
-        typeText();
-    }, 1100);
-}
-
-/* LB PARTICLE EXPLOSION */
-function explodeLB() {
-    const text = "LB";
-    for (let i = 0; i < 40; i++) {
-        let p = document.createElement("div");
-        p.classList.add("particle");
-        p.innerText = text[Math.floor(Math.random() * text.length)];
-
-        p.style.left = "50%";
-        p.style.top = "50%";
-
-        p.style.setProperty("--x", (Math.random() * 400 - 200) + "px");
-        p.style.setProperty("--y", (Math.random() * 400 - 200) + "px");
-
-        document.body.appendChild(p);
-
-        setTimeout(() => p.remove(), 2000);
-    }
-}
-
-/* TYPE LETTER */
-const text =
-"Dear LB 💖\n\n" +
-"You are my galaxy, my peace, and my forever.\n" +
-"I don’t just love you… I choose you in every lifetime.\n\n" +
-"Always yours. 💍";
-
-let i = 0;
-function typeText() {
-    if (i < text.length) {
-        document.getElementById("letter").innerHTML += text.charAt(i);
-        i++;
-        setTimeout(typeText, 30);
-    }
-}
-</script>
-
-</body>
-</html>
