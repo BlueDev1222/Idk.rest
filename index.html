@@ -6,7 +6,6 @@
 
 <title>Wilden Wiki Notice</title>
 
-<!-- Favicon (tab logo) -->
 <link rel="icon" href="WILDEN_LOGO_FULL_QUALITY_OFFICIAL.png">
 
 <style>
@@ -14,29 +13,26 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   color: white;
-
   background: linear-gradient(rgba(10,20,10,0.85), rgba(10,20,10,0.95)),
               url('wilden_bg.png') center top no-repeat;
   background-size: cover;
   min-height: 100vh;
-
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .container {
   width: 90%;
   max-width: 850px;
-
   background: rgba(0, 0, 0, 0.65);
   border: 2px solid #7CFF00;
   border-radius: 18px;
   padding: 28px;
-
   box-shadow: 0 0 40px rgba(124,255,0,0.35);
   backdrop-filter: blur(6px);
-
   text-align: center;
 }
 
@@ -51,9 +47,8 @@ h1 {
   font-size: 26px;
 }
 
-h2 {
+h2, h3 {
   color: #7CFF00;
-  margin-bottom: 5px;
 }
 
 .progress-bar {
@@ -71,7 +66,35 @@ h2 {
   background: linear-gradient(90deg, #7CFF00, #2ecc71);
   line-height: 28px;
   font-weight: bold;
+  color: #000;
   transition: width 1.5s ease;
+}
+
+.countdown-box {
+  margin-top: 25px;
+  padding: 18px;
+  border: 1px solid #7CFF00;
+  border-radius: 14px;
+  background: rgba(124,255,0,0.08);
+  box-shadow: 0 0 20px rgba(124,255,0,0.25);
+}
+
+.countdown {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #7CFF00;
+  text-shadow: 0 0 12px rgba(124,255,0,0.8);
+}
+
+.website-link {
+  color: #7CFF00;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.website-link:hover {
+  text-decoration: underline;
 }
 
 ul {
@@ -94,6 +117,20 @@ ul {
   color: #ccc;
   font-size: 14px;
 }
+
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .countdown {
+    font-size: 22px;
+  }
+}
 </style>
 </head>
 
@@ -101,8 +138,7 @@ ul {
 
 <div class="container">
 
-  <!-- Logo -->
-  <img src="WILDEN_LOGO_FULL_QUALITY_OFFICIAL.png" class="logo">
+  <img src="WILDEN_LOGO_FULL_QUALITY_OFFICIAL.png" class="logo" alt="Wilden Logo">
 
   <h2>📢 Site Notice</h2>
   <h1>A New Wiki Experience is Coming Soon!</h1>
@@ -113,23 +149,38 @@ ul {
   </p>
 
   <h3>🔄 Development Progress</h3>
-  <p><b>Overall Completion:</b> <span id="percent">10%</span></p>
+  <p><b>Overall Completion:</b> <span id="percent">95%</span></p>
 
   <div class="progress-bar">
-    <div class="progress-fill" id="progress">10%</div>
+    <div class="progress-fill" id="progress">95%</div>
+  </div>
+
+  <div class="countdown-box">
+    <h3>🌐 New Website Launch</h3>
+    <p>
+      The new Wilden Wiki launches at:<br>
+      <b>May 1st, 2026 — 5:00 PM EST</b>
+    </p>
+
+    <a class="website-link" href="https://wilden.wiki" target="_blank">
+      https://wilden.wiki
+    </a>
+
+    <div class="countdown" id="countdown">Loading countdown...</div>
   </div>
 
   <h3>🔧 What’s Being Worked On</h3>
   <ul>
-    <li>🔄 Core page structure setup</li>
-    <li>⏳ Writing initial guides and tutorials</li>
-    <li>⏳ Building Events, Skills, and Claims pages</li>
-    <li>⏳ Designing mobile-friendly layout</li>
+    <li>✅ Core page structure setup</li>
+    <li>✅ Initial guides and tutorials</li>
+    <li>✅ Events, Skills, and Claims pages</li>
+    <li>✅ Mobile-friendly layout</li>
+    <li>⏳ Final polish before launch</li>
   </ul>
 
   <div class="note">
     <b>⚠️ Please Note:</b><br>
-    This wiki may be incomplete or missing information while we continue development.
+    This wiki may still be missing small details while the final launch update is being finished.
   </div>
 
   <div class="footer">
@@ -151,6 +202,30 @@ const percent = document.getElementById("percent");
 bar.style.width = progressValue + "%";
 bar.textContent = progressValue + "%";
 percent.textContent = progressValue + "%";
+
+// May 1st, 2026 at 5:00 PM EST
+const launchDate = new Date("May 1, 2026 17:00:00 GMT-0500").getTime();
+
+function updateCountdown() {
+  const now = new Date().getTime();
+  const distance = launchDate - now;
+
+  if (distance <= 0) {
+    document.getElementById("countdown").innerHTML = "🚀 The new Wilden Wiki is now live!";
+    return;
+  }
+
+  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((distance / (1000 * 60)) % 60);
+  const seconds = Math.floor((distance / 1000) % 60);
+
+  document.getElementById("countdown").innerHTML =
+    `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
 </script>
 
 </body>
