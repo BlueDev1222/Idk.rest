@@ -88,13 +88,19 @@ h2, h3 {
 }
 
 .website-link {
-  color: #7CFF00;
+  display: none;
+  margin-top: 14px;
+  color: #000;
+  background: #7CFF00;
   font-weight: bold;
   text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(124,255,0,0.7);
 }
 
 .website-link:hover {
-  text-decoration: underline;
+  transform: scale(1.04);
 }
 
 ul {
@@ -162,11 +168,11 @@ ul {
       <b>May 1st, 2026 — 5:00 PM EST</b>
     </p>
 
-    <a class="website-link" href="https://wilden.wiki" target="_blank">
-      https://wilden.wiki
-    </a>
-
     <div class="countdown" id="countdown">Loading countdown...</div>
+
+    <a id="siteLink" class="website-link" href="https://wilden.wiki" target="_blank">
+      🚀 Visit the New Wiki
+    </a>
   </div>
 
   <h3>🔧 What’s Being Worked On</h3>
@@ -210,8 +216,12 @@ function updateCountdown() {
   const now = new Date().getTime();
   const distance = launchDate - now;
 
+  const countdownEl = document.getElementById("countdown");
+  const linkEl = document.getElementById("siteLink");
+
   if (distance <= 0) {
-    document.getElementById("countdown").innerHTML = "🚀 The new Wilden Wiki is now live!";
+    countdownEl.innerHTML = "🚀 The new Wilden Wiki is now live!";
+    linkEl.style.display = "inline-block";
     return;
   }
 
@@ -220,8 +230,7 @@ function updateCountdown() {
   const minutes = Math.floor((distance / (1000 * 60)) % 60);
   const seconds = Math.floor((distance / 1000) % 60);
 
-  document.getElementById("countdown").innerHTML =
-    `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  countdownEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
 updateCountdown();
