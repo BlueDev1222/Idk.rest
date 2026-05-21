@@ -6,109 +6,76 @@
 <title>Food RNG Game</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #ffb347, #ff6b6b);
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#ffb347,#ff6b6b);
+  color:white;
+  min-height:100vh;
+  padding:20px;
 }
-
-.container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
+.container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:20px;
+  max-width:1400px;
+  margin:auto;
 }
-
-.game-box, .inventory-box {
-  background: rgba(0,0,0,0.25);
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+.box{
+  background:rgba(0,0,0,.28);
+  padding:22px;
+  border-radius:20px;
+  box-shadow:0 0 20px rgba(0,0,0,.4);
 }
-
-.game-box {
-  width: 360px;
-  text-align: center;
+.game-box{text-align:center}
+.food{
+  font-size:90px;
+  margin:20px 0;
 }
-
-.inventory-box {
-  width: 330px;
-  max-height: 540px;
-  overflow-y: auto;
+.rollAnim{animation:rollSpin .55s ease}
+@keyframes rollSpin{
+  0%{transform:scale(.4) rotate(0deg);opacity:.3}
+  50%{transform:scale(1.3) rotate(180deg);opacity:1}
+  100%{transform:scale(1) rotate(360deg)}
 }
-
-.food {
-  font-size: 85px;
-  margin: 20px 0;
-  transition: 0.3s;
+.name{font-size:30px;font-weight:bold}
+.rarity{font-size:20px;margin-top:8px}
+button{
+  padding:11px 16px;
+  margin:6px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  background:white;
+  color:#ff5b5b;
 }
-
-.rollAnim {
-  animation: rollSpin 0.6s ease;
+button:hover{transform:scale(1.04)}
+.danger{background:#ff3333;color:white}
+.green{background:#37ff7a;color:#102b14}
+.item,.achievement,.indexItem,.stat{
+  background:rgba(255,255,255,.15);
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-
-@keyframes rollSpin {
-  0% { transform: scale(0.5) rotate(0deg); opacity: 0.3; }
-  50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
-  100% { transform: scale(1) rotate(360deg); }
+.scroll{
+  max-height:420px;
+  overflow-y:auto;
 }
-
-.name {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.rarity {
-  margin-top: 10px;
-  font-size: 20px;
-}
-
-button {
-  margin-top: 15px;
-  padding: 12px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  background: white;
-  color: #ff6b6b;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  transform: scale(1.05);
-  background: #ffe6e6;
-}
-
-.danger {
-  background: #ff3333;
-  color: white;
-}
-
-.item {
-  background: rgba(255,255,255,0.15);
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.common { color: white; }
-.uncommon { color: #7CFC00; }
-.rare { color: #4da6ff; }
-.epic { color: #c266ff; }
-.legendary { color: gold; }
-.mythic { color: #ff4df2; }
-.secret { color: #00fff7; }
-.godly { color: #ff2b2b; }
+.locked{opacity:.45}
+.common{color:white}
+.uncommon{color:#7CFC00}
+.rare{color:#4da6ff}
+.epic{color:#c266ff}
+.legendary{color:gold}
+.mythic{color:#ff4df2}
+.secret{color:#00fff7}
+.godly{color:#ff2b2b}
 </style>
 </head>
 
@@ -116,192 +83,425 @@ button:hover {
 
 <div class="container">
 
-  <div class="game-box">
+  <div class="box game-box">
     <h1>🍔 Food RNG 🍕</h1>
-
     <div class="food" id="foodEmoji">❓</div>
     <div class="name" id="foodName">Press Roll!</div>
     <div class="rarity" id="foodRarity"></div>
 
     <button onclick="rollFood()">ROLL FOOD</button>
-    <button onclick="saveGame()">Save</button>
-    <button class="danger" onclick="resetGame()">Reset</button>
+    <button class="green" onclick="toggleAutoRoll()">AUTO ROLL</button>
+    <button onclick="saveGame()">SAVE</button>
+    <button class="danger" onclick="resetGame()">RESET</button>
 
-    <div id="score">Rolls: 0</div>
+    <p id="rollsText">Rolls: 0</p>
+    <p id="coinsText">Coins: 0</p>
+    <p id="autoText">Auto Roller: OFF</p>
   </div>
 
-  <div class="inventory-box">
+  <div class="box">
+    <h2>🥚 Food Crates</h2>
+    <button onclick="openCrate('Breakfast')">🍳 Breakfast Crate - 100 Coins</button>
+    <button onclick="openCrate('Fast Food')">🍔 Fast Food Crate - 500 Coins</button>
+    <button onclick="openCrate('Dessert')">🍰 Dessert Crate - 2,000 Coins</button>
+    <button onclick="openCrate('Space')">🚀 Space Crate - 10,000 Coins</button>
+    <button onclick="openCrate('Void')">🕳️ Void Crate - 100,000 Coins</button>
+    <p id="crateResult"></p>
+  </div>
+
+  <div class="box">
     <h2>🎒 Inventory</h2>
-    <div id="inventory"></div>
+    <button onclick="sellDuplicates()">Sell Duplicates</button>
+    <div id="inventory" class="scroll"></div>
+  </div>
+
+  <div class="box">
+    <h2>🏆 Achievements</h2>
+    <div id="achievements" class="scroll"></div>
+  </div>
+
+  <div class="box">
+    <h2>📖 Food Index</h2>
+    <p id="indexProgress"></p>
+    <div id="foodIndex" class="scroll"></div>
+  </div>
+
+  <div class="box">
+    <h2>📊 Stats</h2>
+    <div id="stats"></div>
   </div>
 
 </div>
 
 <script>
 let rolls = 0;
+let coins = 0;
 let inventory = {};
+let discovered = {};
+let achievements = {};
+let autoRolling = false;
+let autoInterval = null;
+let autoRolls = 0;
+let rarestFood = "None";
+let playTime = 0;
 
 const foods = [
-  { emoji:"🍎", name:"Apple", rarity:"Common", chance:20 },
-  { emoji:"🍌", name:"Banana", rarity:"Common", chance:20 },
-  { emoji:"🍊", name:"Orange", rarity:"Common", chance:18 },
-  { emoji:"🍇", name:"Grapes", rarity:"Common", chance:18 },
-  { emoji:"🍉", name:"Watermelon", rarity:"Common", chance:16 },
-  { emoji:"🍓", name:"Strawberry", rarity:"Common", chance:16 },
-  { emoji:"🥕", name:"Carrot", rarity:"Common", chance:15 },
-  { emoji:"🌽", name:"Corn", rarity:"Common", chance:15 },
-  { emoji:"🍞", name:"Bread", rarity:"Common", chance:14 },
-  { emoji:"🥚", name:"Egg", rarity:"Common", chance:14 },
+  {emoji:"🍎",name:"Apple",rarity:"Common",chance:20,value:1},
+  {emoji:"🍌",name:"Banana",rarity:"Common",chance:20,value:1},
+  {emoji:"🍊",name:"Orange",rarity:"Common",chance:18,value:1},
+  {emoji:"🍇",name:"Grapes",rarity:"Common",chance:18,value:1},
+  {emoji:"🍉",name:"Watermelon",rarity:"Common",chance:16,value:1},
+  {emoji:"🍓",name:"Strawberry",rarity:"Common",chance:16,value:1},
+  {emoji:"🥕",name:"Carrot",rarity:"Common",chance:15,value:1},
+  {emoji:"🌽",name:"Corn",rarity:"Common",chance:15,value:1},
+  {emoji:"🍞",name:"Bread",rarity:"Common",chance:14,value:1},
+  {emoji:"🥚",name:"Egg",rarity:"Common",chance:14,value:1},
 
-  { emoji:"🍟", name:"Fries", rarity:"Uncommon", chance:10 },
-  { emoji:"🍕", name:"Pizza", rarity:"Uncommon", chance:10 },
-  { emoji:"🌭", name:"Hotdog", rarity:"Uncommon", chance:9 },
-  { emoji:"🥞", name:"Pancakes", rarity:"Uncommon", chance:9 },
-  { emoji:"🧇", name:"Waffle", rarity:"Uncommon", chance:8 },
-  { emoji:"🥨", name:"Pretzel", rarity:"Uncommon", chance:8 },
-  { emoji:"🥯", name:"Bagel", rarity:"Uncommon", chance:7 },
-  { emoji:"🥪", name:"Sandwich", rarity:"Uncommon", chance:7 },
-  { emoji:"🌯", name:"Burrito", rarity:"Uncommon", chance:6 },
-  { emoji:"🥗", name:"Salad", rarity:"Uncommon", chance:6 },
+  {emoji:"🍟",name:"Fries",rarity:"Uncommon",chance:10,value:5},
+  {emoji:"🍕",name:"Pizza",rarity:"Uncommon",chance:10,value:5},
+  {emoji:"🌭",name:"Hotdog",rarity:"Uncommon",chance:9,value:5},
+  {emoji:"🥞",name:"Pancakes",rarity:"Uncommon",chance:9,value:5},
+  {emoji:"🧇",name:"Waffle",rarity:"Uncommon",chance:8,value:5},
+  {emoji:"🥨",name:"Pretzel",rarity:"Uncommon",chance:8,value:5},
+  {emoji:"🥯",name:"Bagel",rarity:"Uncommon",chance:7,value:5},
+  {emoji:"🥪",name:"Sandwich",rarity:"Uncommon",chance:7,value:5},
 
-  { emoji:"🍔", name:"Burger", rarity:"Rare", chance:5 },
-  { emoji:"🍗", name:"Chicken Leg", rarity:"Rare", chance:4.5 },
-  { emoji:"🥩", name:"Steak", rarity:"Rare", chance:4 },
-  { emoji:"🍝", name:"Spaghetti", rarity:"Rare", chance:4 },
-  { emoji:"🍛", name:"Curry Rice", rarity:"Rare", chance:3.5 },
-  { emoji:"🍚", name:"Rice Bowl", rarity:"Rare", chance:3.5 },
-  { emoji:"🥟", name:"Dumplings", rarity:"Rare", chance:3 },
-  { emoji:"🍙", name:"Rice Ball", rarity:"Rare", chance:3 },
-  { emoji:"🍖", name:"Meat Bone", rarity:"Rare", chance:2.8 },
-  { emoji:"🥓", name:"Bacon", rarity:"Rare", chance:2.8 },
+  {emoji:"🍔",name:"Burger",rarity:"Rare",chance:5,value:25},
+  {emoji:"🍗",name:"Chicken Leg",rarity:"Rare",chance:4.5,value:25},
+  {emoji:"🥩",name:"Steak",rarity:"Rare",chance:4,value:25},
+  {emoji:"🍝",name:"Spaghetti",rarity:"Rare",chance:4,value:25},
+  {emoji:"🍛",name:"Curry Rice",rarity:"Rare",chance:3.5,value:25},
+  {emoji:"🥟",name:"Dumplings",rarity:"Rare",chance:3,value:25},
 
-  { emoji:"🍣", name:"Sushi", rarity:"Epic", chance:2 },
-  { emoji:"🍜", name:"Dragon Ramen", rarity:"Epic", chance:1.8 },
-  { emoji:"🍤", name:"Tempura Shrimp", rarity:"Epic", chance:1.6 },
-  { emoji:"🥘", name:"Royal Paella", rarity:"Epic", chance:1.5 },
-  { emoji:"🧀", name:"Golden Cheese", rarity:"Epic", chance:1.4 },
-  { emoji:"🍮", name:"Caramel Flan", rarity:"Epic", chance:1.2 },
-  { emoji:"🍦", name:"Ice Cream", rarity:"Epic", chance:1.1 },
-  { emoji:"🍩", name:"Glazed Donut", rarity:"Epic", chance:1 },
+  {emoji:"🍣",name:"Sushi",rarity:"Epic",chance:2,value:100},
+  {emoji:"🍜",name:"Dragon Ramen",rarity:"Epic",chance:1.8,value:100},
+  {emoji:"🍤",name:"Tempura Shrimp",rarity:"Epic",chance:1.6,value:100},
+  {emoji:"🥘",name:"Royal Paella",rarity:"Epic",chance:1.5,value:100},
+  {emoji:"🧀",name:"Golden Cheese",rarity:"Epic",chance:1.4,value:100},
 
-  { emoji:"🌮", name:"Golden Taco", rarity:"Legendary", chance:0.8 },
-  { emoji:"🍰", name:"Royal Cake", rarity:"Legendary", chance:0.7 },
-  { emoji:"🥧", name:"Ancient Pie", rarity:"Legendary", chance:0.6 },
-  { emoji:"🧁", name:"Magic Cupcake", rarity:"Legendary", chance:0.5 },
-  { emoji:"🍪", name:"Millionaire Cookie", rarity:"Legendary", chance:0.4 },
+  {emoji:"🌮",name:"Golden Taco",rarity:"Legendary",chance:.8,value:500},
+  {emoji:"🍰",name:"Royal Cake",rarity:"Legendary",chance:.7,value:500},
+  {emoji:"🥧",name:"Ancient Pie",rarity:"Legendary",chance:.6,value:500},
+  {emoji:"🧁",name:"Magic Cupcake",rarity:"Legendary",chance:.5,value:500},
 
-  { emoji:"🍜", name:"Galaxy Ramen", rarity:"Mythic", chance:0.25 },
-  { emoji:"🍕", name:"Meteor Pizza", rarity:"Mythic", chance:0.2 },
-  { emoji:"🍔", name:"Titan Burger", rarity:"Mythic", chance:0.15 },
-  { emoji:"🍰", name:"Galaxy Cake", rarity:"Mythic", chance:0.1 },
-  { emoji:"🧁", name:"Void Cupcake", rarity:"Mythic", chance:0.08 },
+  {emoji:"☄️",name:"Meteor Pizza",rarity:"Mythic",chance:.2,value:2500},
+  {emoji:"🍔",name:"Titan Burger",rarity:"Mythic",chance:.15,value:2500},
+  {emoji:"🍰",name:"Galaxy Cake",rarity:"Mythic",chance:.1,value:2500},
+  {emoji:"🧁",name:"Void Cupcake",rarity:"Mythic",chance:.08,value:2500},
 
-  { emoji:"🍣", name:"Shadow Sushi", rarity:"Secret", chance:0.04 },
-  { emoji:"🌭", name:"Invisible Hotdog", rarity:"Secret", chance:0.03 },
-  { emoji:"🍎", name:"Glitched Apple", rarity:"Secret", chance:0.02 },
+  {emoji:"🕳️",name:"Black Hole Donut",rarity:"Secret",chance:.04,value:10000},
+  {emoji:"🍎",name:"Glitched Apple",rarity:"Secret",chance:.03,value:10000},
+  {emoji:"🧪",name:"Glitched Soup",rarity:"Secret",chance:.02,value:10000},
+  {emoji:"🍔",name:"Admin Burger",rarity:"Secret",chance:.01,value:10000},
 
-  { emoji:"👑", name:"King Feast", rarity:"Godly", chance:0.01 },
-  { emoji:"🌌", name:"Universe Meal", rarity:"Godly", chance:0.005 }
+  {emoji:"👑",name:"King Feast",rarity:"Godly",chance:.006,value:50000},
+  {emoji:"🌌",name:"Universe Meal",rarity:"Godly",chance:.003,value:100000}
 ];
 
-function rollFood() {
+const crates = {
+  "Breakfast": { cost:100, items:["Bread","Egg","Pancakes","Waffle","Bacon"] },
+  "Fast Food": { cost:500, items:["Fries","Pizza","Hotdog","Burger","Golden Taco"] },
+  "Dessert": { cost:2000, items:["Royal Cake","Ancient Pie","Magic Cupcake","Galaxy Cake","Void Cupcake"] },
+  "Space": { cost:10000, items:["Meteor Pizza","Galaxy Cake","Universe Meal"] },
+  "Void": { cost:100000, items:["Black Hole Donut","Glitched Apple","Glitched Soup","Admin Burger","Universe Meal"] }
+};
+
+const achievementList = [
+  {id:"first",name:"🍎 First Bite",desc:"Roll 1 time"},
+  {id:"roll50",name:"🎲 Lucky Roller",desc:"Roll 50 times"},
+  {id:"roll500",name:"🔥 Grinder",desc:"Roll 500 times"},
+  {id:"collector25",name:"📦 Collector",desc:"Discover 25 foods"},
+  {id:"legendary",name:"⭐ Legendary Taste",desc:"Get a Legendary food"},
+  {id:"mythic",name:"🌌 Myth Hunter",desc:"Get a Mythic food"},
+  {id:"secret",name:"🕵️ Secret Hunter",desc:"Get a Secret food"},
+  {id:"godly",name:"👑 Food God",desc:"Get a Godly food"},
+  {id:"auto",name:"⚡ Never Stop",desc:"Use Auto Roller"}
+];
+
+function rollFood(){
   rolls++;
+  const food = getRandomFood(foods);
+  giveFood(food);
+  animateFood(food);
+  coins += food.value;
+  checkAchievements(food);
+  updateAll();
+  saveGame();
+}
 
-  const foodEmoji = document.getElementById("foodEmoji");
-  foodEmoji.classList.remove("rollAnim");
-  void foodEmoji.offsetWidth;
-  foodEmoji.classList.add("rollAnim");
-
-  let totalChance = foods.reduce((sum, food) => sum + food.chance, 0);
+function getRandomFood(list){
+  let totalChance = list.reduce((sum,item)=>sum+item.chance,0);
   let random = Math.random() * totalChance;
   let total = 0;
 
-  for (let food of foods) {
-    total += food.chance;
+  for(let item of list){
+    total += item.chance;
+    if(random <= total) return item;
+  }
 
-    if (random <= total) {
-      foodEmoji.innerText = food.emoji;
-      document.getElementById("foodName").innerText = food.name;
+  return list[0];
+}
 
-      document.getElementById("foodRarity").innerHTML =
-        `<span class="${food.rarity.toLowerCase()}">✨ ${food.rarity} ✨</span>`;
+function giveFood(food){
+  if(!inventory[food.name]){
+    inventory[food.name] = {
+      emoji:food.emoji,
+      rarity:food.rarity,
+      amount:0,
+      value:food.value
+    };
+  }
 
-      if (!inventory[food.name]) {
-        inventory[food.name] = {
-          emoji: food.emoji,
-          rarity: food.rarity,
-          amount: 0
-        };
-      }
+  inventory[food.name].amount++;
+  discovered[food.name] = true;
 
-      inventory[food.name].amount++;
-
-      updateInventory();
-      updateScore();
-      saveGame();
-      break;
-    }
+  if(rarestFood === "None" || rarityPower(food.rarity) > rarityPower(getFoodByName(rarestFood)?.rarity || "Common")){
+    rarestFood = food.name;
   }
 }
 
-function updateInventory() {
-  const inventoryDiv = document.getElementById("inventory");
-  inventoryDiv.innerHTML = "";
+function animateFood(food){
+  const emoji = document.getElementById("foodEmoji");
+  emoji.classList.remove("rollAnim");
+  void emoji.offsetWidth;
+  emoji.classList.add("rollAnim");
 
-  const sortedItems = Object.keys(inventory).sort();
+  emoji.innerText = food.emoji;
+  document.getElementById("foodName").innerText = food.name;
+  document.getElementById("foodRarity").innerHTML =
+    `<span class="${food.rarity.toLowerCase()}">✨ ${food.rarity} ✨</span>`;
+}
 
-  for (let item of sortedItems) {
+function openCrate(crateName){
+  const crate = crates[crateName];
+
+  if(coins < crate.cost){
+    document.getElementById("crateResult").innerText = "Not enough coins!";
+    return;
+  }
+
+  coins -= crate.cost;
+
+  const crateFoods = crate.items
+    .map(name => getFoodByName(name))
+    .filter(Boolean);
+
+  const food = crateFoods[Math.floor(Math.random() * crateFoods.length)];
+
+  giveFood(food);
+  animateFood(food);
+  checkAchievements(food);
+
+  document.getElementById("crateResult").innerHTML =
+    `You opened a ${crateName} Crate and got ${food.emoji} <b>${food.name}</b>!`;
+
+  updateAll();
+  saveGame();
+}
+
+function toggleAutoRoll(){
+  autoRolling = !autoRolling;
+
+  if(autoRolling){
+    unlockAchievement("auto");
+    autoInterval = setInterval(()=>{
+      autoRolls++;
+      rollFood();
+    },1000);
+  }else{
+    clearInterval(autoInterval);
+  }
+
+  updateAll();
+  saveGame();
+}
+
+function sellDuplicates(){
+  let earned = 0;
+
+  for(let item in inventory){
+    if(inventory[item].amount > 1){
+      let extra = inventory[item].amount - 1;
+      earned += extra * inventory[item].value;
+      inventory[item].amount = 1;
+    }
+  }
+
+  coins += earned;
+  alert("Sold duplicates for " + earned + " coins!");
+  updateAll();
+  saveGame();
+}
+
+function checkAchievements(food){
+  if(rolls >= 1) unlockAchievement("first");
+  if(rolls >= 50) unlockAchievement("roll50");
+  if(rolls >= 500) unlockAchievement("roll500");
+  if(Object.keys(discovered).length >= 25) unlockAchievement("collector25");
+
+  if(food.rarity === "Legendary") unlockAchievement("legendary");
+  if(food.rarity === "Mythic") unlockAchievement("mythic");
+  if(food.rarity === "Secret") unlockAchievement("secret");
+  if(food.rarity === "Godly") unlockAchievement("godly");
+}
+
+function unlockAchievement(id){
+  achievements[id] = true;
+}
+
+function updateAll(){
+  document.getElementById("rollsText").innerText = "Rolls: " + rolls;
+  document.getElementById("coinsText").innerText = "Coins: " + coins;
+  document.getElementById("autoText").innerText = "Auto Roller: " + (autoRolling ? "ON" : "OFF");
+
+  updateInventory();
+  updateAchievements();
+  updateFoodIndex();
+  updateStats();
+}
+
+function updateInventory(){
+  const div = document.getElementById("inventory");
+  div.innerHTML = "";
+
+  Object.keys(inventory).sort().forEach(item=>{
     const food = inventory[item];
-
-    inventoryDiv.innerHTML += `
+    div.innerHTML += `
       <div class="item">
         <span>${food.emoji} ${item}</span>
         <span class="${food.rarity.toLowerCase()}">x${food.amount}</span>
       </div>
     `;
-  }
+  });
 }
 
-function updateScore() {
-  document.getElementById("score").innerText = "Rolls: " + rolls;
+function updateAchievements(){
+  const div = document.getElementById("achievements");
+  div.innerHTML = "";
+
+  achievementList.forEach(a=>{
+    const unlocked = achievements[a.id];
+    div.innerHTML += `
+      <div class="achievement ${unlocked ? "" : "locked"}">
+        <span>${a.name}<br><small>${a.desc}</small></span>
+        <span>${unlocked ? "✅" : "🔒"}</span>
+      </div>
+    `;
+  });
 }
 
-function saveGame() {
-  const saveData = {
-    rolls: rolls,
-    inventory: inventory
+function updateFoodIndex(){
+  const div = document.getElementById("foodIndex");
+  const found = Object.keys(discovered).length;
+
+  document.getElementById("indexProgress").innerText =
+    `Collected: ${found} / ${foods.length}`;
+
+  div.innerHTML = "";
+
+  foods.forEach(food=>{
+    const seen = discovered[food.name];
+
+    div.innerHTML += `
+      <div class="indexItem ${seen ? "" : "locked"}">
+        <span>${seen ? food.emoji + " " + food.name : "❓ Unknown Food"}</span>
+        <span class="${seen ? food.rarity.toLowerCase() : ""}">
+          ${seen ? food.rarity : "Locked"}
+        </span>
+      </div>
+    `;
+  });
+}
+
+function updateStats(){
+  let totalFoods = Object.values(inventory).reduce((sum,item)=>sum+item.amount,0);
+  let percent = ((Object.keys(discovered).length / foods.length) * 100).toFixed(1);
+
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><span>Total Rolls</span><b>${rolls}</b></div>
+    <div class="stat"><span>Coins</span><b>${coins}</b></div>
+    <div class="stat"><span>Total Foods</span><b>${totalFoods}</b></div>
+    <div class="stat"><span>Foods Found</span><b>${Object.keys(discovered).length}</b></div>
+    <div class="stat"><span>Index Complete</span><b>${percent}%</b></div>
+    <div class="stat"><span>Auto Rolls</span><b>${autoRolls}</b></div>
+    <div class="stat"><span>Rarest Food</span><b>${rarestFood}</b></div>
+    <div class="stat"><span>Play Time</span><b>${formatTime(playTime)}</b></div>
+  `;
+}
+
+function saveGame(){
+  const data = {
+    rolls,
+    coins,
+    inventory,
+    discovered,
+    achievements,
+    autoRolls,
+    rarestFood,
+    playTime
   };
 
-  localStorage.setItem("foodRNGSave", JSON.stringify(saveData));
+  localStorage.setItem("foodRNGSave", JSON.stringify(data));
 }
 
-function loadGame() {
+function loadGame(){
   const saved = localStorage.getItem("foodRNGSave");
 
-  if (saved) {
+  if(saved){
     const data = JSON.parse(saved);
+
     rolls = data.rolls || 0;
+    coins = data.coins || 0;
     inventory = data.inventory || {};
+    discovered = data.discovered || {};
+    achievements = data.achievements || {};
+    autoRolls = data.autoRolls || 0;
+    rarestFood = data.rarestFood || "None";
+    playTime = data.playTime || 0;
   }
 
-  updateScore();
-  updateInventory();
+  updateAll();
 }
 
-function resetGame() {
-  if (confirm("Are you sure you want to reset your save?")) {
-    rolls = 0;
-    inventory = {};
+function resetGame(){
+  if(confirm("Reset all progress?")){
     localStorage.removeItem("foodRNGSave");
-
-    document.getElementById("foodEmoji").innerText = "❓";
-    document.getElementById("foodName").innerText = "Press Roll!";
-    document.getElementById("foodRarity").innerText = "";
-
-    updateScore();
-    updateInventory();
+    location.reload();
   }
 }
+
+function getFoodByName(name){
+  return foods.find(food=>food.name === name);
+}
+
+function rarityPower(rarity){
+  const power = {
+    Common:1,
+    Uncommon:2,
+    Rare:3,
+    Epic:4,
+    Legendary:5,
+    Mythic:6,
+    Secret:7,
+    Godly:8
+  };
+
+  return power[rarity] || 1;
+}
+
+function formatTime(seconds){
+  let h = Math.floor(seconds / 3600);
+  let m = Math.floor((seconds % 3600) / 60);
+  let s = seconds % 60;
+
+  return `${h}h ${m}m ${s}s`;
+}
+
+setInterval(()=>{
+  playTime++;
+  saveGame();
+  updateStats();
+},1000);
 
 loadGame();
 </script>
