@@ -2,219 +2,308 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Food Orange Game 🍊</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food RNG Game</title>
 
 <style>
 body {
-    margin: 0;
-    overflow: hidden;
-    font-family: Arial;
-    background: #111;
-    color: white;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ffb347, #ff6b6b);
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-#game {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
+.container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.player {
-    width: 50px;
-    height: 50px;
-    background: orange;
-    border-radius: 50%;
-    position: absolute;
+.game-box, .inventory-box {
+  background: rgba(0,0,0,0.25);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
-.roll {
-    animation: rollAnim 0.3s linear infinite;
+.game-box {
+  width: 360px;
+  text-align: center;
 }
 
-@keyframes rollAnim {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.inventory-box {
+  width: 330px;
+  max-height: 540px;
+  overflow-y: auto;
 }
 
 .food {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    border-radius: 5px;
-    cursor: pointer;
+  font-size: 85px;
+  margin: 20px 0;
+  transition: 0.3s;
 }
 
-#inventory {
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    width: 220px;
-    height: 90%;
-    background: rgba(0,0,0,0.7);
-    overflow-y: auto;
-    padding: 10px;
-    border: 2px solid orange;
+.rollAnim {
+  animation: rollSpin 0.6s ease;
 }
 
-.inv-item {
-    padding: 5px;
-    margin: 3px 0;
-    background: #222;
-    border-left: 4px solid orange;
+@keyframes rollSpin {
+  0% { transform: scale(0.5) rotate(0deg); opacity: 0.3; }
+  50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.name {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.rarity {
+  margin-top: 10px;
+  font-size: 20px;
 }
 
 button {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    padding: 10px;
-    background: red;
-    color: white;
-    border: none;
-    cursor: pointer;
+  margin-top: 15px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  color: #ff6b6b;
+  cursor: pointer;
+  font-weight: bold;
 }
+
+button:hover {
+  transform: scale(1.05);
+  background: #ffe6e6;
+}
+
+.danger {
+  background: #ff3333;
+  color: white;
+}
+
+.item {
+  background: rgba(255,255,255,0.15);
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.common { color: white; }
+.uncommon { color: #7CFC00; }
+.rare { color: #4da6ff; }
+.epic { color: #c266ff; }
+.legendary { color: gold; }
+.mythic { color: #ff4df2; }
+.secret { color: #00fff7; }
+.godly { color: #ff2b2b; }
 </style>
 </head>
+
 <body>
 
-<div id="game"></div>
-<div id="inventory"><b>Inventory</b></div>
-<button onclick="resetData()">Reset Save</button>
+<div class="container">
+
+  <div class="game-box">
+    <h1>🍔 Food RNG 🍕</h1>
+
+    <div class="food" id="foodEmoji">❓</div>
+    <div class="name" id="foodName">Press Roll!</div>
+    <div class="rarity" id="foodRarity"></div>
+
+    <button onclick="rollFood()">ROLL FOOD</button>
+    <button onclick="saveGame()">Save</button>
+    <button class="danger" onclick="resetGame()">Reset</button>
+
+    <div id="score">Rolls: 0</div>
+  </div>
+
+  <div class="inventory-box">
+    <h2>🎒 Inventory</h2>
+    <div id="inventory"></div>
+  </div>
+
+</div>
 
 <script>
-const game = document.getElementById("game");
-const inventoryUI = document.getElementById("inventory");
-
-// PLAYER
-const player = document.createElement("div");
-player.classList.add("player");
-game.appendChild(player);
-
-let x = 200;
-let y = 200;
-let speed = 4;
-
-// INVENTORY
+let rolls = 0;
 let inventory = {};
 
-// FOODS (50)
 const foods = [
-"Apple","Banana","Burger","Pizza","Hotdog","Fries","Taco","Donut","Cake","Cookie",
-"Ice Cream","Steak","Chicken","Fish","Sushi","Rice","Pasta","Bread","Cheese","Egg",
-"Pancake","Waffle","Salad","Soup","Sandwich","Cereal","Milk","Orange","Grapes","Watermelon",
-"Strawberry","Blueberry","Mango","Pineapple","Avocado","Carrot","Potato","Corn","Beans","Peas",
-"Chocolate","Candy","Popcorn","Nachos","Ramen","Dumplings","Shrimp","Lobster","Bacon","Sausage"
+  { emoji:"🍎", name:"Apple", rarity:"Common", chance:20 },
+  { emoji:"🍌", name:"Banana", rarity:"Common", chance:20 },
+  { emoji:"🍊", name:"Orange", rarity:"Common", chance:18 },
+  { emoji:"🍇", name:"Grapes", rarity:"Common", chance:18 },
+  { emoji:"🍉", name:"Watermelon", rarity:"Common", chance:16 },
+  { emoji:"🍓", name:"Strawberry", rarity:"Common", chance:16 },
+  { emoji:"🥕", name:"Carrot", rarity:"Common", chance:15 },
+  { emoji:"🌽", name:"Corn", rarity:"Common", chance:15 },
+  { emoji:"🍞", name:"Bread", rarity:"Common", chance:14 },
+  { emoji:"🥚", name:"Egg", rarity:"Common", chance:14 },
+
+  { emoji:"🍟", name:"Fries", rarity:"Uncommon", chance:10 },
+  { emoji:"🍕", name:"Pizza", rarity:"Uncommon", chance:10 },
+  { emoji:"🌭", name:"Hotdog", rarity:"Uncommon", chance:9 },
+  { emoji:"🥞", name:"Pancakes", rarity:"Uncommon", chance:9 },
+  { emoji:"🧇", name:"Waffle", rarity:"Uncommon", chance:8 },
+  { emoji:"🥨", name:"Pretzel", rarity:"Uncommon", chance:8 },
+  { emoji:"🥯", name:"Bagel", rarity:"Uncommon", chance:7 },
+  { emoji:"🥪", name:"Sandwich", rarity:"Uncommon", chance:7 },
+  { emoji:"🌯", name:"Burrito", rarity:"Uncommon", chance:6 },
+  { emoji:"🥗", name:"Salad", rarity:"Uncommon", chance:6 },
+
+  { emoji:"🍔", name:"Burger", rarity:"Rare", chance:5 },
+  { emoji:"🍗", name:"Chicken Leg", rarity:"Rare", chance:4.5 },
+  { emoji:"🥩", name:"Steak", rarity:"Rare", chance:4 },
+  { emoji:"🍝", name:"Spaghetti", rarity:"Rare", chance:4 },
+  { emoji:"🍛", name:"Curry Rice", rarity:"Rare", chance:3.5 },
+  { emoji:"🍚", name:"Rice Bowl", rarity:"Rare", chance:3.5 },
+  { emoji:"🥟", name:"Dumplings", rarity:"Rare", chance:3 },
+  { emoji:"🍙", name:"Rice Ball", rarity:"Rare", chance:3 },
+  { emoji:"🍖", name:"Meat Bone", rarity:"Rare", chance:2.8 },
+  { emoji:"🥓", name:"Bacon", rarity:"Rare", chance:2.8 },
+
+  { emoji:"🍣", name:"Sushi", rarity:"Epic", chance:2 },
+  { emoji:"🍜", name:"Dragon Ramen", rarity:"Epic", chance:1.8 },
+  { emoji:"🍤", name:"Tempura Shrimp", rarity:"Epic", chance:1.6 },
+  { emoji:"🥘", name:"Royal Paella", rarity:"Epic", chance:1.5 },
+  { emoji:"🧀", name:"Golden Cheese", rarity:"Epic", chance:1.4 },
+  { emoji:"🍮", name:"Caramel Flan", rarity:"Epic", chance:1.2 },
+  { emoji:"🍦", name:"Ice Cream", rarity:"Epic", chance:1.1 },
+  { emoji:"🍩", name:"Glazed Donut", rarity:"Epic", chance:1 },
+
+  { emoji:"🌮", name:"Golden Taco", rarity:"Legendary", chance:0.8 },
+  { emoji:"🍰", name:"Royal Cake", rarity:"Legendary", chance:0.7 },
+  { emoji:"🥧", name:"Ancient Pie", rarity:"Legendary", chance:0.6 },
+  { emoji:"🧁", name:"Magic Cupcake", rarity:"Legendary", chance:0.5 },
+  { emoji:"🍪", name:"Millionaire Cookie", rarity:"Legendary", chance:0.4 },
+
+  { emoji:"🍜", name:"Galaxy Ramen", rarity:"Mythic", chance:0.25 },
+  { emoji:"🍕", name:"Meteor Pizza", rarity:"Mythic", chance:0.2 },
+  { emoji:"🍔", name:"Titan Burger", rarity:"Mythic", chance:0.15 },
+  { emoji:"🍰", name:"Galaxy Cake", rarity:"Mythic", chance:0.1 },
+  { emoji:"🧁", name:"Void Cupcake", rarity:"Mythic", chance:0.08 },
+
+  { emoji:"🍣", name:"Shadow Sushi", rarity:"Secret", chance:0.04 },
+  { emoji:"🌭", name:"Invisible Hotdog", rarity:"Secret", chance:0.03 },
+  { emoji:"🍎", name:"Glitched Apple", rarity:"Secret", chance:0.02 },
+
+  { emoji:"👑", name:"King Feast", rarity:"Godly", chance:0.01 },
+  { emoji:"🌌", name:"Universe Meal", rarity:"Godly", chance:0.005 }
 ];
 
-// SAVE DATA
-function saveData() {
-    const data = {
-        inventory: inventory
-    };
-    localStorage.setItem("foodOrangeSave", JSON.stringify(data));
-}
+function rollFood() {
+  rolls++;
 
-// LOAD DATA
-function loadData() {
-    const data = localStorage.getItem("foodOrangeSave");
+  const foodEmoji = document.getElementById("foodEmoji");
+  foodEmoji.classList.remove("rollAnim");
+  void foodEmoji.offsetWidth;
+  foodEmoji.classList.add("rollAnim");
 
-    if (data) {
-        const parsed = JSON.parse(data);
+  let totalChance = foods.reduce((sum, food) => sum + food.chance, 0);
+  let random = Math.random() * totalChance;
+  let total = 0;
 
-        if (parsed.inventory) {
-            inventory = parsed.inventory;
-        }
+  for (let food of foods) {
+    total += food.chance;
+
+    if (random <= total) {
+      foodEmoji.innerText = food.emoji;
+      document.getElementById("foodName").innerText = food.name;
+
+      document.getElementById("foodRarity").innerHTML =
+        `<span class="${food.rarity.toLowerCase()}">✨ ${food.rarity} ✨</span>`;
+
+      if (!inventory[food.name]) {
+        inventory[food.name] = {
+          emoji: food.emoji,
+          rarity: food.rarity,
+          amount: 0
+        };
+      }
+
+      inventory[food.name].amount++;
+
+      updateInventory();
+      updateScore();
+      saveGame();
+      break;
     }
-
-    renderInventory();
+  }
 }
 
-// RESET DATA
-function resetData() {
-    localStorage.removeItem("foodOrangeSave");
+function updateInventory() {
+  const inventoryDiv = document.getElementById("inventory");
+  inventoryDiv.innerHTML = "";
+
+  const sortedItems = Object.keys(inventory).sort();
+
+  for (let item of sortedItems) {
+    const food = inventory[item];
+
+    inventoryDiv.innerHTML += `
+      <div class="item">
+        <span>${food.emoji} ${item}</span>
+        <span class="${food.rarity.toLowerCase()}">x${food.amount}</span>
+      </div>
+    `;
+  }
+}
+
+function updateScore() {
+  document.getElementById("score").innerText = "Rolls: " + rolls;
+}
+
+function saveGame() {
+  const saveData = {
+    rolls: rolls,
+    inventory: inventory
+  };
+
+  localStorage.setItem("foodRNGSave", JSON.stringify(saveData));
+}
+
+function loadGame() {
+  const saved = localStorage.getItem("foodRNGSave");
+
+  if (saved) {
+    const data = JSON.parse(saved);
+    rolls = data.rolls || 0;
+    inventory = data.inventory || {};
+  }
+
+  updateScore();
+  updateInventory();
+}
+
+function resetGame() {
+  if (confirm("Are you sure you want to reset your save?")) {
+    rolls = 0;
     inventory = {};
-    renderInventory();
+    localStorage.removeItem("foodRNGSave");
+
+    document.getElementById("foodEmoji").innerText = "❓";
+    document.getElementById("foodName").innerText = "Press Roll!";
+    document.getElementById("foodRarity").innerText = "";
+
+    updateScore();
+    updateInventory();
+  }
 }
 
-// SPAWN FOODS
-foods.forEach(food => {
-    const f = document.createElement("div");
-    f.classList.add("food");
-
-    f.style.left = Math.random() * (window.innerWidth - 30) + "px";
-    f.style.top = Math.random() * (window.innerHeight - 30) + "px";
-    f.style.background = `hsl(${Math.random()*360},70%,60%)`;
-    f.title = food;
-
-    f.onclick = () => {
-        collectFood(food);
-        f.remove();
-    };
-
-    game.appendChild(f);
-});
-
-// COLLECT FOOD
-function collectFood(food) {
-    if (!inventory[food]) inventory[food] = 0;
-    inventory[food]++;
-
-    renderInventory();
-    saveData(); // save instantly
-}
-
-// RENDER INVENTORY
-function renderInventory() {
-    inventoryUI.innerHTML = "<b>Inventory</b>";
-
-    for (let item in inventory) {
-        const div = document.createElement("div");
-        div.className = "inv-item";
-        div.innerText = `${item} x${inventory[item]}`;
-        inventoryUI.appendChild(div);
-    }
-}
-
-// CONTROLS
-let keys = {};
-
-document.addEventListener("keydown", e => {
-    keys[e.key.toLowerCase()] = true;
-});
-
-document.addEventListener("keyup", e => {
-    keys[e.key.toLowerCase()] = false;
-});
-
-// GAME LOOP
-function update() {
-    let moving = false;
-
-    if (keys["w"]) { y -= speed; moving = true; }
-    if (keys["s"]) { y += speed; moving = true; }
-    if (keys["a"]) { x -= speed; moving = true; }
-    if (keys["d"]) { x += speed; moving = true; }
-
-    player.style.left = x + "px";
-    player.style.top = y + "px";
-
-    if (moving) {
-        player.classList.add("roll");
-    } else {
-        player.classList.remove("roll");
-    }
-
-    requestAnimationFrame(update);
-}
-
-// LOAD SAVE
-loadData();
-
-// AUTO SAVE EVERY 10s
-setInterval(saveData, 10000);
-
-// START GAME
-update();
+loadGame();
 </script>
 
 </body>
