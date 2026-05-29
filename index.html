@@ -1,33 +1,266 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title></title>
-        <meta charset="UTF-8" />
-        <meta name="description" content="Blazing fast live mapping solution for Minecraft servers" />
-        <meta property="og:url" content="https://github.com/jpenilla/squaremap" />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="squaremap" />
-        <meta property="og:description" content="Blazing fast live mapping solution for Minecraft servers" />
-        <!--<meta property="og:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="github.com/jpenilla/squaremap" />
-        <meta property="twitter:url" content="https://github.com/jpenilla/squaremap" />
-        <meta name="twitter:title" content="squaremap" />
-        <meta name="twitter:description" content="Blazing fast live mapping solution for Minecraft servers" />
-        <!--<meta name="twitter:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="theme-color" content="#222222" />
-        <meta name="keywords" content="minecraft, map, dynamic, squaremap" />
-        <meta name="description" content="Minecraft Dynamic Map" />
-        <link rel="shortcut icon" href="favicon.ico" sizes="256x256" crossorigin="anonymous" />
-      <script type="module" crossorigin src="./assets/index-Ug_lD-Kt.js"></script>
-      <link rel="stylesheet" crossorigin href="./assets/index-B3PRV0t1.css">
-    </head>
-    <body>
-        <div id="map"></div>
-    </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>XON Client | Coming Soon</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)),
+    radial-gradient(circle at top, #1428ff, #050505 60%);
+  color: white;
+  overflow-x: hidden;
+}
+
+header {
+  padding: 25px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: #4d7cff;
+  text-shadow: 0 0 15px #315cff;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 25px;
+  opacity: 0.8;
+}
+
+nav a:hover {
+  opacity: 1;
+  color: #4d7cff;
+}
+
+.hero {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.hero-box {
+  max-width: 850px;
+  background: rgba(10, 10, 20, 0.75);
+  border: 1px solid rgba(77,124,255,0.4);
+  border-radius: 25px;
+  padding: 50px 35px;
+  box-shadow: 0 0 40px rgba(77,124,255,0.25);
+}
+
+.tag {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(77,124,255,0.15);
+  color: #7fa0ff;
+  border: 1px solid rgba(77,124,255,0.5);
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 64px;
+  margin-bottom: 15px;
+  letter-spacing: 6px;
+}
+
+h1 span {
+  color: #4d7cff;
+  text-shadow: 0 0 20px #315cff;
+}
+
+.subtitle {
+  font-size: 21px;
+  color: #ccc;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.buttons {
+  margin-top: 30px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 28px;
+  margin: 8px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.primary {
+  background: #315cff;
+  color: white;
+  box-shadow: 0 0 20px rgba(49,92,255,0.5);
+}
+
+.primary:hover {
+  background: #4d7cff;
+  transform: translateY(-3px);
+}
+
+.secondary {
+  border: 1px solid #4d7cff;
+  color: #9bb2ff;
+}
+
+.secondary:hover {
+  background: rgba(77,124,255,0.15);
+  transform: translateY(-3px);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 40px 50px 70px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 25px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #4d7cff;
+  box-shadow: 0 0 25px rgba(77,124,255,0.2);
+}
+
+.card h3 {
+  color: #7fa0ff;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #bbb;
+  line-height: 1.5;
+}
+
+.notice {
+  max-width: 900px;
+  margin: 0 auto 50px;
+  padding: 20px;
+  text-align: center;
+  color: #aaa;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  background: rgba(0,0,0,0.6);
+  color: #777;
+}
+
+@media (max-width: 700px) {
+  header {
+    padding: 20px;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  nav a {
+    margin: 0 10px;
+  }
+
+  h1 {
+    font-size: 45px;
+  }
+
+  .subtitle {
+    font-size: 17px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">XON</div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#status">Status</a>
+    <a href="#discord">Discord</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-box">
+    <div class="tag">Coming Soon</div>
+
+    <h1><span>XON</span> Client</h1>
+
+    <p class="subtitle">
+      A sleek Minecraft utility client built for anarchy servers,
+      survival gameplay, and basic vanilla worlds.
+    </p>
+
+    <div class="buttons">
+      <a href="#" class="btn primary">Coming Soon</a>
+      <a href="#" class="btn secondary">Join Discord</a>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="card">
+    <h3>⚔️ Anarchy Ready</h3>
+    <p>Designed for chaotic survival worlds and anarchy-style gameplay.</p>
+  </div>
+
+  <div class="card">
+    <h3>🌎 Vanilla Support</h3>
+    <p>Made to work smoothly with basic vanilla Minecraft experiences.</p>
+  </div>
+
+  <div class="card">
+    <h3>🖥️ Clean Interface</h3>
+    <p>A simple, modern UI with a dark blue XON-themed design.</p>
+  </div>
+
+  <div class="card">
+    <h3>⚙️ Custom Settings</h3>
+    <p>Easy-to-use menus for adjusting client options and visuals.</p>
+  </div>
+</section>
+
+<div class="notice" id="status">
+  XON is currently in development. More information, previews, and release details will be announced soon.
+</div>
+
+<footer>
+  © 2026 XON Client. Not affiliated with Mojang or Microsoft.
+</footer>
+
+</body>
 </html>
