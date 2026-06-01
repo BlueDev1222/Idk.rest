@@ -255,10 +255,20 @@
       animation: cardRoll .7s cubic-bezier(.2, .85, .25, 1.2);
     }
 
+    .card.walkout {
+      animation: cardRoll .7s cubic-bezier(.2, .85, .25, 1.2), walkoutPulse 1.05s ease-out;
+    }
+
     @keyframes cardRoll {
       0% { transform: translateY(40px) rotateX(72deg) scale(.75); opacity: .2; }
       60% { transform: translateY(-14px) rotateX(-8deg) scale(1.04); opacity: 1; }
       100% { transform: translateY(0) rotateX(0) scale(1); }
+    }
+
+    @keyframes walkoutPulse {
+      0% { box-shadow: 0 0 0 rgba(245,200,76,0), 0 32px 100px rgba(0,0,0,.48); }
+      35% { box-shadow: 0 0 70px color-mix(in srgb, var(--rarity), transparent 28%), 0 32px 100px rgba(0,0,0,.48); }
+      100% { box-shadow: 0 0 0 rgba(245,200,76,0), 0 32px 100px rgba(0,0,0,.48); }
     }
 
     .card.common { --rarity: #b7c1bc; }
@@ -340,6 +350,19 @@
       font-size: 82px;
     }
 
+    .card-art {
+      width: 78%;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        linear-gradient(90deg, transparent 46%, rgba(255,255,255,.85) 46% 54%, transparent 54%),
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--rarity), #ffffff 30%), color-mix(in srgb, var(--rarity), #111c18 30%) 58%, rgba(0,0,0,.28) 59%);
+      border: 3px solid rgba(255,255,255,.24);
+      text-shadow: 0 8px 18px rgba(0,0,0,.34);
+    }
+
     .player-name {
       font-size: clamp(24px, 4vw, 36px);
       font-weight: 950;
@@ -360,6 +383,27 @@
       font-size: 12px;
       font-weight: 950;
       text-transform: uppercase;
+    }
+
+    .new-badge {
+      display: none;
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #101b17;
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+      z-index: 3;
+      box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    }
+
+    .new-badge.show {
+      display: inline-flex;
     }
 
     .ability {
@@ -455,7 +499,8 @@
     .inventory-grid,
     .achievements-grid,
     .area-grid,
-    .shop-grid {
+    .shop-grid,
+    .showcase-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 12px;
@@ -466,12 +511,27 @@
     .achievement,
     .area,
     .shop-item,
+    .showcase-card,
     .team-slot {
       border: 1px solid var(--line);
       background: rgba(255,255,255,.045);
       border-radius: var(--radius);
       padding: 12px;
       min-height: 118px;
+    }
+
+    .showcase-card {
+      min-height: 168px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--rarity), transparent 74%), rgba(255,255,255,.035)),
+        rgba(255,255,255,.045);
+    }
+
+    .showcase-card strong {
+      display: block;
+      font-size: 30px;
+      margin-bottom: 8px;
+      color: var(--rarity);
     }
 
     .dex-card.missing {
@@ -688,6 +748,7 @@
       <button class="tab" data-tab="team">Team</button>
       <button class="tab" data-tab="battle">Battles</button>
       <button class="tab" data-tab="areas">Areas</button>
+      <button class="tab" data-tab="showcase">Showcase</button>
       <button class="tab" data-tab="shop">Shop</button>
       <button class="tab" data-tab="achievements">Awards</button>
     </nav>
@@ -705,10 +766,11 @@
               <div id="lights" class="lights"></div>
               <article id="resultCard" class="card common">
                 <div class="card-top">
+                  <div class="new-badge" id="newBadge">New Player</div>
                   <div class="position" id="cardPosition">QB</div>
                   <div class="overall"><span id="cardOverall">??</span><small>OVR</small></div>
                 </div>
-                <div class="portrait" id="cardPortrait">🏈</div>
+                <div class="portrait"><div class="card-art" id="cardPortrait">🏈</div></div>
                 <h2 class="player-name" id="cardName">Ready to Roll</h2>
                 <div class="rarity-pill" id="cardRarity">Common</div>
                 <div class="ability" id="cardAbility">Roll to reveal an NFL player card.</div>
@@ -758,6 +820,10 @@
               <button data-filter="All" class="dexFilter primary">All</button>
               <button data-filter="Legendary" class="dexFilter">Legendary+</button>
               <button data-filter="Missing" class="dexFilter">Missing</button>
+            </div>
+            <div class="progress-wrap" style="margin-top:0; margin-bottom:14px;">
+              <div class="bar"><span id="dexBar"></span></div>
+              <div class="meta" id="dexTracker">0 of 0 players collected</div>
             </div>
             <div id="dexGrid" class="dex-grid"></div>
           </div>
@@ -834,6 +900,18 @@
         </div>
       </section>
 
+      <section id="showcase" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Rarity Showcase</h2>
+            <strong id="showcaseTotal">0 Players</strong>
+          </div>
+          <div class="panel-body">
+            <div id="showcaseGrid" class="showcase-grid"></div>
+          </div>
+        </div>
+      </section>
+
       <section id="shop" class="screen">
         <div class="panel">
           <div class="panel-head">
@@ -886,7 +964,7 @@
       { name: "Mythic", key: "mythic", chance: 0.01, bonus: 4.5, min: 99, color: "#54e3ff" }
     ];
 
-    const players = [
+    const basePlayers = [
       { id: "mac-jones", name: "Mac Jones", rarity: "Common", position: "QB", overall: 72, ability: "Pocket Rhythm: small coin bonus after three common pulls.", icon: "🎯" },
       { id: "kenny-pickett", name: "Kenny Pickett", rarity: "Common", position: "QB", overall: 71, ability: "Two-Minute Spark: adds XP after close battles.", icon: "⏱️" },
       { id: "zach-wilson", name: "Zach Wilson", rarity: "Common", position: "QB", overall: 70, ability: "Backyard Launch: tiny chance to refund a roll.", icon: "🚀" },
@@ -914,6 +992,95 @@
       { id: "prime-deion", name: "Prime Deion Sanders", rarity: "Mythic", position: "CB", overall: 100, ability: "Prime Time: lights flash and rewards multiply.", icon: "🌟" }
     ];
 
+    const rarityOverall = {
+      Common: 72,
+      Uncommon: 78,
+      Rare: 84,
+      Epic: 91,
+      Legendary: 95,
+      "Hall of Fame": 98,
+      GOAT: 99,
+      Mythic: 100
+    };
+
+    const positionIcons = {
+      QB: "🎯",
+      RB: "💨",
+      WR: "🧤",
+      TE: "🧱",
+      LB: "💥",
+      EDGE: "⚔️",
+      CB: "🛡️",
+      S: "🔒",
+      DL: "🪨"
+    };
+
+    const expansionRoster = {
+      Common: [
+        ["Gardner Minshew", "QB"], ["Aidan O'Connell", "QB"], ["Tyler Allgeier", "RB"], ["Michael Wilson", "WR"], ["Jalin Hyatt", "WR"],
+        ["Chase Brown", "RB"], ["Rico Dowdle", "RB"], ["Luke Musgrave", "TE"], ["Josh Downs", "WR"], ["Trey Palmer", "WR"],
+        ["Sam Howell", "QB"], ["Desmond Ridder", "QB"], ["Chuba Hubbard", "RB"], ["Khalil Shakir", "WR"], ["Wan'Dale Robinson", "WR"],
+        ["Noah Fant", "TE"], ["Ty Chandler", "RB"], ["Demario Douglas", "WR"], ["Roschon Johnson", "RB"], ["Darnell Mooney", "WR"],
+        ["Jahan Dotson", "WR"], ["Jerome Ford", "RB"], ["Tyjae Spears", "RB"], ["Quentin Johnston", "WR"], ["Marvin Mims Jr.", "WR"]
+      ],
+      Uncommon: [
+        ["Geno Smith", "QB"], ["Derek Carr", "QB"], ["Najee Harris", "RB"], ["Brian Robinson Jr.", "RB"], ["D'Andre Swift", "RB"],
+        ["David Montgomery", "RB"], ["Romeo Doubs", "WR"], ["Christian Watson", "WR"], ["Rashid Shaheed", "WR"], ["Jakobi Meyers", "WR"],
+        ["Dallas Goedert", "TE"], ["Pat Freiermuth", "TE"], ["Cole Kmet", "TE"], ["Talanoa Hufanga", "S"], ["DaRon Bland", "CB"],
+        ["Jaelan Phillips", "EDGE"], ["Kayvon Thibodeaux", "EDGE"], ["Logan Wilson", "LB"], ["Jordyn Brooks", "LB"], ["Alim McNeill", "DL"]
+      ],
+      Rare: [
+        ["Jordan Love", "QB"], ["Brock Purdy", "QB"], ["Kenneth Walker III", "RB"], ["James Cook", "RB"], ["Zay Flowers", "WR"],
+        ["Tank Dell", "WR"], ["George Pickens", "WR"], ["Brian Branch", "S"], ["Sam LaPorta", "TE"], ["Jayden Reed", "WR"],
+        ["Tua Tagovailoa", "QB"], ["Trevor Lawrence", "QB"], ["Kyren Williams", "RB"], ["Rachaad White", "RB"], ["Chris Olave", "WR"],
+        ["Garrett Wilson", "WR"], ["Terry McLaurin", "WR"], ["Tee Higgins", "WR"], ["Kyle Pitts", "TE"], ["Patrick Surtain II", "CB"],
+        ["Antoine Winfield Jr.", "S"], ["Trevon Diggs", "CB"], ["Quinnen Williams", "DL"], ["Aidan Hutchinson", "EDGE"], ["Derrick Henry", "RB"]
+      ],
+      Epic: [
+        ["CJ Stroud", "QB"], ["Jared Goff", "QB"], ["DeVonta Smith", "WR"], ["DK Metcalf", "WR"], ["Amon-Ra St. Brown", "WR"],
+        ["Maxx Crosby", "EDGE"], ["Fred Warner", "LB"], ["Micah Parsons", "EDGE"], ["Sauce Gardner", "CB"], ["Kyle Hamilton", "S"],
+        ["CeeDee Lamb", "WR"], ["A.J. Brown", "WR"], ["Stefon Diggs", "WR"], ["Puka Nacua", "WR"], ["Travis Etienne Jr.", "RB"],
+        ["Breece Hall", "RB"], ["Bijan Robinson", "RB"], ["Mark Andrews", "TE"], ["George Kittle", "TE"], ["Trent McDuffie", "CB"],
+        ["Roquan Smith", "LB"], ["Chris Jones", "DL"], ["Dexter Lawrence", "DL"], ["Derwin James", "S"], ["Justin Herbert", "QB"]
+      ],
+      Legendary: [
+        ["Patrick Mahomes", "QB"], ["Lamar Jackson", "QB"], ["Josh Allen", "QB"], ["Joe Burrow", "QB"], ["Justin Jefferson", "WR"],
+        ["Ja'Marr Chase", "WR"], ["Tyreek Hill", "WR"], ["Christian McCaffrey", "RB"], ["Nick Bosa", "EDGE"], ["T.J. Watt", "EDGE"],
+        ["Travis Kelce", "TE"], ["Davante Adams", "WR"], ["Aaron Donald", "DL"], ["Myles Garrett", "EDGE"], ["Jalen Ramsey", "CB"],
+        ["Saquon Barkley", "RB"], ["Khalil Mack", "EDGE"], ["Cooper Kupp", "WR"], ["Von Miller", "EDGE"], ["Bobby Wagner", "LB"],
+        ["Aaron Rodgers", "QB"], ["Matthew Stafford", "QB"], ["Mike Evans", "WR"], ["Lane Johnson", "TE"], ["Minkah Fitzpatrick", "S"]
+      ],
+      "Hall of Fame": [
+        ["Jerry Rice", "WR"], ["Randy Moss", "WR"], ["Peyton Manning", "QB"], ["Brett Favre", "QB"], ["Walter Payton", "RB"],
+        ["Emmitt Smith", "RB"], ["Barry Sanders", "RB"], ["Ray Lewis", "LB"], ["Ed Reed", "S"], ["Deion Sanders", "CB"],
+        ["Joe Montana", "QB"], ["Dan Marino", "QB"], ["Reggie White", "DL"], ["Bruce Smith", "EDGE"], ["Tony Gonzalez", "TE"],
+        ["LaDainian Tomlinson", "RB"], ["Calvin Johnson", "WR"], ["Troy Polamalu", "S"], ["Champ Bailey", "CB"], ["Steve Young", "QB"]
+      ],
+      GOAT: [
+        ["Prime Tom Brady", "QB"], ["Prime Jerry Rice", "WR"], ["Prime Lawrence Taylor", "LB"], ["Prime Barry Sanders", "RB"], ["Prime Randy Moss", "WR"],
+        ["Prime Peyton Manning", "QB"], ["Prime Deion Sanders", "CB"], ["Prime Walter Payton", "RB"], ["Prime Ray Lewis", "LB"], ["Prime Reggie White", "DL"]
+      ],
+      Mythic: [
+        ["Golden Brady", "QB"], ["Golden Mahomes", "QB"], ["Shadow Deion Sanders", "CB"], ["Galactic Jerry Rice", "WR"], ["Ultimate GOAT Brady", "QB"],
+        ["Celestial Barry Sanders", "RB"], ["Neon Randy Moss", "WR"], ["Omega Lawrence Taylor", "LB"], ["Infinity Patrick Mahomes", "QB"], ["Eternal Jerry Rice", "WR"]
+      ]
+    };
+
+    const slugify = text => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    const expansionPlayers = Object.entries(expansionRoster).flatMap(([rarity, entries]) => entries.map(([name, position], index) => ({
+      id: `${slugify(rarity)}-${slugify(name)}-${index}`,
+      name,
+      rarity,
+      position,
+      overall: Math.min(100, rarityOverall[rarity] + (index % 4)),
+      ability: `${rarity} Trait: ${position} dynasty boost with extra collection power when equipped.`,
+      icon: positionIcons[position] || "🏈",
+      update: "Roster Expansion"
+    })));
+
+    const players = [...basePlayers, ...expansionPlayers];
+
     const areas = [
       { id: "high-school", name: "High School Field", required: 0, luck: 0, power: 250, reward: 75 },
       { id: "college", name: "College Stadium", required: 750, luck: .05, power: 520, reward: 160 },
@@ -928,7 +1095,17 @@
       { id: "collector", name: "NFL Collector", text: "Collect 50% of the NFL Dex.", test: s => collectedPercent(s) >= 50, reward: { coins: 800 } },
       { id: "hall-famer", name: "Hall of Famer", text: "Own a Hall of Fame card.", test: s => hasRarityAtLeast(s, "Hall of Fame"), reward: { rings: 1 } },
       { id: "mythic-hunter", name: "Mythic Hunter", text: "Find a Mythic player.", test: s => hasRarityAtLeast(s, "Mythic"), reward: { tokens: 3 } },
-      { id: "goat-collector", name: "GOAT Collector", text: "Collect every GOAT card.", test: s => players.filter(p => p.rarity === "GOAT").every(p => s.dex[p.id]), reward: { rings: 3, tokens: 5 } }
+      { id: "goat-collector", name: "GOAT Collector", text: "Collect every GOAT card.", test: s => players.filter(p => p.rarity === "GOAT").every(p => s.dex[p.id]), reward: { rings: 3, tokens: 5 } },
+      { id: "common-captain", name: "Common Captain", text: "Collect 20 Common players.", test: s => countOwnedByRarity(s, "Common") >= 20, reward: { coins: 250 } },
+      { id: "rare-riser", name: "Rare Riser", text: "Collect 15 Rare players.", test: s => countOwnedByRarity(s, "Rare") >= 15, reward: { points: 30 } },
+      { id: "epic-core", name: "Epic Core", text: "Collect 10 Epic players.", test: s => countOwnedByRarity(s, "Epic") >= 10, reward: { coins: 900, points: 40 } },
+      { id: "legendary-locker", name: "Legendary Locker", text: "Collect 8 Legendary players.", test: s => countOwnedByRarity(s, "Legendary") >= 8, reward: { rings: 1 } },
+      { id: "canton-class", name: "Canton Class", text: "Collect 5 Hall of Fame players.", test: s => countOwnedByRarity(s, "Hall of Fame") >= 5, reward: { rings: 2 } },
+      { id: "prime-five", name: "Prime Five", text: "Collect 5 GOAT or Mythic players.", test: s => countOwnedAtLeast(s, "GOAT") >= 5, reward: { tokens: 5 } },
+      { id: "update-one-scout", name: "Update 1 Scout", text: "Collect 10 roster expansion players.", test: s => countOwnedExpansion(s) >= 10, reward: { coins: 1000 } },
+      { id: "update-one-star", name: "Update 1 Star", text: "Collect 25 roster expansion players.", test: s => countOwnedExpansion(s) >= 25, reward: { points: 100 } },
+      { id: "update-one-master", name: "Update 1 Master", text: "Collect 50 roster expansion players.", test: s => countOwnedExpansion(s) >= 50, reward: { rings: 2, tokens: 2 } },
+      { id: "century-club", name: "Century Club", text: "Collect 100 total NFL players.", test: s => Object.keys(s.dex).length >= 100, reward: { rings: 4, tokens: 6 } }
     ];
 
     const shop = [
@@ -950,7 +1127,7 @@
       xp: 0,
       level: 1,
       prestige: 0,
-      inventorySize: 30,
+      inventorySize: 85,
       inventory: [],
       team: [],
       dex: {},
@@ -984,7 +1161,9 @@
       const raw = localStorage.getItem("nflLegendsRngSave");
       if (!raw) return structuredClone(defaultState);
       try {
-        return { ...structuredClone(defaultState), ...JSON.parse(raw) };
+        const loaded = { ...structuredClone(defaultState), ...JSON.parse(raw) };
+        loaded.inventorySize = Math.max(loaded.inventorySize || 0, defaultState.inventorySize);
+        return loaded;
       } catch {
         return structuredClone(defaultState);
       }
@@ -1042,6 +1221,7 @@
         const rarity = pickRarity(isPremium);
         const pool = players.filter(p => p.rarity === rarity.name);
         const player = pool[Math.floor(Math.random() * pool.length)];
+        const wasNew = !state.dex[player.id];
         const card = { uid: createUid(), id: player.id, pulledAt: Date.now() };
 
         if (state.inventory.length >= inventoryCap()) {
@@ -1060,10 +1240,10 @@
         state.xp += Math.round(12 + player.overall / 6 + rarityIndex(player.rarity) * 7);
         if (isPremium) state.points += rarityIndex(player.rarity) + 1;
 
-        state.recent.unshift({ id: player.id, rarity: player.rarity, overall: player.overall, time: Date.now() });
+        state.recent.unshift({ id: player.id, rarity: player.rarity, overall: player.overall, isNew: wasNew, time: Date.now() });
         state.recent = state.recent.slice(0, 18);
 
-        renderCard(player, true);
+        renderCard(player, true, wasNew);
         if (rarityIndex(player.rarity) >= 2) crowd(player);
         if (rarityIndex(player.rarity) >= 4) celebrate(rarityByName(player.rarity).color);
         if (player.rarity === "Mythic") $("lights").classList.add("flash");
@@ -1148,6 +1328,19 @@
       return Math.round((Object.keys(s.dex).length / players.length) * 100);
     }
 
+    function countOwnedByRarity(s, rarityName) {
+      return players.filter(p => p.rarity === rarityName && s.dex[p.id]).length;
+    }
+
+    function countOwnedAtLeast(s, rarityName) {
+      const target = rarityIndex(rarityName);
+      return players.filter(p => rarityIndex(p.rarity) >= target && s.dex[p.id]).length;
+    }
+
+    function countOwnedExpansion(s) {
+      return players.filter(p => p.update === "Roster Expansion" && s.dex[p.id]).length;
+    }
+
     function checkAchievements() {
       achievements.forEach(a => {
         if (!state.claimedAchievements[a.id] && a.test(state)) {
@@ -1161,15 +1354,17 @@
       });
     }
 
-    function renderCard(player, animate = false) {
+    function renderCard(player, animate = false, isNew = false) {
       const rarity = rarityByName(player.rarity);
       const card = $("resultCard");
       card.className = `card ${rarity.key}`;
       if (animate) {
         card.classList.remove("roll");
+        card.classList.remove("walkout");
         void card.offsetWidth;
-        card.classList.add("roll");
+        card.classList.add(rarityIndex(player.rarity) >= 4 ? "walkout" : "roll");
       }
+      $("newBadge").classList.toggle("show", isNew);
       $("cardPosition").textContent = player.position;
       $("cardOverall").textContent = player.overall;
       $("cardPortrait").textContent = player.icon;
@@ -1196,6 +1391,7 @@
       renderTeam();
       renderBattles();
       renderAreas();
+      renderShowcase();
       renderShop();
       renderAchievements();
     }
@@ -1206,7 +1402,7 @@
         const rarity = rarityByName(p.rarity);
         return `<div class="feed-item" style="--rarity:${rarity.color}">
           <div class="mini-ball">${p.position}</div>
-          <div><strong>${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.ability}</div></div>
+          <div><strong>${item.isNew ? "NEW · " : ""}${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.ability}</div></div>
           <strong>${p.overall}</strong>
         </div>`;
       }).join("") || `<div class="meta">No pulls yet. Your first walkout is waiting.</div>`;
@@ -1224,6 +1420,8 @@
         return true;
       });
       $("dexPercent").textContent = `${collectedPercent()}% Collected`;
+      $("dexBar").style.width = `${collectedPercent()}%`;
+      $("dexTracker").textContent = `${Object.keys(state.dex).length} of ${players.length} players collected · ${countOwnedExpansion(state)} roster expansion cards`;
       $("dexGrid").innerHTML = visible.map(p => {
         const owned = !!state.dex[p.id];
         const rarity = rarityByName(p.rarity);
@@ -1373,6 +1571,23 @@
           <div class="meta">Unlock Power: ${fmt(area.required)} · Luck +${Math.round(area.luck * 100)}%</div>
           <div class="meta">NPC Power starts at ${fmt(area.power)} · Battle reward ${fmt(area.reward)} coins</div>
           <button style="margin-top:10px;" data-area="${area.id}" ${unlocked ? "" : "disabled"}>${active ? "Current" : unlocked ? "Travel" : "Locked"}</button>
+        </div>`;
+      }).join("");
+    }
+
+    function renderShowcase() {
+      $("showcaseTotal").textContent = `${players.length} Players`;
+      $("showcaseGrid").innerHTML = rarities.map(rarity => {
+        const total = players.filter(p => p.rarity === rarity.name).length;
+        const owned = countOwnedByRarity(state, rarity.name);
+        const odds = rarity.chance < 1 ? `${rarity.chance}%` : `${rarity.chance}%`;
+        const samples = players.filter(p => p.rarity === rarity.name).slice(0, 5).map(p => p.name).join(", ");
+        return `<div class="showcase-card" style="--rarity:${rarity.color}">
+          <strong>${owned} / ${total}</strong>
+          <h3 class="small-title">${rarity.name}</h3>
+          <div class="meta">Base roll odds: ${odds} · OVR floor ${rarity.min}+</div>
+          <div class="bar" style="margin:10px 0;"><span style="width:${total ? owned / total * 100 : 0}%"></span></div>
+          <div class="meta">${samples}</div>
         </div>`;
       }).join("");
     }
