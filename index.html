@@ -1,3 +1,1403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NFL Legends RNG</title>
+  <style>
+    :root {
+      --bg: #07110d;
+      --panel: #101b17;
+      --panel-2: #16231e;
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #f7fbf8;
+      --muted: #aebbb4;
+      --field: #15904b;
+      --gold: #f5c84c;
+      --red: #ec4b48;
+      --blue: #4aa3ff;
+      --purple: #a37cff;
+      --cyan: #54e3ff;
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.38);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px) 0 0 / 72px 72px,
+        radial-gradient(circle at 15% 15%, rgba(21, 144, 75, .35), transparent 32%),
+        radial-gradient(circle at 80% 8%, rgba(245, 200, 76, .16), transparent 28%),
+        linear-gradient(135deg, #06100c, #0a1512 55%, #060a09);
+      overflow-x: hidden;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: #182620;
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.28); }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    .app {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(90deg, transparent 46%, rgba(255,255,255,.75) 46% 54%, transparent 54%),
+        linear-gradient(180deg, #1fb863, #0d7139);
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(255,255,255,.16);
+      font-size: 26px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 52px);
+      line-height: 1;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .tagline {
+      color: var(--muted);
+      margin-top: 6px;
+      font-weight: 650;
+    }
+
+    .wallet {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(110px, 1fr));
+      gap: 8px;
+      min-width: min(100%, 530px);
+    }
+
+    .stat {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: rgba(16, 27, 23, .82);
+      border-radius: var(--radius);
+      min-height: 60px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      white-space: nowrap;
+      min-width: 96px;
+      font-weight: 850;
+      color: #dfe9e4;
+    }
+
+    .tab.active {
+      background: var(--gold);
+      color: #1d1604;
+      border-color: rgba(0,0,0,.1);
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.05fr) minmax(320px, .95fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(16, 27, 23, .88);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .field-stage {
+      position: relative;
+      min-height: 470px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 2px, transparent 2px 11%),
+        linear-gradient(180deg, rgba(255,255,255,.08), transparent 22%),
+        linear-gradient(90deg, #0e7338, #16994e 50%, #0e7338);
+    }
+
+    .field-stage:before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 3px solid rgba(255,255,255,.55);
+      pointer-events: none;
+    }
+
+    .hash {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(0deg, transparent 48%, rgba(255,255,255,.7) 48% 52%, transparent 52%) center / 100% 90px;
+      opacity: .28;
+    }
+
+    .lights {
+      position: absolute;
+      inset: -20%;
+      background: conic-gradient(from 0deg, transparent, rgba(255,255,255,.26), transparent, rgba(84,227,255,.22), transparent);
+      opacity: 0;
+      transform: scale(.7);
+    }
+
+    .lights.flash {
+      animation: flashLights 1.4s ease-out;
+    }
+
+    @keyframes flashLights {
+      0% { opacity: 0; transform: scale(.6) rotate(0deg); }
+      35% { opacity: .9; transform: scale(1) rotate(45deg); }
+      100% { opacity: 0; transform: scale(1.2) rotate(120deg); }
+    }
+
+    .card {
+      position: relative;
+      width: min(82vw, 360px);
+      aspect-ratio: 2.5 / 3.5;
+      border-radius: 14px;
+      padding: 16px;
+      border: 3px solid rgba(255,255,255,.22);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.18), transparent 32%),
+        linear-gradient(160deg, #24332d, #111c18);
+      box-shadow: 0 32px 100px rgba(0,0,0,.48);
+      transform-style: preserve-3d;
+      z-index: 2;
+    }
+
+    .card.roll {
+      animation: cardRoll .7s cubic-bezier(.2, .85, .25, 1.2);
+    }
+
+    @keyframes cardRoll {
+      0% { transform: translateY(40px) rotateX(72deg) scale(.75); opacity: .2; }
+      60% { transform: translateY(-14px) rotateX(-8deg) scale(1.04); opacity: 1; }
+      100% { transform: translateY(0) rotateX(0) scale(1); }
+    }
+
+    .card.common { --rarity: #b7c1bc; }
+    .card.uncommon { --rarity: #4fe47c; }
+    .card.rare { --rarity: #4aa3ff; }
+    .card.epic { --rarity: #a37cff; }
+    .card.legendary { --rarity: #f5c84c; }
+    .card.halloffame { --rarity: #ff9f45; }
+    .card.goat { --rarity: #f4f1e8; }
+    .card.mythic { --rarity: #54e3ff; }
+
+    .card:after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px solid color-mix(in srgb, var(--rarity), transparent 35%);
+      border-radius: 10px;
+      pointer-events: none;
+    }
+
+    .card.legendary,
+    .card.halloffame,
+    .card.goat,
+    .card.mythic {
+      animation: shimmer 2.2s linear infinite;
+      background:
+        linear-gradient(120deg, transparent 20%, rgba(255,255,255,.24), transparent 44%) -130px 0 / 220px 100% no-repeat,
+        linear-gradient(160deg, color-mix(in srgb, var(--rarity), #101b17 35%), #101b17 58%, #111c18);
+    }
+
+    @keyframes shimmer {
+      from { background-position: -180px 0, 0 0; }
+      to { background-position: 420px 0, 0 0; }
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .position {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--rarity), #000 28%);
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.28);
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .overall {
+      text-align: right;
+      font-weight: 950;
+      font-size: 44px;
+      line-height: .9;
+    }
+
+    .overall small {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0;
+    }
+
+    .portrait {
+      height: 42%;
+      display: grid;
+      place-items: center;
+      margin: 14px 0;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(circle, color-mix(in srgb, var(--rarity), transparent 48%), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.16));
+      font-size: 82px;
+    }
+
+    .player-name {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 950;
+      line-height: .96;
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    .rarity-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: #0c100e;
+      background: var(--rarity);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .ability {
+      margin-top: 12px;
+      color: #dce7e1;
+      font-weight: 700;
+      min-height: 44px;
+    }
+
+    .roll-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .primary {
+      background: var(--gold);
+      color: #1e1704;
+      border-color: transparent;
+      font-weight: 950;
+    }
+
+    .danger {
+      background: #3b1818;
+      border-color: rgba(236,75,72,.4);
+    }
+
+    .toggle.on {
+      background: #17462e;
+      border-color: rgba(79,228,124,.6);
+    }
+
+    .feed {
+      display: grid;
+      gap: 8px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .feed-item {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .mini-ball {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #7a3b1c;
+      border: 2px solid rgba(255,255,255,.24);
+      font-weight: 950;
+    }
+
+    .progress-wrap {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar {
+      height: 12px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--field), var(--gold));
+      transition: width .25s ease;
+    }
+
+    .controls-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .dex-grid,
+    .inventory-grid,
+    .achievements-grid,
+    .area-grid,
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .dex-card,
+    .inventory-card,
+    .achievement,
+    .area,
+    .shop-item,
+    .team-slot {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 118px;
+    }
+
+    .dex-card.missing {
+      opacity: .5;
+      filter: grayscale(.65);
+    }
+
+    .small-title {
+      margin: 0 0 6px;
+      font-size: 17px;
+      font-weight: 950;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .rarity-text {
+      color: var(--rarity);
+      font-weight: 950;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .search {
+      flex: 1 1 220px;
+      min-height: 42px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.06);
+      padding: 9px 11px;
+    }
+
+    .team-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, .9fr) minmax(320px, 1.1fr);
+      gap: 16px;
+    }
+
+    .team-slots {
+      display: grid;
+      gap: 10px;
+    }
+
+    .team-slot {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 78px;
+    }
+
+    .battle-stage {
+      display: grid;
+      grid-template-columns: 1fr 90px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .score-card {
+      background: rgba(255,255,255,.045);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 210px;
+    }
+
+    .vs {
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      font-weight: 950;
+      color: var(--gold);
+    }
+
+    .battle-log {
+      margin-top: 12px;
+      min-height: 96px;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.22);
+      border: 1px solid var(--line);
+      color: #dce7e1;
+      line-height: 1.55;
+    }
+
+    .area.locked { opacity: .48; }
+    .area.active { border-color: rgba(245,200,76,.7); background: rgba(245,200,76,.08); }
+
+    .achievement.done {
+      border-color: rgba(79,228,124,.55);
+      background: rgba(79,228,124,.07);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.7);
+      z-index: 20;
+    }
+
+    .modal.show { display: grid; }
+
+    .modal-card {
+      width: min(560px, 100%);
+      border: 1px solid var(--line);
+      background: #101b17;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      gap: 8px;
+      z-index: 30;
+      width: min(360px, calc(100vw - 36px));
+    }
+
+    .toast-item {
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: rgba(16, 27, 23, .96);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      animation: toastIn .25s ease;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .celebrate {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 25;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 18px;
+      top: -30px;
+      background: var(--gold);
+      animation: fall 1.8s linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(calc(100vh + 60px)) rotate(520deg); opacity: 0; }
+    }
+
+    @media (max-width: 1000px) {
+      .topbar, .grid, .team-layout, .battle-stage {
+        grid-template-columns: 1fr;
+      }
+
+      .wallet {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .vs {
+        min-height: 50px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 14px; }
+      .wallet { grid-template-columns: 1fr; }
+      .roll-actions, .controls-row { grid-template-columns: 1fr; }
+      .field-stage { min-height: 420px; }
+      .card { width: min(90vw, 330px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🏈</div>
+        <div>
+          <h1>NFL Legends RNG</h1>
+          <div class="tagline">Catch the Greatest. Build the Ultimate Dynasty.</div>
+        </div>
+      </div>
+      <div class="wallet">
+        <div class="stat"><span>Coins</span><strong id="coins">0</strong></div>
+        <div class="stat"><span>NFL Points</span><strong id="points">0</strong></div>
+        <div class="stat"><span>Rings</span><strong id="rings">0</strong></div>
+        <div class="stat"><span>Trophy Tokens</span><strong id="tokens">0</strong></div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Game screens">
+      <button class="tab active" data-tab="roll">Roll</button>
+      <button class="tab" data-tab="dex">NFL Dex</button>
+      <button class="tab" data-tab="team">Team</button>
+      <button class="tab" data-tab="battle">Battles</button>
+      <button class="tab" data-tab="areas">Areas</button>
+      <button class="tab" data-tab="shop">Shop</button>
+      <button class="tab" data-tab="achievements">Awards</button>
+    </nav>
+
+    <main>
+      <section id="roll" class="screen active">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Roll System</h2>
+              <strong id="luckLabel">Luck x1.00</strong>
+            </div>
+            <div class="field-stage">
+              <div class="hash"></div>
+              <div id="lights" class="lights"></div>
+              <article id="resultCard" class="card common">
+                <div class="card-top">
+                  <div class="position" id="cardPosition">QB</div>
+                  <div class="overall"><span id="cardOverall">??</span><small>OVR</small></div>
+                </div>
+                <div class="portrait" id="cardPortrait">🏈</div>
+                <h2 class="player-name" id="cardName">Ready to Roll</h2>
+                <div class="rarity-pill" id="cardRarity">Common</div>
+                <div class="ability" id="cardAbility">Roll to reveal an NFL player card.</div>
+              </article>
+            </div>
+            <div class="panel-body">
+              <div class="roll-actions">
+                <button class="primary" id="rollBtn">Roll</button>
+                <button id="premiumBtn">Premium Roll</button>
+                <button class="toggle" id="autoBtn">Auto Roll</button>
+                <button class="toggle" id="fastBtn">Fast Roll</button>
+              </div>
+              <div class="controls-row">
+                <button id="luckBtn">Use Luck Potion</button>
+                <button id="saveBtn">Save</button>
+                <button class="danger" id="resetBtn">Reset</button>
+              </div>
+              <div class="progress-wrap">
+                <div class="meta">Level <strong id="level">1</strong> · XP <strong id="xpText">0 / 100</strong> · Inventory <strong id="invText">0 / 30</strong> · Prestige <strong id="prestige">0</strong></div>
+                <div class="bar"><span id="xpBar"></span></div>
+                <div class="meta">Next luck boost unlocks every 5 levels. Prestige at level 25 for permanent luck.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Recent Pulls</h2>
+              <strong id="rollCount">0 Rolls</strong>
+            </div>
+            <div class="panel-body">
+              <div class="feed" id="feed"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dex" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>NFL Dex</h2>
+            <strong id="dexPercent">0%</strong>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <input class="search" id="dexSearch" placeholder="Search players, positions, rarities..." />
+              <button data-filter="All" class="dexFilter primary">All</button>
+              <button data-filter="Legendary" class="dexFilter">Legendary+</button>
+              <button data-filter="Missing" class="dexFilter">Missing</button>
+            </div>
+            <div id="dexGrid" class="dex-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="team" class="screen">
+        <div class="team-layout">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Team Builder</h2>
+              <strong id="teamCount">0 / 6</strong>
+            </div>
+            <div class="panel-body">
+              <div class="stat"><span>Team Overall</span><strong id="teamOverall">0</strong></div>
+              <div class="stat" style="margin-top:10px;"><span>Power Score</span><strong id="teamPower">0</strong></div>
+              <div class="team-slots" id="teamSlots" style="margin-top:12px;"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Inventory</h2>
+              <strong id="inventoryLabel">0 Cards</strong>
+            </div>
+            <div class="panel-body">
+              <div id="inventoryGrid" class="inventory-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="battle" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Stadium Battles</h2>
+            <strong id="battleAreaLabel">High School Field</strong>
+          </div>
+          <div class="panel-body">
+            <div class="battle-stage">
+              <div class="score-card">
+                <h3>Your Dynasty</h3>
+                <div class="meta">Overall</div>
+                <h2 id="battleYourOvr">0</h2>
+                <div class="meta">Power Score</div>
+                <h2 id="battleYourPower">0</h2>
+              </div>
+              <div class="vs">VS</div>
+              <div class="score-card">
+                <h3 id="npcName">JV Wildcats</h3>
+                <div class="meta">Required Power</div>
+                <h2 id="npcPower">250</h2>
+                <div class="meta">Rewards</div>
+                <h2 id="npcRewards">75 Coins</h2>
+              </div>
+            </div>
+            <div class="roll-actions">
+              <button class="primary" id="battleBtn">Challenge Team</button>
+              <button id="nextNpcBtn">Next Matchup</button>
+            </div>
+            <div class="battle-log" id="battleLog">Build a six-player squad and challenge NPC teams to unlock stronger stadiums.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="areas" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Areas</h2>
+            <strong id="areaLabel">High School Field</strong>
+          </div>
+          <div class="panel-body">
+            <div id="areaGrid" class="area-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="shop" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Gamepasses & Boosts</h2>
+            <strong>Shop</strong>
+          </div>
+          <div class="panel-body">
+            <div id="shopGrid" class="shop-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="achievements" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Achievements</h2>
+            <strong id="achievementCount">0 / 6</strong>
+          </div>
+          <div class="panel-body">
+            <div id="achievementGrid" class="achievements-grid"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="confirmModal">
+    <div class="modal-card">
+      <h2>Reset NFL Legends RNG?</h2>
+      <p class="meta">This clears your local collection, team, currency, achievements, and progress.</p>
+      <div class="roll-actions">
+        <button class="danger" id="confirmReset">Reset Game</button>
+        <button id="cancelReset">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="celebrate" id="celebrate"></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const rarities = [
+      { name: "Common", key: "common", chance: 70, bonus: 1, min: 68, color: "#b7c1bc" },
+      { name: "Uncommon", key: "uncommon", chance: 20, bonus: 1.1, min: 74, color: "#4fe47c" },
+      { name: "Rare", key: "rare", chance: 7, bonus: 1.25, min: 80, color: "#4aa3ff" },
+      { name: "Epic", key: "epic", chance: 2, bonus: 1.55, min: 86, color: "#a37cff" },
+      { name: "Legendary", key: "legendary", chance: 0.8, bonus: 2, min: 91, color: "#f5c84c" },
+      { name: "Hall of Fame", key: "halloffame", chance: 0.15, bonus: 2.6, min: 94, color: "#ff9f45" },
+      { name: "GOAT", key: "goat", chance: 0.04, bonus: 3.35, min: 97, color: "#f4f1e8" },
+      { name: "Mythic", key: "mythic", chance: 0.01, bonus: 4.5, min: 99, color: "#54e3ff" }
+    ];
+
+    const players = [
+      { id: "mac-jones", name: "Mac Jones", rarity: "Common", position: "QB", overall: 72, ability: "Pocket Rhythm: small coin bonus after three common pulls.", icon: "🎯" },
+      { id: "kenny-pickett", name: "Kenny Pickett", rarity: "Common", position: "QB", overall: 71, ability: "Two-Minute Spark: adds XP after close battles.", icon: "⏱️" },
+      { id: "zach-wilson", name: "Zach Wilson", rarity: "Common", position: "QB", overall: 70, ability: "Backyard Launch: tiny chance to refund a roll.", icon: "🚀" },
+      { id: "baker-mayfield", name: "Baker Mayfield", rarity: "Uncommon", position: "QB", overall: 78, ability: "Comeback Juice: +4 battle power when trailing.", icon: "🔥" },
+      { id: "tony-pollard", name: "Tony Pollard", rarity: "Uncommon", position: "RB", overall: 79, ability: "Open Field: improves coin rewards from wins.", icon: "💨" },
+      { id: "courtland-sutton", name: "Courtland Sutton", rarity: "Uncommon", position: "WR", overall: 78, ability: "Sideline Snag: adds collection XP on new cards.", icon: "🧤" },
+      { id: "dak-prescott", name: "Dak Prescott", rarity: "Rare", position: "QB", overall: 84, ability: "Star Tempo: boosts team overall when equipped.", icon: "⭐" },
+      { id: "kirk-cousins", name: "Kirk Cousins", rarity: "Rare", position: "QB", overall: 83, ability: "Prime Time Drive: earns extra NFL Points at night.", icon: "🌙" },
+      { id: "deebo-samuel", name: "Deebo Samuel", rarity: "Rare", position: "WR", overall: 86, ability: "Positionless Threat: counts as WR or RB in battles.", icon: "⚡" },
+      { id: "jalen-hurts", name: "Jalen Hurts", rarity: "Epic", position: "QB", overall: 90, ability: "Brotherly Push: major bonus in clutch rounds.", icon: "🦅" },
+      { id: "lamar-jackson", name: "Lamar Jackson", rarity: "Epic", position: "QB", overall: 91, ability: "Escape Artist: dodges one NPC scoring drive.", icon: "🌀" },
+      { id: "tyreek-hill", name: "Tyreek Hill", rarity: "Epic", position: "WR", overall: 92, ability: "Cheetah Burst: fast rolls earn extra XP.", icon: "💥" },
+      { id: "josh-allen", name: "Josh Allen", rarity: "Legendary", position: "QB", overall: 94, ability: "Cannon Arm: huge power spike in NFL Stadium.", icon: "💪" },
+      { id: "joe-burrow", name: "Joe Burrow", rarity: "Legendary", position: "QB", overall: 93, ability: "Cool Finish: increases premium roll rewards.", icon: "🕶️" },
+      { id: "justin-jefferson", name: "Justin Jefferson", rarity: "Legendary", position: "WR", overall: 95, ability: "Griddy Walkout: big crowd bonus on rare pulls.", icon: "🕺" },
+      { id: "peyton-manning", name: "Peyton Manning", rarity: "Hall of Fame", position: "QB", overall: 97, ability: "Omaha Read: reveals the next battle difficulty.", icon: "📣" },
+      { id: "jerry-rice", name: "Jerry Rice", rarity: "Hall of Fame", position: "WR", overall: 98, ability: "Route King: raises full-team consistency.", icon: "👑" },
+      { id: "randy-moss", name: "Randy Moss", rarity: "Hall of Fame", position: "WR", overall: 97, ability: "Mossed: chance to instantly win a drive.", icon: "🌲" },
+      { id: "tom-brady", name: "Tom Brady", rarity: "GOAT", position: "QB", overall: 99, ability: "Seventh Ring: doubles championship ring drops.", icon: "💍" },
+      { id: "barry-sanders", name: "Barry Sanders", rarity: "GOAT", position: "RB", overall: 99, ability: "Impossible Cut: massive bonus versus elite defenses.", icon: "🪄" },
+      { id: "lawrence-taylor", name: "Lawrence Taylor", rarity: "GOAT", position: "LB", overall: 99, ability: "Game Wrecker: lowers NPC power before battle.", icon: "💣" },
+      { id: "prime-brady", name: "Prime Tom Brady", rarity: "Mythic", position: "QB", overall: 100, ability: "Dynasty Engine: permanent team power aura.", icon: "🏆" },
+      { id: "prime-rice", name: "Prime Jerry Rice", rarity: "Mythic", position: "WR", overall: 100, ability: "Perfect Route: all receivers gain power.", icon: "✨" },
+      { id: "prime-mahomes", name: "Prime Patrick Mahomes", rarity: "Mythic", position: "QB", overall: 100, ability: "No-Look Miracle: rerolls losing battle moments.", icon: "🎩" },
+      { id: "prime-deion", name: "Prime Deion Sanders", rarity: "Mythic", position: "CB", overall: 100, ability: "Prime Time: lights flash and rewards multiply.", icon: "🌟" }
+    ];
+
+    const areas = [
+      { id: "high-school", name: "High School Field", required: 0, luck: 0, power: 250, reward: 75 },
+      { id: "college", name: "College Stadium", required: 750, luck: .05, power: 520, reward: 160 },
+      { id: "nfl", name: "NFL Stadium", required: 1400, luck: .12, power: 820, reward: 320 },
+      { id: "hof", name: "Hall of Fame Arena", required: 2150, luck: .22, power: 1150, reward: 650 },
+      { id: "goat", name: "GOAT Dimension", required: 3100, luck: .38, power: 1550, reward: 1100 }
+    ];
+
+    const achievements = [
+      { id: "first-roll", name: "First Roll", text: "Roll your first player card.", test: s => s.rolls >= 1, reward: { coins: 50 } },
+      { id: "first-legendary", name: "First Legendary", text: "Pull any Legendary or better.", test: s => hasRarityAtLeast(s, "Legendary"), reward: { points: 25 } },
+      { id: "collector", name: "NFL Collector", text: "Collect 50% of the NFL Dex.", test: s => collectedPercent(s) >= 50, reward: { coins: 800 } },
+      { id: "hall-famer", name: "Hall of Famer", text: "Own a Hall of Fame card.", test: s => hasRarityAtLeast(s, "Hall of Fame"), reward: { rings: 1 } },
+      { id: "mythic-hunter", name: "Mythic Hunter", text: "Find a Mythic player.", test: s => hasRarityAtLeast(s, "Mythic"), reward: { tokens: 3 } },
+      { id: "goat-collector", name: "GOAT Collector", text: "Collect every GOAT card.", test: s => players.filter(p => p.rarity === "GOAT").every(p => s.dex[p.id]), reward: { rings: 3, tokens: 5 } }
+    ];
+
+    const shop = [
+      { id: "luck-potion", name: "Luck Potion", text: "Boost luck for 10 rolls.", cost: { coins: 250 }, buy: s => { s.luckPotions += 1; } },
+      { id: "premium-ticket", name: "Premium Roll Ticket", text: "Roll with stronger odds.", cost: { points: 20 }, buy: s => { s.premiumTickets += 1; } },
+      { id: "vip-luck", name: "VIP Luck", text: "Permanent +20% luck.", cost: { rings: 2 }, once: true, flag: "vipLuck" },
+      { id: "faster-rolls", name: "Faster Rolls", text: "Auto Roll runs faster.", cost: { coins: 900 }, once: true, flag: "fasterRolls" },
+      { id: "extra-team", name: "Extra Team Slots", text: "Team can equip 8 players.", cost: { rings: 1, tokens: 2 }, once: true, flag: "extraTeam" },
+      { id: "double-coins", name: "Double Coins", text: "Battle coin rewards doubled.", cost: { points: 120 }, once: true, flag: "doubleCoins" },
+      { id: "mythic-tracker", name: "Mythic Tracker", text: "Shows pity progress toward elite pulls.", cost: { tokens: 4 }, once: true, flag: "mythicTracker" }
+    ];
+
+    const defaultState = {
+      coins: 250,
+      points: 30,
+      rings: 0,
+      tokens: 0,
+      rolls: 0,
+      xp: 0,
+      level: 1,
+      prestige: 0,
+      inventorySize: 30,
+      inventory: [],
+      team: [],
+      dex: {},
+      recent: [],
+      luckPotions: 1,
+      luckRolls: 0,
+      premiumTickets: 1,
+      flags: {},
+      unlockedAreas: ["high-school"],
+      activeArea: "high-school",
+      npcIndex: 0,
+      claimedAchievements: {},
+      pity: 0
+    };
+
+    let state = loadState();
+    let autoTimer = null;
+    let fastMode = false;
+    let dexFilter = "All";
+
+    const $ = id => document.getElementById(id);
+    const rarityByName = name => rarities.find(r => r.name === name);
+    const rarityIndex = name => rarities.findIndex(r => r.name === name);
+    const fmt = n => Math.floor(n).toLocaleString();
+    const createUid = () => {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return `card-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    };
+
+    function loadState() {
+      const raw = localStorage.getItem("nflLegendsRngSave");
+      if (!raw) return structuredClone(defaultState);
+      try {
+        return { ...structuredClone(defaultState), ...JSON.parse(raw) };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState(show = false) {
+      localStorage.setItem("nflLegendsRngSave", JSON.stringify(state));
+      if (show) toast("Game saved.");
+    }
+
+    function currentArea() {
+      return areas.find(a => a.id === state.activeArea) || areas[0];
+    }
+
+    function maxTeamSlots() {
+      return state.flags.extraTeam ? 8 : 6;
+    }
+
+    function inventoryCap() {
+      return state.inventorySize + Math.floor((state.level - 1) / 3) * 5 + state.prestige * 10;
+    }
+
+    function luckMultiplier() {
+      let luck = 1 + currentArea().luck + state.prestige * .04 + Math.floor(state.level / 5) * .04;
+      if (state.luckRolls > 0) luck += .65;
+      if (state.flags.vipLuck) luck += .2;
+      return luck;
+    }
+
+    function pickRarity(isPremium = false) {
+      const luck = luckMultiplier() + (isPremium ? .75 : 0);
+      const weighted = rarities.map((r, i) => {
+        const boost = i <= 1 ? 1 : Math.pow(luck, i * .42);
+        return { ...r, weight: r.chance * boost };
+      });
+
+      if (state.pity >= 240 && Math.random() < .08) return rarities[3 + Math.floor(Math.random() * 2)];
+      if (state.pity >= 600 && Math.random() < .04) return rarities[4 + Math.floor(Math.random() * 2)];
+
+      const total = weighted.reduce((sum, r) => sum + r.weight, 0);
+      let roll = Math.random() * total;
+      for (const rarity of weighted) {
+        roll -= rarity.weight;
+        if (roll <= 0) return rarity;
+      }
+      return weighted[0];
+    }
+
+    function rollPlayer(isPremium = false) {
+      const delay = fastMode || state.flags.fasterRolls ? 130 : 520;
+      $("rollBtn").disabled = true;
+      $("premiumBtn").disabled = true;
+
+      setTimeout(() => {
+        const rarity = pickRarity(isPremium);
+        const pool = players.filter(p => p.rarity === rarity.name);
+        const player = pool[Math.floor(Math.random() * pool.length)];
+        const card = { uid: createUid(), id: player.id, pulledAt: Date.now() };
+
+        if (state.inventory.length >= inventoryCap()) {
+          const removed = state.inventory.shift();
+          state.team = state.team.filter(uid => uid !== removed.uid);
+        }
+
+        state.inventory.push(card);
+        state.dex[player.id] = true;
+        state.rolls += 1;
+        state.pity = rarityIndex(player.rarity) >= 3 ? 0 : state.pity + 1;
+        if (state.luckRolls > 0) state.luckRolls -= 1;
+
+        const rewardCoins = Math.max(8, Math.round(player.overall * rarityByName(player.rarity).bonus / 10));
+        state.coins += rewardCoins;
+        state.xp += Math.round(12 + player.overall / 6 + rarityIndex(player.rarity) * 7);
+        if (isPremium) state.points += rarityIndex(player.rarity) + 1;
+
+        state.recent.unshift({ id: player.id, rarity: player.rarity, overall: player.overall, time: Date.now() });
+        state.recent = state.recent.slice(0, 18);
+
+        renderCard(player, true);
+        if (rarityIndex(player.rarity) >= 2) crowd(player);
+        if (rarityIndex(player.rarity) >= 4) celebrate(rarityByName(player.rarity).color);
+        if (player.rarity === "Mythic") $("lights").classList.add("flash");
+        setTimeout(() => $("lights").classList.remove("flash"), 1500);
+
+        levelCheck();
+        unlockAreas();
+        checkAchievements();
+        saveState();
+        render();
+        $("rollBtn").disabled = false;
+        $("premiumBtn").disabled = false;
+      }, delay);
+    }
+
+    function premiumRoll() {
+      if (state.premiumTickets > 0) {
+        state.premiumTickets -= 1;
+        rollPlayer(true);
+        return;
+      }
+      if (state.points < 15) {
+        toast("You need 15 NFL Points or a Premium Roll Ticket.");
+        return;
+      }
+      state.points -= 15;
+      rollPlayer(true);
+    }
+
+    function useLuckPotion() {
+      if (state.luckPotions <= 0) {
+        toast("No Luck Potions available. Buy one in the shop.");
+        return;
+      }
+      state.luckPotions -= 1;
+      state.luckRolls += 10;
+      toast("Luck Potion active for 10 rolls.");
+      render();
+      saveState();
+    }
+
+    function levelCheck() {
+      while (state.xp >= xpNeeded()) {
+        state.xp -= xpNeeded();
+        state.level += 1;
+        state.points += 10;
+        if (state.level % 5 === 0) {
+          state.luckPotions += 1;
+          toast(`Level ${state.level}: luck boost unlocked.`);
+        }
+        if (state.level >= 25) {
+          state.prestige += 1;
+          state.level = 1;
+          state.xp = 0;
+          state.rings += 1;
+          toast("Prestige complete. Permanent luck increased.");
+          break;
+        }
+      }
+    }
+
+    function xpNeeded() {
+      return 100 + (state.level - 1) * 35;
+    }
+
+    function unlockAreas() {
+      const power = teamPower();
+      areas.forEach(area => {
+        if (power >= area.required && !state.unlockedAreas.includes(area.id)) {
+          state.unlockedAreas.push(area.id);
+          toast(`${area.name} unlocked.`);
+        }
+      });
+    }
+
+    function hasRarityAtLeast(s, rarityName) {
+      const target = rarityIndex(rarityName);
+      return Object.keys(s.dex).some(id => rarityIndex(players.find(p => p.id === id).rarity) >= target);
+    }
+
+    function collectedPercent(s = state) {
+      return Math.round((Object.keys(s.dex).length / players.length) * 100);
+    }
+
+    function checkAchievements() {
+      achievements.forEach(a => {
+        if (!state.claimedAchievements[a.id] && a.test(state)) {
+          state.claimedAchievements[a.id] = true;
+          if (a.reward.coins) state.coins += a.reward.coins;
+          if (a.reward.points) state.points += a.reward.points;
+          if (a.reward.rings) state.rings += a.reward.rings;
+          if (a.reward.tokens) state.tokens += a.reward.tokens;
+          toast(`Achievement unlocked: ${a.name}`);
+        }
+      });
+    }
+
+    function renderCard(player, animate = false) {
+      const rarity = rarityByName(player.rarity);
+      const card = $("resultCard");
+      card.className = `card ${rarity.key}`;
+      if (animate) {
+        card.classList.remove("roll");
+        void card.offsetWidth;
+        card.classList.add("roll");
+      }
+      $("cardPosition").textContent = player.position;
+      $("cardOverall").textContent = player.overall;
+      $("cardPortrait").textContent = player.icon;
+      $("cardName").textContent = player.name;
+      $("cardRarity").textContent = player.rarity;
+      $("cardAbility").textContent = player.ability;
+    }
+
+    function render() {
+      $("coins").textContent = fmt(state.coins);
+      $("points").textContent = fmt(state.points);
+      $("rings").textContent = fmt(state.rings);
+      $("tokens").textContent = fmt(state.tokens);
+      $("level").textContent = state.level;
+      $("prestige").textContent = state.prestige;
+      $("xpText").textContent = `${fmt(state.xp)} / ${fmt(xpNeeded())}`;
+      $("xpBar").style.width = `${Math.min(100, state.xp / xpNeeded() * 100)}%`;
+      $("rollCount").textContent = `${fmt(state.rolls)} Rolls`;
+      $("invText").textContent = `${state.inventory.length} / ${inventoryCap()}`;
+      $("luckLabel").textContent = `Luck x${luckMultiplier().toFixed(2)} · Potions ${state.luckPotions} · Premium ${state.premiumTickets}`;
+
+      renderFeed();
+      renderDex();
+      renderTeam();
+      renderBattles();
+      renderAreas();
+      renderShop();
+      renderAchievements();
+    }
+
+    function renderFeed() {
+      $("feed").innerHTML = state.recent.map(item => {
+        const p = players.find(player => player.id === item.id);
+        const rarity = rarityByName(p.rarity);
+        return `<div class="feed-item" style="--rarity:${rarity.color}">
+          <div class="mini-ball">${p.position}</div>
+          <div><strong>${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.ability}</div></div>
+          <strong>${p.overall}</strong>
+        </div>`;
+      }).join("") || `<div class="meta">No pulls yet. Your first walkout is waiting.</div>`;
+    }
+
+    function renderDex() {
+      const search = $("dexSearch").value.trim().toLowerCase();
+      const legendaryIndex = rarityIndex("Legendary");
+      const visible = players.filter(p => {
+        const matchesSearch = [p.name, p.rarity, p.position, p.ability].join(" ").toLowerCase().includes(search);
+        const owned = !!state.dex[p.id];
+        if (!matchesSearch) return false;
+        if (dexFilter === "Missing") return !owned;
+        if (dexFilter === "Legendary") return rarityIndex(p.rarity) >= legendaryIndex;
+        return true;
+      });
+      $("dexPercent").textContent = `${collectedPercent()}% Collected`;
+      $("dexGrid").innerHTML = visible.map(p => {
+        const owned = !!state.dex[p.id];
+        const rarity = rarityByName(p.rarity);
+        return `<div class="dex-card ${owned ? "" : "missing"}" style="--rarity:${rarity.color}">
+          <h3 class="small-title">${owned ? p.name : "Unknown Player"}</h3>
+          <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${owned ? p.overall + " OVR" : "?? OVR"}</div>
+          <div class="meta">${owned ? p.ability : "Roll this card to reveal its ability."}</div>
+        </div>`;
+      }).join("");
+    }
+
+    function playerForCard(card) {
+      return players.find(p => p.id === card.id);
+    }
+
+    function teamCards() {
+      return state.team.map(uid => state.inventory.find(card => card.uid === uid)).filter(Boolean);
+    }
+
+    function teamOverall() {
+      const cards = teamCards();
+      if (!cards.length) return 0;
+      return Math.round(cards.reduce((sum, card) => sum + playerForCard(card).overall, 0) / cards.length);
+    }
+
+    function teamPower() {
+      return teamCards().reduce((sum, card) => {
+        const p = playerForCard(card);
+        return sum + Math.round(p.overall * 3.2 * rarityByName(p.rarity).bonus);
+      }, 0);
+    }
+
+    function renderTeam() {
+      const slots = maxTeamSlots();
+      $("teamCount").textContent = `${state.team.length} / ${slots}`;
+      $("teamOverall").textContent = teamOverall();
+      $("teamPower").textContent = fmt(teamPower());
+      $("inventoryLabel").textContent = `${state.inventory.length} Cards`;
+
+      const cards = teamCards();
+      $("teamSlots").innerHTML = Array.from({ length: slots }, (_, i) => {
+        const card = cards[i];
+        if (!card) return `<div class="team-slot"><div class="mini-ball">+</div><div><strong>Empty Slot</strong><div class="meta">Equip a card from inventory.</div></div></div>`;
+        const p = playerForCard(card);
+        const rarity = rarityByName(p.rarity);
+        return `<div class="team-slot" style="--rarity:${rarity.color}">
+          <div class="mini-ball">${p.position}</div>
+          <div><strong>${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.overall} OVR</div></div>
+          <button data-unequip="${card.uid}">Bench</button>
+        </div>`;
+      }).join("");
+
+      const sorted = [...state.inventory].sort((a, b) => playerForCard(b).overall - playerForCard(a).overall);
+      $("inventoryGrid").innerHTML = sorted.map(card => {
+        const p = playerForCard(card);
+        const rarity = rarityByName(p.rarity);
+        const equipped = state.team.includes(card.uid);
+        return `<div class="inventory-card" style="--rarity:${rarity.color}">
+          <h3 class="small-title">${p.name}</h3>
+          <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${p.overall} OVR</div>
+          <div class="meta">${p.ability}</div>
+          <button style="margin-top:10px;" data-equip="${card.uid}" ${equipped ? "disabled" : ""}>${equipped ? "Equipped" : "Equip"}</button>
+        </div>`;
+      }).join("") || `<div class="meta">Inventory is empty. Roll for your first player.</div>`;
+    }
+
+    function equip(uid) {
+      if (state.team.includes(uid)) return;
+      if (state.team.length >= maxTeamSlots()) {
+        toast("Team slots are full.");
+        return;
+      }
+      state.team.push(uid);
+      unlockAreas();
+      saveState();
+      render();
+    }
+
+    function unequip(uid) {
+      state.team = state.team.filter(id => id !== uid);
+      saveState();
+      render();
+    }
+
+    function npc() {
+      const area = currentArea();
+      const names = ["JV Wildcats", "Campus Comets", "Metro Blitz", "Canton Immortals", "Prime Dynasty"];
+      return {
+        name: names[areas.indexOf(area)] || "Dynasty Squad",
+        power: area.power + state.npcIndex * 95,
+        reward: area.reward + state.npcIndex * 45
+      };
+    }
+
+    function renderBattles() {
+      const enemy = npc();
+      $("battleAreaLabel").textContent = currentArea().name;
+      $("battleYourOvr").textContent = teamOverall();
+      $("battleYourPower").textContent = fmt(teamPower());
+      $("npcName").textContent = enemy.name;
+      $("npcPower").textContent = fmt(enemy.power);
+      $("npcRewards").textContent = `${fmt(enemy.reward)} Coins`;
+    }
+
+    function battle() {
+      if (!teamCards().length) {
+        toast("Equip at least one player first.");
+        return;
+      }
+      const enemy = npc();
+      const yourPower = teamPower() + Math.floor(Math.random() * 180);
+      const enemyPower = enemy.power + Math.floor(Math.random() * 160);
+      const win = yourPower >= enemyPower;
+      if (win) {
+        const coins = enemy.reward * (state.flags.doubleCoins ? 2 : 1);
+        state.coins += coins;
+        state.xp += Math.round(enemy.reward / 2);
+        state.points += 8 + areas.indexOf(currentArea()) * 4;
+        if (enemy.power >= 1000) state.rings += 1;
+        if (enemy.power >= 1450) state.tokens += 1;
+        state.npcIndex += 1;
+        $("battleLog").innerHTML = `Touchdown. Your dynasty won ${fmt(yourPower)} to ${fmt(enemyPower)} and earned ${fmt(coins)} coins.`;
+      } else {
+        state.coins += 20;
+        state.xp += 20;
+        $("battleLog").innerHTML = `Close loss. Your squad posted ${fmt(yourPower)} power against ${fmt(enemyPower)}. You still earned 20 coins and XP.`;
+      }
+      levelCheck();
+      unlockAreas();
+      checkAchievements();
+      saveState();
+      render();
+    }
+
+    function nextNpc() {
+      state.npcIndex = (state.npcIndex + 1) % 6;
+      render();
+    }
+
+    function renderAreas() {
+      $("areaLabel").textContent = currentArea().name;
+      $("areaGrid").innerHTML = areas.map(area => {
+        const unlocked = state.unlockedAreas.includes(area.id);
+        const active = state.activeArea === area.id;
+        return `<div class="area ${unlocked ? "" : "locked"} ${active ? "active" : ""}">
+          <h3 class="small-title">${area.name}</h3>
+          <div class="meta">Unlock Power: ${fmt(area.required)} · Luck +${Math.round(area.luck * 100)}%</div>
+          <div class="meta">NPC Power starts at ${fmt(area.power)} · Battle reward ${fmt(area.reward)} coins</div>
+          <button style="margin-top:10px;" data-area="${area.id}" ${unlocked ? "" : "disabled"}>${active ? "Current" : unlocked ? "Travel" : "Locked"}</button>
+        </div>`;
+      }).join("");
+    }
+
+    function renderShop() {
+      $("shopGrid").innerHTML = shop.map(item => {
+        const owned = item.once && state.flags[item.flag];
+        const cost = Object.entries(item.cost).map(([k, v]) => `${fmt(v)} ${k}`).join(" · ");
+        return `<div class="shop-item">
+          <h3 class="small-title">${item.name}</h3>
+          <div class="meta">${item.text}</div>
+          <div class="meta">Cost: ${cost}</div>
+          <button style="margin-top:10px;" data-buy="${item.id}" ${owned ? "disabled" : ""}>${owned ? "Owned" : "Buy"}</button>
+        </div>`;
+      }).join("");
+    }
+
+    function canPay(cost) {
+      return Object.entries(cost).every(([k, v]) => state[k] >= v);
+    }
+
+    function buy(id) {
+      const item = shop.find(s => s.id === id);
+      if (!item || (item.once && state.flags[item.flag])) return;
+      if (!canPay(item.cost)) {
         toast("Not enough currency.");
         return;
       }
