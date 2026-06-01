@@ -289,6 +289,13 @@
       pointer-events: none;
     }
 
+    .card.team-bg {
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--team-primary), transparent 16%), transparent 35%),
+        linear-gradient(225deg, color-mix(in srgb, var(--team-secondary), transparent 20%), transparent 42%),
+        linear-gradient(160deg, color-mix(in srgb, var(--rarity), #101b17 42%), #101b17 62%, #111c18);
+    }
+
     .card.legendary,
     .card.halloffame,
     .card.goat,
@@ -500,6 +507,8 @@
     .achievements-grid,
     .area-grid,
     .shop-grid,
+    .team-dex-grid,
+    .crate-grid,
     .showcase-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -511,6 +520,8 @@
     .achievement,
     .area,
     .shop-item,
+    .team-dex-card,
+    .crate-card,
     .showcase-card,
     .team-slot {
       border: 1px solid var(--line);
@@ -518,6 +529,31 @@
       border-radius: var(--radius);
       padding: 12px;
       min-height: 118px;
+    }
+
+    .team-dex-card,
+    .crate-card {
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--team-primary, #15904b), transparent 62%), color-mix(in srgb, var(--team-secondary, #f5c84c), transparent 82%)),
+        rgba(255,255,255,.045);
+    }
+
+    .team-badge {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: linear-gradient(135deg, var(--team-primary, #15904b), var(--team-secondary, #f5c84c));
+      border: 2px solid rgba(255,255,255,.25);
+      font-weight: 950;
+      margin-bottom: 10px;
+    }
+
+    .team-complete {
+      border-color: rgba(79,228,124,.72);
+      box-shadow: inset 0 0 0 1px rgba(79,228,124,.2);
     }
 
     .showcase-card {
@@ -564,7 +600,8 @@
       margin-bottom: 14px;
     }
 
-    .search {
+    .search,
+    .filter-select {
       flex: 1 1 220px;
       min-height: 42px;
       color: var(--text);
@@ -572,6 +609,10 @@
       border-radius: var(--radius);
       background: rgba(255,255,255,.06);
       padding: 9px 11px;
+    }
+
+    .filter-select {
+      flex: 0 1 180px;
     }
 
     .team-layout {
@@ -739,12 +780,14 @@
         <div class="stat"><span>NFL Points</span><strong id="points">0</strong></div>
         <div class="stat"><span>Rings</span><strong id="rings">0</strong></div>
         <div class="stat"><span>Trophy Tokens</span><strong id="tokens">0</strong></div>
+        <div class="stat"><span>Team Tokens</span><strong id="teamTokens">0</strong></div>
       </div>
     </header>
 
     <nav class="tabs" aria-label="Game screens">
       <button class="tab active" data-tab="roll">Roll</button>
       <button class="tab" data-tab="dex">NFL Dex</button>
+      <button class="tab" data-tab="teams">Teams</button>
       <button class="tab" data-tab="team">Team</button>
       <button class="tab" data-tab="battle">Battles</button>
       <button class="tab" data-tab="areas">Areas</button>
@@ -773,6 +816,7 @@
                 <div class="portrait"><div class="card-art" id="cardPortrait">🏈</div></div>
                 <h2 class="player-name" id="cardName">Ready to Roll</h2>
                 <div class="rarity-pill" id="cardRarity">Common</div>
+                <div class="meta" id="cardTeam">Team · Division · Card #</div>
                 <div class="ability" id="cardAbility">Roll to reveal an NFL player card.</div>
               </article>
             </div>
@@ -830,6 +874,36 @@
         </div>
       </section>
 
+      <section id="teams" class="screen">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Team Dex</h2>
+            <strong id="teamDexSummary">0 / 32 Teams</strong>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <input class="search" id="teamSearch" placeholder="Search teams, divisions, conferences..." />
+              <button data-division="All" class="divisionFilter primary">All</button>
+              <button data-division="AFC" class="divisionFilter">AFC</button>
+              <button data-division="NFC" class="divisionFilter">NFC</button>
+              <button data-division="AFC East" class="divisionFilter">AFC East</button>
+              <button data-division="AFC North" class="divisionFilter">AFC North</button>
+              <button data-division="AFC South" class="divisionFilter">AFC South</button>
+              <button data-division="AFC West" class="divisionFilter">AFC West</button>
+              <button data-division="NFC East" class="divisionFilter">NFC East</button>
+              <button data-division="NFC North" class="divisionFilter">NFC North</button>
+              <button data-division="NFC South" class="divisionFilter">NFC South</button>
+              <button data-division="NFC West" class="divisionFilter">NFC West</button>
+            </div>
+            <div class="progress-wrap" style="margin-top:0; margin-bottom:14px;">
+              <div class="bar"><span id="teamDexBar"></span></div>
+              <div class="meta" id="teamDexTracker">Collect Every Team. Build Your Dynasty.</div>
+            </div>
+            <div id="teamDexGrid" class="team-dex-grid"></div>
+          </div>
+        </div>
+      </section>
+
       <section id="team" class="screen">
         <div class="team-layout">
           <div class="panel">
@@ -849,6 +923,17 @@
               <strong id="inventoryLabel">0 Cards</strong>
             </div>
             <div class="panel-body">
+              <div class="toolbar">
+                <select class="filter-select" id="inventoryTeamFilter"></select>
+                <select class="filter-select" id="inventoryRarityFilter"></select>
+                <select class="filter-select" id="inventoryPositionFilter"></select>
+                <select class="filter-select" id="inventorySort">
+                  <option value="newest">Newest Collected</option>
+                  <option value="overall">Overall Rating</option>
+                  <option value="rarity">Rarity</option>
+                  <option value="team">Team</option>
+                </select>
+              </div>
               <div id="inventoryGrid" class="inventory-grid"></div>
             </div>
           </div>
@@ -886,6 +971,36 @@
             <div class="battle-log" id="battleLog">Build a six-player squad and challenge NPC teams to unlock stronger stadiums.</div>
           </div>
         </div>
+        <div class="panel" style="margin-top:16px;">
+          <div class="panel-head">
+            <h2>Team Battles</h2>
+            <strong id="teamBattleReward">Team Tokens</strong>
+          </div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <select class="filter-select" id="teamBattleSelect"></select>
+              <button class="primary" id="teamBattleBtn">Challenge Team</button>
+            </div>
+            <div class="battle-stage">
+              <div class="score-card">
+                <h3>Your Dynasty</h3>
+                <div class="meta">Power Score</div>
+                <h2 id="teamBattleYourPower">0</h2>
+                <div class="meta">Team Boosts</div>
+                <h2 id="teamBoostLabel">0 Active</h2>
+              </div>
+              <div class="vs">VS</div>
+              <div class="score-card">
+                <h3 id="teamBattleName">Dallas Cowboys Team</h3>
+                <div class="meta">Required Power</div>
+                <h2 id="teamBattlePower">700</h2>
+                <div class="meta">Rewards</div>
+                <h2>Coins · XP · Tokens · Luck</h2>
+              </div>
+            </div>
+            <div class="battle-log" id="teamBattleLog">Defeat team-themed opponents to earn Team Tokens and boost future odds for that team.</div>
+          </div>
+        </div>
       </section>
 
       <section id="areas" class="screen">
@@ -920,6 +1035,11 @@
           </div>
           <div class="panel-body">
             <div id="shopGrid" class="shop-grid"></div>
+            <h2 style="margin:18px 0 10px;">Team Crates</h2>
+            <div class="toolbar">
+              <input class="search" id="crateSearch" placeholder="Search team crates..." />
+            </div>
+            <div id="crateGrid" class="crate-grid"></div>
           </div>
         </div>
       </section>
@@ -963,6 +1083,74 @@
       { name: "GOAT", key: "goat", chance: 0.04, bonus: 3.35, min: 97, color: "#f4f1e8" },
       { name: "Mythic", key: "mythic", chance: 0.01, bonus: 4.5, min: 99, color: "#54e3ff" }
     ];
+
+    const nflTeams = [
+      { id: "buf", name: "Buffalo Bills", division: "AFC East", conference: "AFC", primary: "#00338d", secondary: "#c60c30", badge: "BUF" },
+      { id: "mia", name: "Miami Dolphins", division: "AFC East", conference: "AFC", primary: "#008e97", secondary: "#fc4c02", badge: "MIA" },
+      { id: "ne", name: "New England Patriots", division: "AFC East", conference: "AFC", primary: "#002244", secondary: "#c60c30", badge: "NE" },
+      { id: "nyj", name: "New York Jets", division: "AFC East", conference: "AFC", primary: "#125740", secondary: "#ffffff", badge: "NYJ" },
+      { id: "bal", name: "Baltimore Ravens", division: "AFC North", conference: "AFC", primary: "#241773", secondary: "#9e7c0c", badge: "BAL" },
+      { id: "cin", name: "Cincinnati Bengals", division: "AFC North", conference: "AFC", primary: "#fb4f14", secondary: "#000000", badge: "CIN" },
+      { id: "cle", name: "Cleveland Browns", division: "AFC North", conference: "AFC", primary: "#311d00", secondary: "#ff3c00", badge: "CLE" },
+      { id: "pit", name: "Pittsburgh Steelers", division: "AFC North", conference: "AFC", primary: "#ffb612", secondary: "#101820", badge: "PIT" },
+      { id: "hou", name: "Houston Texans", division: "AFC South", conference: "AFC", primary: "#03202f", secondary: "#a71930", badge: "HOU" },
+      { id: "ind", name: "Indianapolis Colts", division: "AFC South", conference: "AFC", primary: "#002c5f", secondary: "#a2aaad", badge: "IND" },
+      { id: "jax", name: "Jacksonville Jaguars", division: "AFC South", conference: "AFC", primary: "#006778", secondary: "#d7a22a", badge: "JAX" },
+      { id: "ten", name: "Tennessee Titans", division: "AFC South", conference: "AFC", primary: "#4b92db", secondary: "#c8102e", badge: "TEN" },
+      { id: "den", name: "Denver Broncos", division: "AFC West", conference: "AFC", primary: "#fb4f14", secondary: "#002244", badge: "DEN" },
+      { id: "kc", name: "Kansas City Chiefs", division: "AFC West", conference: "AFC", primary: "#e31837", secondary: "#ffb81c", badge: "KC" },
+      { id: "lv", name: "Las Vegas Raiders", division: "AFC West", conference: "AFC", primary: "#000000", secondary: "#a5acaf", badge: "LV" },
+      { id: "lac", name: "Los Angeles Chargers", division: "AFC West", conference: "AFC", primary: "#0080c6", secondary: "#ffc20e", badge: "LAC" },
+      { id: "dal", name: "Dallas Cowboys", division: "NFC East", conference: "NFC", primary: "#003594", secondary: "#869397", badge: "DAL" },
+      { id: "nyg", name: "New York Giants", division: "NFC East", conference: "NFC", primary: "#0b2265", secondary: "#a71930", badge: "NYG" },
+      { id: "phi", name: "Philadelphia Eagles", division: "NFC East", conference: "NFC", primary: "#004c54", secondary: "#a5acaf", badge: "PHI" },
+      { id: "was", name: "Washington Commanders", division: "NFC East", conference: "NFC", primary: "#5a1414", secondary: "#ffb612", badge: "WAS" },
+      { id: "chi", name: "Chicago Bears", division: "NFC North", conference: "NFC", primary: "#0b162a", secondary: "#c83803", badge: "CHI" },
+      { id: "det", name: "Detroit Lions", division: "NFC North", conference: "NFC", primary: "#0076b6", secondary: "#b0b7bc", badge: "DET" },
+      { id: "gb", name: "Green Bay Packers", division: "NFC North", conference: "NFC", primary: "#203731", secondary: "#ffb612", badge: "GB" },
+      { id: "min", name: "Minnesota Vikings", division: "NFC North", conference: "NFC", primary: "#4f2683", secondary: "#ffc62f", badge: "MIN" },
+      { id: "atl", name: "Atlanta Falcons", division: "NFC South", conference: "NFC", primary: "#a71930", secondary: "#000000", badge: "ATL" },
+      { id: "car", name: "Carolina Panthers", division: "NFC South", conference: "NFC", primary: "#0085ca", secondary: "#101820", badge: "CAR" },
+      { id: "no", name: "New Orleans Saints", division: "NFC South", conference: "NFC", primary: "#d3bc8d", secondary: "#101820", badge: "NO" },
+      { id: "tb", name: "Tampa Bay Buccaneers", division: "NFC South", conference: "NFC", primary: "#d50a0a", secondary: "#34302b", badge: "TB" },
+      { id: "ari", name: "Arizona Cardinals", division: "NFC West", conference: "NFC", primary: "#97233f", secondary: "#ffb612", badge: "ARI" },
+      { id: "lar", name: "Los Angeles Rams", division: "NFC West", conference: "NFC", primary: "#003594", secondary: "#ffa300", badge: "LAR" },
+      { id: "sf", name: "San Francisco 49ers", division: "NFC West", conference: "NFC", primary: "#aa0000", secondary: "#b3995d", badge: "SF" },
+      { id: "sea", name: "Seattle Seahawks", division: "NFC West", conference: "NFC", primary: "#002244", secondary: "#69be28", badge: "SEA" }
+    ];
+
+    const knownTeamByName = {
+      "Mac Jones": "ne", "Kenny Pickett": "pit", "Zach Wilson": "nyj", "Baker Mayfield": "tb", "Tony Pollard": "dal", "Courtland Sutton": "den",
+      "Dak Prescott": "dal", "Kirk Cousins": "min", "Deebo Samuel": "sf", "Jalen Hurts": "phi", "Lamar Jackson": "bal", "Tyreek Hill": "mia",
+      "Josh Allen": "buf", "Joe Burrow": "cin", "Justin Jefferson": "min", "Peyton Manning": "ind", "Jerry Rice": "sf", "Randy Moss": "min",
+      "Tom Brady": "ne", "Barry Sanders": "det", "Lawrence Taylor": "nyg", "Prime Tom Brady": "ne", "Prime Jerry Rice": "sf", "Prime Patrick Mahomes": "kc",
+      "Prime Deion Sanders": "dal", "Gardner Minshew": "ind", "Aidan O'Connell": "lv", "Tyler Allgeier": "atl", "Michael Wilson": "ari", "Jalin Hyatt": "nyg",
+      "Chase Brown": "cin", "Rico Dowdle": "dal", "Luke Musgrave": "gb", "Josh Downs": "ind", "Trey Palmer": "tb", "Sam Howell": "was", "Desmond Ridder": "atl",
+      "Chuba Hubbard": "car", "Khalil Shakir": "buf", "Wan'Dale Robinson": "nyg", "Noah Fant": "sea", "Ty Chandler": "min", "Demario Douglas": "ne",
+      "Roschon Johnson": "chi", "Darnell Mooney": "chi", "Jahan Dotson": "was", "Jerome Ford": "cle", "Tyjae Spears": "ten", "Quentin Johnston": "lac",
+      "Marvin Mims Jr.": "den", "Geno Smith": "sea", "Derek Carr": "no", "Najee Harris": "pit", "Brian Robinson Jr.": "was", "D'Andre Swift": "phi",
+      "David Montgomery": "det", "Romeo Doubs": "gb", "Christian Watson": "gb", "Rashid Shaheed": "no", "Jakobi Meyers": "lv", "Dallas Goedert": "phi",
+      "Pat Freiermuth": "pit", "Cole Kmet": "chi", "Talanoa Hufanga": "sf", "DaRon Bland": "dal", "Jaelan Phillips": "mia", "Kayvon Thibodeaux": "nyg",
+      "Logan Wilson": "cin", "Jordyn Brooks": "sea", "Alim McNeill": "det", "Jordan Love": "gb", "Brock Purdy": "sf", "Kenneth Walker III": "sea",
+      "James Cook": "buf", "Zay Flowers": "bal", "Tank Dell": "hou", "George Pickens": "pit", "Brian Branch": "det", "Sam LaPorta": "det", "Jayden Reed": "gb",
+      "Tua Tagovailoa": "mia", "Trevor Lawrence": "jax", "Kyren Williams": "lar", "Rachaad White": "tb", "Chris Olave": "no", "Garrett Wilson": "nyj",
+      "Terry McLaurin": "was", "Tee Higgins": "cin", "Kyle Pitts": "atl", "Patrick Surtain II": "den", "Antoine Winfield Jr.": "tb", "Trevon Diggs": "dal",
+      "Quinnen Williams": "nyj", "Aidan Hutchinson": "det", "Derrick Henry": "ten", "CJ Stroud": "hou", "Jared Goff": "det", "DeVonta Smith": "phi",
+      "DK Metcalf": "sea", "Amon-Ra St. Brown": "det", "Maxx Crosby": "lv", "Fred Warner": "sf", "Micah Parsons": "dal", "Sauce Gardner": "nyj",
+      "Kyle Hamilton": "bal", "CeeDee Lamb": "dal", "A.J. Brown": "phi", "Stefon Diggs": "buf", "Puka Nacua": "lar", "Travis Etienne Jr.": "jax",
+      "Breece Hall": "nyj", "Bijan Robinson": "atl", "Mark Andrews": "bal", "George Kittle": "sf", "Trent McDuffie": "kc", "Roquan Smith": "bal",
+      "Chris Jones": "kc", "Dexter Lawrence": "nyg", "Derwin James": "lac", "Justin Herbert": "lac", "Patrick Mahomes": "kc", "Ja'Marr Chase": "cin",
+      "Christian McCaffrey": "sf", "Nick Bosa": "sf", "T.J. Watt": "pit", "Travis Kelce": "kc", "Davante Adams": "lv", "Aaron Donald": "lar",
+      "Myles Garrett": "cle", "Jalen Ramsey": "mia", "Saquon Barkley": "nyg", "Khalil Mack": "lac", "Cooper Kupp": "lar", "Von Miller": "buf",
+      "Bobby Wagner": "sea", "Aaron Rodgers": "nyj", "Matthew Stafford": "lar", "Mike Evans": "tb", "Lane Johnson": "phi", "Minkah Fitzpatrick": "pit",
+      "Brett Favre": "gb", "Walter Payton": "chi", "Emmitt Smith": "dal", "Ray Lewis": "bal", "Ed Reed": "bal", "Deion Sanders": "dal",
+      "Joe Montana": "sf", "Dan Marino": "mia", "Reggie White": "gb", "Bruce Smith": "buf", "Tony Gonzalez": "kc", "LaDainian Tomlinson": "lac",
+      "Calvin Johnson": "det", "Troy Polamalu": "pit", "Champ Bailey": "den", "Steve Young": "sf", "Prime Lawrence Taylor": "nyg",
+      "Prime Barry Sanders": "det", "Prime Randy Moss": "min", "Prime Peyton Manning": "ind", "Prime Walter Payton": "chi", "Prime Ray Lewis": "bal",
+      "Prime Reggie White": "gb", "Golden Brady": "tb", "Golden Mahomes": "kc", "Shadow Deion Sanders": "dal", "Galactic Jerry Rice": "sf",
+      "Ultimate GOAT Brady": "ne", "Celestial Barry Sanders": "det", "Neon Randy Moss": "min", "Omega Lawrence Taylor": "nyg",
+      "Infinity Patrick Mahomes": "kc", "Eternal Jerry Rice": "sf"
+    };
 
     const basePlayers = [
       { id: "mac-jones", name: "Mac Jones", rarity: "Common", position: "QB", overall: 72, ability: "Pocket Rhythm: small coin bonus after three common pulls.", icon: "🎯" },
@@ -1079,7 +1267,22 @@
       update: "Roster Expansion"
     })));
 
-    const players = [...basePlayers, ...expansionPlayers];
+    const withTeamData = (player, index) => {
+      const teamId = knownTeamByName[player.name] || nflTeams[index % nflTeams.length].id;
+      const team = nflTeams.find(t => t.id === teamId) || nflTeams[index % nflTeams.length];
+      return {
+        ...player,
+        teamId: team.id,
+        team: team.name,
+        division: team.division,
+        conference: team.conference,
+        teamPrimary: team.primary,
+        teamSecondary: team.secondary,
+        cardNumber: `${team.badge}-${String(index + 1).padStart(3, "0")}`
+      };
+    };
+
+    const players = [...basePlayers, ...expansionPlayers].map(withTeamData);
 
     const areas = [
       { id: "high-school", name: "High School Field", required: 0, luck: 0, power: 250, reward: 75 },
@@ -1105,7 +1308,13 @@
       { id: "update-one-scout", name: "Update 1 Scout", text: "Collect 10 roster expansion players.", test: s => countOwnedExpansion(s) >= 10, reward: { coins: 1000 } },
       { id: "update-one-star", name: "Update 1 Star", text: "Collect 25 roster expansion players.", test: s => countOwnedExpansion(s) >= 25, reward: { points: 100 } },
       { id: "update-one-master", name: "Update 1 Master", text: "Collect 50 roster expansion players.", test: s => countOwnedExpansion(s) >= 50, reward: { rings: 2, tokens: 2 } },
-      { id: "century-club", name: "Century Club", text: "Collect 100 total NFL players.", test: s => Object.keys(s.dex).length >= 100, reward: { rings: 4, tokens: 6 } }
+      { id: "century-club", name: "Century Club", text: "Collect 100 total NFL players.", test: s => Object.keys(s.dex).length >= 100, reward: { rings: 4, tokens: 6 } },
+      { id: "first-team-player", name: "First Team Player", text: "Unlock your first team-based player card.", test: s => ownedTeamCount(s) >= 1, reward: { teamTokens: 10 } },
+      { id: "team-collector", name: "Team Collector", text: "Collect cards from 10 different teams.", test: s => ownedTeamCount(s) >= 10, reward: { teamTokens: 35, coins: 700 } },
+      { id: "division-master", name: "Division Master", text: "Complete every team in one division.", test: s => divisions().some(d => divisionComplete(s, d)), reward: { teamTokens: 120, rings: 1 } },
+      { id: "afc-champion", name: "AFC Champion", text: "Complete all AFC teams.", test: s => conferenceComplete(s, "AFC"), reward: { teamTokens: 250, rings: 2 } },
+      { id: "nfc-champion", name: "NFC Champion", text: "Complete all NFC teams.", test: s => conferenceComplete(s, "NFC"), reward: { teamTokens: 250, rings: 2 } },
+      { id: "nfl-master", name: "NFL Master", text: "Complete every NFL team collection.", test: s => nflTeams.every(t => teamComplete(s, t.id)), reward: { teamTokens: 600, rings: 6, tokens: 10 } }
     ];
 
     const shop = [
@@ -1115,7 +1324,10 @@
       { id: "faster-rolls", name: "Faster Rolls", text: "Auto Roll runs faster.", cost: { coins: 900 }, once: true, flag: "fasterRolls" },
       { id: "extra-team", name: "Extra Team Slots", text: "Team can equip 8 players.", cost: { rings: 1, tokens: 2 }, once: true, flag: "extraTeam" },
       { id: "double-coins", name: "Double Coins", text: "Battle coin rewards doubled.", cost: { points: 120 }, once: true, flag: "doubleCoins" },
-      { id: "mythic-tracker", name: "Mythic Tracker", text: "Shows pity progress toward elite pulls.", cost: { tokens: 4 }, once: true, flag: "mythicTracker" }
+      { id: "mythic-tracker", name: "Mythic Tracker", text: "Shows pity progress toward elite pulls.", cost: { tokens: 4 }, once: true, flag: "mythicTracker" },
+      { id: "team-background-pack", name: "Team Background Pack", text: "Unlocks special team-card backgrounds for completed teams.", cost: { teamTokens: 90 }, once: true, flag: "teamBackgroundPack" },
+      { id: "card-upgrade-kit", name: "Card Upgrade Kit", text: "Increases inventory size and adds 8 luck rolls.", cost: { teamTokens: 55 }, buy: s => { s.inventorySize += 10; s.luckRolls += 8; } },
+      { id: "team-odds-boost", name: "Team Odds Boost", text: "Adds a global team-focused luck boost for 12 rolls.", cost: { teamTokens: 45 }, buy: s => { s.luckRolls += 12; } }
     ];
 
     const defaultState = {
@@ -1123,6 +1335,7 @@
       points: 30,
       rings: 0,
       tokens: 0,
+      teamTokens: 25,
       rolls: 0,
       xp: 0,
       level: 1,
@@ -1136,6 +1349,10 @@
       luckRolls: 0,
       premiumTickets: 1,
       flags: {},
+      teamLuck: {},
+      teamBadges: {},
+      teamBackgrounds: {},
+      claimedTeamRewards: {},
       unlockedAreas: ["high-school"],
       activeArea: "high-school",
       npcIndex: 0,
@@ -1147,6 +1364,7 @@
     let autoTimer = null;
     let fastMode = false;
     let dexFilter = "All";
+    let teamDexFilter = "All";
 
     const $ = id => document.getElementById(id);
     const rarityByName = name => rarities.find(r => r.name === name);
@@ -1163,6 +1381,11 @@
       try {
         const loaded = { ...structuredClone(defaultState), ...JSON.parse(raw) };
         loaded.inventorySize = Math.max(loaded.inventorySize || 0, defaultState.inventorySize);
+        loaded.teamTokens = loaded.teamTokens || 0;
+        loaded.teamLuck = loaded.teamLuck || {};
+        loaded.teamBadges = loaded.teamBadges || {};
+        loaded.teamBackgrounds = loaded.teamBackgrounds || {};
+        loaded.claimedTeamRewards = loaded.claimedTeamRewards || {};
         return loaded;
       } catch {
         return structuredClone(defaultState);
@@ -1212,6 +1435,51 @@
       return weighted[0];
     }
 
+    function pickPlayerFromPool(pool) {
+      const weighted = pool.map(player => ({
+        player,
+        weight: 1 + ((state.teamLuck && state.teamLuck[player.teamId]) || 0)
+      }));
+      const total = weighted.reduce((sum, item) => sum + item.weight, 0);
+      let roll = Math.random() * total;
+      for (const item of weighted) {
+        roll -= item.weight;
+        if (roll <= 0) return item.player;
+      }
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function addPlayerCard(player, isPremium = false) {
+      const wasNew = !state.dex[player.id];
+      const card = { uid: createUid(), id: player.id, pulledAt: Date.now() };
+
+      if (state.inventory.length >= inventoryCap()) {
+        const removed = state.inventory.shift();
+        state.team = state.team.filter(uid => uid !== removed.uid);
+      }
+
+      state.inventory.push(card);
+      state.dex[player.id] = true;
+      state.rolls += 1;
+      state.pity = rarityIndex(player.rarity) >= 3 ? 0 : state.pity + 1;
+      if (state.luckRolls > 0) state.luckRolls -= 1;
+
+      const rewardCoins = Math.max(8, Math.round(player.overall * rarityByName(player.rarity).bonus / 10));
+      state.coins += rewardCoins;
+      state.xp += Math.round(12 + player.overall / 6 + rarityIndex(player.rarity) * 7);
+      if (isPremium) state.points += rarityIndex(player.rarity) + 1;
+
+      state.recent.unshift({ id: player.id, rarity: player.rarity, overall: player.overall, isNew: wasNew, time: Date.now() });
+      state.recent = state.recent.slice(0, 18);
+
+      renderCard(player, true, wasNew);
+      if (wasNew) checkTeamRewards(player.teamId);
+      if (rarityIndex(player.rarity) >= 2) crowd(player);
+      if (rarityIndex(player.rarity) >= 4) celebrate(rarityByName(player.rarity).color);
+      if (player.rarity === "Mythic") $("lights").classList.add("flash");
+      setTimeout(() => $("lights").classList.remove("flash"), 1500);
+    }
+
     function rollPlayer(isPremium = false) {
       const delay = fastMode || state.flags.fasterRolls ? 130 : 520;
       $("rollBtn").disabled = true;
@@ -1220,34 +1488,8 @@
       setTimeout(() => {
         const rarity = pickRarity(isPremium);
         const pool = players.filter(p => p.rarity === rarity.name);
-        const player = pool[Math.floor(Math.random() * pool.length)];
-        const wasNew = !state.dex[player.id];
-        const card = { uid: createUid(), id: player.id, pulledAt: Date.now() };
-
-        if (state.inventory.length >= inventoryCap()) {
-          const removed = state.inventory.shift();
-          state.team = state.team.filter(uid => uid !== removed.uid);
-        }
-
-        state.inventory.push(card);
-        state.dex[player.id] = true;
-        state.rolls += 1;
-        state.pity = rarityIndex(player.rarity) >= 3 ? 0 : state.pity + 1;
-        if (state.luckRolls > 0) state.luckRolls -= 1;
-
-        const rewardCoins = Math.max(8, Math.round(player.overall * rarityByName(player.rarity).bonus / 10));
-        state.coins += rewardCoins;
-        state.xp += Math.round(12 + player.overall / 6 + rarityIndex(player.rarity) * 7);
-        if (isPremium) state.points += rarityIndex(player.rarity) + 1;
-
-        state.recent.unshift({ id: player.id, rarity: player.rarity, overall: player.overall, isNew: wasNew, time: Date.now() });
-        state.recent = state.recent.slice(0, 18);
-
-        renderCard(player, true, wasNew);
-        if (rarityIndex(player.rarity) >= 2) crowd(player);
-        if (rarityIndex(player.rarity) >= 4) celebrate(rarityByName(player.rarity).color);
-        if (player.rarity === "Mythic") $("lights").classList.add("flash");
-        setTimeout(() => $("lights").classList.remove("flash"), 1500);
+        const player = pickPlayerFromPool(pool);
+        addPlayerCard(player, isPremium);
 
         levelCheck();
         unlockAreas();
@@ -1341,6 +1583,55 @@
       return players.filter(p => p.update === "Roster Expansion" && s.dex[p.id]).length;
     }
 
+    function teamPlayers(teamId) {
+      return players.filter(p => p.teamId === teamId);
+    }
+
+    function ownedTeamPlayers(s, teamId) {
+      return teamPlayers(teamId).filter(p => s.dex[p.id]);
+    }
+
+    function teamProgress(s, teamId) {
+      const total = teamPlayers(teamId).length;
+      const owned = ownedTeamPlayers(s, teamId).length;
+      return { owned, total, percent: total ? Math.round((owned / total) * 100) : 0 };
+    }
+
+    function teamComplete(s, teamId) {
+      const progress = teamProgress(s, teamId);
+      return progress.total > 0 && progress.owned >= progress.total;
+    }
+
+    function divisions() {
+      return [...new Set(nflTeams.map(team => team.division))];
+    }
+
+    function divisionComplete(s, division) {
+      return nflTeams.filter(team => team.division === division).every(team => teamComplete(s, team.id));
+    }
+
+    function conferenceComplete(s, conference) {
+      return nflTeams.filter(team => team.conference === conference).every(team => teamComplete(s, team.id));
+    }
+
+    function ownedTeamCount(s) {
+      return nflTeams.filter(team => teamProgress(s, team.id).owned > 0).length;
+    }
+
+    function checkTeamRewards(teamId) {
+      if (!teamComplete(state, teamId) || state.claimedTeamRewards[teamId]) return;
+      const team = nflTeams.find(t => t.id === teamId);
+      state.claimedTeamRewards[teamId] = true;
+      state.teamBadges[teamId] = true;
+      state.teamBackgrounds[teamId] = true;
+      state.teamLuck[teamId] = ((state.teamLuck && state.teamLuck[teamId]) || 0) + .35;
+      state.coins += 1500;
+      state.teamTokens += 75;
+      state.luckRolls += 15;
+      celebrate(team.primary);
+      toast(`${team.name} set complete: badge, background, coins, Team Tokens, and luck boost earned.`);
+    }
+
     function checkAchievements() {
       achievements.forEach(a => {
         if (!state.claimedAchievements[a.id] && a.test(state)) {
@@ -1349,6 +1640,8 @@
           if (a.reward.points) state.points += a.reward.points;
           if (a.reward.rings) state.rings += a.reward.rings;
           if (a.reward.tokens) state.tokens += a.reward.tokens;
+          if (a.reward.teamTokens) state.teamTokens += a.reward.teamTokens;
+          if (a.reward.luckRolls) state.luckRolls += a.reward.luckRolls;
           toast(`Achievement unlocked: ${a.name}`);
         }
       });
@@ -1358,6 +1651,9 @@
       const rarity = rarityByName(player.rarity);
       const card = $("resultCard");
       card.className = `card ${rarity.key}`;
+      if ((state.teamBackgrounds && state.teamBackgrounds[player.teamId]) || state.flags.teamBackgroundPack) card.classList.add("team-bg");
+      card.style.setProperty("--team-primary", player.teamPrimary || "#15904b");
+      card.style.setProperty("--team-secondary", player.teamSecondary || "#f5c84c");
       if (animate) {
         card.classList.remove("roll");
         card.classList.remove("walkout");
@@ -1370,6 +1666,7 @@
       $("cardPortrait").textContent = player.icon;
       $("cardName").textContent = player.name;
       $("cardRarity").textContent = player.rarity;
+      $("cardTeam").textContent = `${player.team || "Free Agent"} · ${player.division || "NFL"} · ${player.cardNumber || "NFL-000"}`;
       $("cardAbility").textContent = player.ability;
     }
 
@@ -1378,6 +1675,7 @@
       $("points").textContent = fmt(state.points);
       $("rings").textContent = fmt(state.rings);
       $("tokens").textContent = fmt(state.tokens);
+      $("teamTokens").textContent = fmt(state.teamTokens);
       $("level").textContent = state.level;
       $("prestige").textContent = state.prestige;
       $("xpText").textContent = `${fmt(state.xp)} / ${fmt(xpNeeded())}`;
@@ -1388,11 +1686,13 @@
 
       renderFeed();
       renderDex();
+      renderTeamDex();
       renderTeam();
       renderBattles();
       renderAreas();
       renderShowcase();
       renderShop();
+      renderCrates();
       renderAchievements();
     }
 
@@ -1402,7 +1702,7 @@
         const rarity = rarityByName(p.rarity);
         return `<div class="feed-item" style="--rarity:${rarity.color}">
           <div class="mini-ball">${p.position}</div>
-          <div><strong>${item.isNew ? "NEW · " : ""}${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.ability}</div></div>
+          <div><strong>${item.isNew ? "NEW · " : ""}${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.team} · ${p.position}</div></div>
           <strong>${p.overall}</strong>
         </div>`;
       }).join("") || `<div class="meta">No pulls yet. Your first walkout is waiting.</div>`;
@@ -1412,7 +1712,7 @@
       const search = $("dexSearch").value.trim().toLowerCase();
       const legendaryIndex = rarityIndex("Legendary");
       const visible = players.filter(p => {
-        const matchesSearch = [p.name, p.rarity, p.position, p.ability].join(" ").toLowerCase().includes(search);
+        const matchesSearch = [p.name, p.rarity, p.position, p.team, p.division, p.ability].join(" ").toLowerCase().includes(search);
         const owned = !!state.dex[p.id];
         if (!matchesSearch) return false;
         if (dexFilter === "Missing") return !owned;
@@ -1427,8 +1727,35 @@
         const rarity = rarityByName(p.rarity);
         return `<div class="dex-card ${owned ? "" : "missing"}" style="--rarity:${rarity.color}">
           <h3 class="small-title">${owned ? p.name : "Unknown Player"}</h3>
-          <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${owned ? p.overall + " OVR" : "?? OVR"}</div>
+          <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${p.team} · ${p.division}</div>
+          <div class="meta">${owned ? p.overall + " OVR · " + p.cardNumber : "?? OVR · Card hidden"}</div>
           <div class="meta">${owned ? p.ability : "Roll this card to reveal its ability."}</div>
+        </div>`;
+      }).join("");
+    }
+
+    function renderTeamDex() {
+      const search = $("teamSearch").value.trim().toLowerCase();
+      const completed = nflTeams.filter(team => teamComplete(state, team.id)).length;
+      const visible = nflTeams.filter(team => {
+        const matchesSearch = [team.name, team.division, team.conference, team.badge].join(" ").toLowerCase().includes(search);
+        const matchesDivision = teamDexFilter === "All" || team.conference === teamDexFilter || team.division === teamDexFilter;
+        return matchesSearch && matchesDivision;
+      });
+      $("teamDexSummary").textContent = `${completed} / ${nflTeams.length} Teams`;
+      $("teamDexBar").style.width = `${completed / nflTeams.length * 100}%`;
+      $("teamDexTracker").textContent = `${ownedTeamCount(state)} teams started · ${completed} complete · ${fmt(state.teamTokens)} Team Tokens`;
+      $("teamDexGrid").innerHTML = visible.map(team => {
+        const progress = teamProgress(state, team.id);
+        const complete = teamComplete(state, team.id);
+        const reward = state.claimedTeamRewards[team.id] ? "Reward claimed" : "Full set: 1,500 coins, +15 luck rolls, 75 Team Tokens, badge, background";
+        return `<div class="team-dex-card ${complete ? "team-complete" : ""}" style="--team-primary:${team.primary}; --team-secondary:${team.secondary}">
+          <div class="team-badge">${team.badge}</div>
+          <h3 class="small-title">${team.name}</h3>
+          <div class="meta">${team.division} · ${progress.owned} / ${progress.total} players · ${progress.percent}%</div>
+          <div class="bar" style="margin:10px 0;"><span style="width:${progress.percent}%"></span></div>
+          <div class="meta">${reward}</div>
+          <button style="margin-top:10px;" data-crate="${team.id}">${team.badge} Crate</button>
         </div>`;
       }).join("");
     }
@@ -1454,6 +1781,12 @@
       }, 0);
     }
 
+    function setSelectOptions(select, options, selected) {
+      const current = selected || select.value;
+      select.innerHTML = options.map(option => `<option value="${option.value}">${option.label}</option>`).join("");
+      select.value = options.some(option => option.value === current) ? current : options[0].value;
+    }
+
     function renderTeam() {
       const slots = maxTeamSlots();
       $("teamCount").textContent = `${state.team.length} / ${slots}`;
@@ -1469,19 +1802,42 @@
         const rarity = rarityByName(p.rarity);
         return `<div class="team-slot" style="--rarity:${rarity.color}">
           <div class="mini-ball">${p.position}</div>
-          <div><strong>${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.overall} OVR</div></div>
+          <div><strong>${p.name}</strong><div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.team} · ${p.overall} OVR</div></div>
           <button data-unequip="${card.uid}">Bench</button>
         </div>`;
       }).join("");
 
-      const sorted = [...state.inventory].sort((a, b) => playerForCard(b).overall - playerForCard(a).overall);
+      setSelectOptions($("inventoryTeamFilter"), [{ value: "All", label: "All Teams" }, ...nflTeams.map(team => ({ value: team.id, label: team.name }))]);
+      setSelectOptions($("inventoryRarityFilter"), [{ value: "All", label: "All Rarities" }, ...rarities.map(r => ({ value: r.name, label: r.name }))]);
+      setSelectOptions($("inventoryPositionFilter"), [{ value: "All", label: "All Positions" }, ...[...new Set(players.map(p => p.position))].sort().map(position => ({ value: position, label: position }))]);
+
+      const teamFilter = $("inventoryTeamFilter").value;
+      const rarityFilter = $("inventoryRarityFilter").value;
+      const positionFilter = $("inventoryPositionFilter").value;
+      const sortMode = $("inventorySort").value;
+      const sorted = [...state.inventory]
+        .filter(card => {
+          const p = playerForCard(card);
+          return (teamFilter === "All" || p.teamId === teamFilter)
+            && (rarityFilter === "All" || p.rarity === rarityFilter)
+            && (positionFilter === "All" || p.position === positionFilter);
+        })
+        .sort((a, b) => {
+          const pa = playerForCard(a);
+          const pb = playerForCard(b);
+          if (sortMode === "newest") return b.pulledAt - a.pulledAt;
+          if (sortMode === "rarity") return rarityIndex(pb.rarity) - rarityIndex(pa.rarity) || pb.overall - pa.overall;
+          if (sortMode === "team") return pa.team.localeCompare(pb.team) || pb.overall - pa.overall;
+          return pb.overall - pa.overall;
+        });
       $("inventoryGrid").innerHTML = sorted.map(card => {
         const p = playerForCard(card);
         const rarity = rarityByName(p.rarity);
         const equipped = state.team.includes(card.uid);
-        return `<div class="inventory-card" style="--rarity:${rarity.color}">
+        return `<div class="inventory-card" style="--rarity:${rarity.color}; --team-primary:${p.teamPrimary}; --team-secondary:${p.teamSecondary}">
           <h3 class="small-title">${p.name}</h3>
           <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${p.overall} OVR</div>
+          <div class="meta">${p.team} · ${p.division} · ${p.cardNumber}</div>
           <div class="meta">${p.ability}</div>
           <button style="margin-top:10px;" data-equip="${card.uid}" ${equipped ? "disabled" : ""}>${equipped ? "Equipped" : "Equip"}</button>
         </div>`;
@@ -1524,6 +1880,44 @@
       $("npcName").textContent = enemy.name;
       $("npcPower").textContent = fmt(enemy.power);
       $("npcRewards").textContent = `${fmt(enemy.reward)} Coins`;
+      setSelectOptions($("teamBattleSelect"), nflTeams.map(team => ({ value: team.id, label: `${team.name} Team` })), $("teamBattleSelect").value || "dal");
+      const selectedTeam = nflTeams.find(team => team.id === $("teamBattleSelect").value) || nflTeams[16];
+      const teamOwned = teamProgress(state, selectedTeam.id).owned;
+      const required = 620 + nflTeams.indexOf(selectedTeam) * 28 + teamOwned * 24;
+      $("teamBattleName").textContent = `${selectedTeam.name} Team`;
+      $("teamBattlePower").textContent = fmt(required);
+      $("teamBattleYourPower").textContent = fmt(teamPower());
+      $("teamBoostLabel").textContent = `${Object.keys(state.teamLuck || {}).length} Active`;
+      $("teamBattleReward").textContent = `${12 + Math.floor(required / 150)} Team Tokens`;
+    }
+
+    function teamBattle() {
+      if (!teamCards().length) {
+        toast("Equip at least one player first.");
+        return;
+      }
+      const selectedTeam = nflTeams.find(team => team.id === $("teamBattleSelect").value) || nflTeams[16];
+      const owned = teamProgress(state, selectedTeam.id).owned;
+      const required = 620 + nflTeams.indexOf(selectedTeam) * 28 + owned * 24;
+      const yourPower = teamPower() + Math.floor(Math.random() * 220);
+      const enemyPower = required + Math.floor(Math.random() * 180);
+      if (yourPower >= enemyPower) {
+        const coins = Math.round(180 + required / 3);
+        const teamTokens = 12 + Math.floor(required / 150);
+        state.coins += coins;
+        state.xp += Math.round(required / 3);
+        state.teamTokens += teamTokens;
+        state.teamLuck[selectedTeam.id] = (state.teamLuck[selectedTeam.id] || 0) + .08;
+        $("teamBattleLog").innerHTML = `Defeated the ${selectedTeam.name} Team, ${fmt(yourPower)} to ${fmt(enemyPower)}. Earned ${fmt(coins)} coins, XP, ${teamTokens} Team Tokens, and boosted ${selectedTeam.badge} crate odds.`;
+      } else {
+        state.xp += 30;
+        state.teamTokens += 2;
+        $("teamBattleLog").innerHTML = `The ${selectedTeam.name} Team held on, ${fmt(enemyPower)} to ${fmt(yourPower)}. You earned 2 Team Tokens and 30 XP for the attempt.`;
+      }
+      levelCheck();
+      checkAchievements();
+      saveState();
+      render();
     }
 
     function battle() {
@@ -1603,6 +1997,45 @@
           <button style="margin-top:10px;" data-buy="${item.id}" ${owned ? "disabled" : ""}>${owned ? "Owned" : "Buy"}</button>
         </div>`;
       }).join("");
+    }
+
+    function renderCrates() {
+      const search = $("crateSearch").value.trim().toLowerCase();
+      const visible = nflTeams.filter(team => [team.name, team.division, team.badge].join(" ").toLowerCase().includes(search));
+      $("crateGrid").innerHTML = visible.map(team => {
+        const progress = teamProgress(state, team.id);
+        return `<div class="crate-card" style="--team-primary:${team.primary}; --team-secondary:${team.secondary}">
+          <div class="team-badge">${team.badge}</div>
+          <h3 class="small-title">${team.name} Crate</h3>
+          <div class="meta">Only drops ${team.name} players. Owned ${progress.owned} / ${progress.total}.</div>
+          <div class="meta">Cost: 35 Team Tokens</div>
+          <button style="margin-top:10px;" data-crate="${team.id}" ${state.teamTokens >= 35 ? "" : "disabled"}>Open Crate</button>
+        </div>`;
+      }).join("");
+    }
+
+    function buyTeamCrate(teamId) {
+      const team = nflTeams.find(t => t.id === teamId);
+      if (!team) return;
+      if (state.teamTokens < 35) {
+        toast("You need 35 Team Tokens for a team crate.");
+        return;
+      }
+      const pool = teamPlayers(teamId);
+      if (!pool.length) {
+        toast("This team needs more players before crates can open.");
+        return;
+      }
+      state.teamTokens -= 35;
+      const byNeed = pool.filter(player => !state.dex[player.id]);
+      const player = Math.random() < .72 && byNeed.length ? pickPlayerFromPool(byNeed) : pickPlayerFromPool(pool);
+      addPlayerCard(player, true);
+      levelCheck();
+      unlockAreas();
+      checkAchievements();
+      saveState();
+      render();
+      toast(`${team.name} Crate opened.`);
     }
 
     function canPay(cost) {
@@ -1718,6 +2151,12 @@
     });
 
     $("dexSearch").addEventListener("input", renderDex);
+    $("teamSearch").addEventListener("input", renderTeamDex);
+    $("crateSearch").addEventListener("input", renderCrates);
+    ["inventoryTeamFilter", "inventoryRarityFilter", "inventoryPositionFilter", "inventorySort"].forEach(id => {
+      $(id).addEventListener("change", renderTeam);
+    });
+    $("teamBattleSelect").addEventListener("change", renderBattles);
     document.querySelectorAll(".dexFilter").forEach(btn => {
       btn.addEventListener("click", () => {
         dexFilter = btn.dataset.filter;
@@ -1726,20 +2165,31 @@
         renderDex();
       });
     });
+    document.querySelectorAll(".divisionFilter").forEach(btn => {
+      btn.addEventListener("click", () => {
+        teamDexFilter = btn.dataset.division;
+        document.querySelectorAll(".divisionFilter").forEach(b => b.classList.remove("primary"));
+        btn.classList.add("primary");
+        renderTeamDex();
+      });
+    });
 
     document.body.addEventListener("click", event => {
       const equipBtn = event.target.closest("[data-equip]");
       const unequipBtn = event.target.closest("[data-unequip]");
       const areaBtn = event.target.closest("[data-area]");
       const buyBtn = event.target.closest("[data-buy]");
+      const crateBtn = event.target.closest("[data-crate]");
       if (equipBtn) equip(equipBtn.dataset.equip);
       if (unequipBtn) unequip(unequipBtn.dataset.unequip);
       if (areaBtn) travel(areaBtn.dataset.area);
       if (buyBtn) buy(buyBtn.dataset.buy);
+      if (crateBtn) buyTeamCrate(crateBtn.dataset.crate);
     });
 
     $("battleBtn").addEventListener("click", battle);
     $("nextNpcBtn").addEventListener("click", nextNpc);
+    $("teamBattleBtn").addEventListener("click", teamBattle);
 
     render();
   </script>
