@@ -697,6 +697,182 @@
       padding: 18px;
     }
 
+    .preview-modal {
+      z-index: 28;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,.16), transparent 34%),
+        rgba(0,0,0,.78);
+    }
+
+    .preview-shell {
+      width: min(1120px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      border: 1px solid color-mix(in srgb, var(--rarity), transparent 34%);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--team-primary), transparent 68%), rgba(16,27,23,.96)),
+        #101b17;
+      box-shadow: 0 0 58px color-mix(in srgb, var(--rarity), transparent 55%), var(--shadow);
+      padding: 16px;
+    }
+
+    .preview-shell.epic-glow {
+      animation: previewGlow 2.2s ease-in-out infinite;
+    }
+
+    .preview-shell.goat-shine {
+      background:
+        linear-gradient(115deg, transparent 18%, rgba(255,255,255,.28), transparent 34%) -260px 0 / 260px 100% no-repeat,
+        linear-gradient(135deg, color-mix(in srgb, var(--team-primary), transparent 62%), color-mix(in srgb, var(--team-secondary), transparent 78%)),
+        #101b17;
+      animation: previewShine 2.6s linear infinite;
+    }
+
+    @keyframes previewGlow {
+      0%, 100% { box-shadow: 0 0 42px color-mix(in srgb, var(--rarity), transparent 62%), var(--shadow); }
+      50% { box-shadow: 0 0 86px color-mix(in srgb, var(--rarity), transparent 34%), var(--shadow); }
+    }
+
+    @keyframes previewShine {
+      from { background-position: -260px 0, 0 0, 0 0; }
+      to { background-position: 1180px 0, 0 0, 0 0; }
+    }
+
+    .preview-layout {
+      display: grid;
+      grid-template-columns: minmax(300px, 390px) minmax(320px, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .trading-card-scene {
+      perspective: 1400px;
+    }
+
+    .trading-card {
+      position: relative;
+      min-height: 560px;
+      transform-style: preserve-3d;
+      transition: transform .55s ease;
+    }
+
+    .trading-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      min-height: 560px;
+      backface-visibility: hidden;
+      border: 4px solid color-mix(in srgb, var(--rarity), #ffffff 22%);
+      border-radius: 18px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255,255,255,.2), transparent 26%),
+        linear-gradient(90deg, transparent 46%, rgba(255,255,255,.55) 46% 54%, transparent 54%) center 92px / 180px 180px no-repeat,
+        linear-gradient(160deg, color-mix(in srgb, var(--team-primary), #101b17 18%), color-mix(in srgb, var(--team-secondary), #101b17 58%) 48%, #111c18);
+      box-shadow: inset 0 0 24px rgba(255,255,255,.12), 0 22px 64px rgba(0,0,0,.35);
+    }
+
+    .card-face.back {
+      transform: rotateY(180deg);
+      background:
+        repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 2px, transparent 2px 12px),
+        linear-gradient(160deg, color-mix(in srgb, var(--team-secondary), #111c18 28%), #101b17 62%, color-mix(in srgb, var(--team-primary), #111c18 40%));
+    }
+
+    .preview-art {
+      height: 190px;
+      display: grid;
+      place-items: center;
+      font-size: 92px;
+      margin: 12px 0;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle, color-mix(in srgb, var(--rarity), transparent 36%), transparent 58%),
+        rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .preview-title {
+      margin: 0;
+      font-size: 34px;
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .preview-meta-grid,
+    .stats-grid,
+    .career-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .preview-chip,
+    .stat-line,
+    .career-item {
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      border-radius: var(--radius);
+      padding: 9px 10px;
+      min-height: 54px;
+    }
+
+    .preview-chip span,
+    .stat-line span,
+    .career-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .preview-chip strong,
+    .stat-line strong,
+    .career-item strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 16px;
+    }
+
+    .stat-meter {
+      height: 8px;
+      background: rgba(255,255,255,.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 7px;
+    }
+
+    .stat-meter span {
+      height: 100%;
+      background: linear-gradient(90deg, var(--team-secondary), var(--rarity));
+    }
+
+    .preview-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .preview-section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.045);
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .preview-section h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
     .toast {
       position: fixed;
       right: 18px;
@@ -747,6 +923,10 @@
         grid-template-columns: 1fr;
       }
 
+      .preview-layout {
+        grid-template-columns: 1fr;
+      }
+
       .wallet {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -762,6 +942,7 @@
       .roll-actions, .controls-row { grid-template-columns: 1fr; }
       .field-stage { min-height: 420px; }
       .card { width: min(90vw, 330px); }
+      .preview-meta-grid, .stats-grid, .career-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1069,6 +1250,77 @@
     </div>
   </div>
 
+  <div class="modal preview-modal" id="cardPreviewModal">
+    <div class="preview-shell" id="previewShell">
+      <div class="preview-actions">
+        <div>
+          <button id="prevCardBtn">Previous</button>
+          <button id="nextCardBtn">Next</button>
+          <button id="flipCardBtn">Flip Card</button>
+        </div>
+        <div>
+          <button id="favoriteCardBtn">Favorite Card</button>
+          <button id="lockCardBtn">Lock Card</button>
+          <button class="danger" id="closePreviewBtn">Close</button>
+        </div>
+      </div>
+      <div class="preview-layout">
+        <div class="trading-card-scene">
+          <div class="trading-card" id="previewCard">
+            <div class="card-face front">
+              <div class="card-top">
+                <div class="position" id="previewPosition">QB</div>
+                <div class="overall"><span id="previewOverall">99</span><small>OVR</small></div>
+              </div>
+              <div class="preview-art" id="previewIcon">🏈</div>
+              <h2 class="preview-title" id="previewName">Player Name</h2>
+              <div class="rarity-pill" id="previewRarity">Legendary</div>
+              <div class="preview-meta-grid" style="margin-top:12px;">
+                <div class="preview-chip"><span>Team</span><strong id="previewTeam">Team</strong></div>
+                <div class="preview-chip"><span>Division</span><strong id="previewDivision">Division</strong></div>
+                <div class="preview-chip"><span>Card Number</span><strong id="previewNumber">NFL-000</strong></div>
+                <div class="preview-chip"><span>Owned</span><strong id="previewOwned">1</strong></div>
+              </div>
+            </div>
+            <div class="card-face back">
+              <h2 class="preview-title">Career Summary</h2>
+              <div class="preview-section" style="margin-top:14px;">
+                <h3>Full Career</h3>
+                <div class="meta" id="previewBackSummary"></div>
+              </div>
+              <div class="preview-section">
+                <h3>Super Bowl History</h3>
+                <div class="meta" id="previewBackSuperBowls"></div>
+              </div>
+              <div class="preview-section">
+                <h3>Team History</h3>
+                <div class="meta" id="previewBackTeams"></div>
+              </div>
+              <div class="preview-section">
+                <h3>Card Lore</h3>
+                <div class="meta" id="previewBackLore"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="preview-section">
+            <h3>Player Stats</h3>
+            <div class="stats-grid" id="previewStats"></div>
+          </div>
+          <div class="preview-section">
+            <h3>Career Info</h3>
+            <div class="career-grid" id="previewCareer"></div>
+          </div>
+          <div class="preview-section">
+            <h3>Extra Details</h3>
+            <div class="career-grid" id="previewExtra"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="celebrate" id="celebrate"></div>
   <div class="toast" id="toast"></div>
 
@@ -1353,6 +1605,8 @@
       teamBadges: {},
       teamBackgrounds: {},
       claimedTeamRewards: {},
+      favoriteCards: {},
+      lockedCards: {},
       unlockedAreas: ["high-school"],
       activeArea: "high-school",
       npcIndex: 0,
@@ -1365,6 +1619,8 @@
     let fastMode = false;
     let dexFilter = "All";
     let teamDexFilter = "All";
+    let previewUid = null;
+    let previewList = [];
 
     const $ = id => document.getElementById(id);
     const rarityByName = name => rarities.find(r => r.name === name);
@@ -1386,6 +1642,8 @@
         loaded.teamBadges = loaded.teamBadges || {};
         loaded.teamBackgrounds = loaded.teamBackgrounds || {};
         loaded.claimedTeamRewards = loaded.claimedTeamRewards || {};
+        loaded.favoriteCards = loaded.favoriteCards || {};
+        loaded.lockedCards = loaded.lockedCards || {};
         return loaded;
       } catch {
         return structuredClone(defaultState);
@@ -1454,8 +1712,15 @@
       const card = { uid: createUid(), id: player.id, pulledAt: Date.now() };
 
       if (state.inventory.length >= inventoryCap()) {
-        const removed = state.inventory.shift();
+        const removableIndex = state.inventory.findIndex(item => !(state.lockedCards && state.lockedCards[item.uid]));
+        if (removableIndex === -1) {
+          toast("Inventory is full and every card is locked.");
+          return;
+        }
+        const removed = state.inventory.splice(removableIndex, 1)[0];
         state.team = state.team.filter(uid => uid !== removed.uid);
+        delete state.favoriteCards[removed.uid];
+        delete state.lockedCards[removed.uid];
       }
 
       state.inventory.push(card);
@@ -1764,6 +2029,77 @@
       return players.find(p => p.id === card.id);
     }
 
+    function cardsForPlayer(playerId) {
+      return state.inventory.filter(card => card.id === playerId);
+    }
+
+    function firstPulledDate(playerId) {
+      const cards = cardsForPlayer(playerId);
+      if (!cards.length) return "Not collected";
+      const first = Math.min(...cards.map(card => card.pulledAt || Date.now()));
+      return new Date(first).toLocaleDateString();
+    }
+
+    function hashValue(text, min, max) {
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+      return min + (hash % (max - min + 1));
+    }
+
+    function playerStats(player) {
+      const base = Math.max(55, player.overall - 12);
+      const stats = {
+        Speed: base + hashValue(player.id + "speed", 0, 14),
+        Strength: base + hashValue(player.id + "strength", 0, 14),
+        Throwing: player.position === "QB" ? player.overall + hashValue(player.id, -2, 4) : base - 8 + hashValue(player.id, 0, 12),
+        Catching: ["WR", "TE", "RB"].includes(player.position) ? player.overall + hashValue(player.id, -3, 4) : base - 10 + hashValue(player.id, 0, 10),
+        Defense: ["CB", "S", "LB", "EDGE", "DL"].includes(player.position) ? player.overall + hashValue(player.id, -2, 4) : base - 12 + hashValue(player.id, 0, 9),
+        Stamina: base + hashValue(player.id + "stamina", 2, 16),
+        "Team Power": Math.round(player.overall * rarityByName(player.rarity).bonus * 3.2)
+      };
+      Object.keys(stats).forEach(key => stats[key] = Math.max(40, Math.min(100, stats[key])));
+      return stats;
+    }
+
+    function careerInfo(player) {
+      const idx = rarityIndex(player.rarity);
+      const rookie = Math.max(1981, 2024 - hashValue(player.id + "years", 1, idx >= 5 ? 18 : 9));
+      const yearsEnd = idx >= 5 || player.name.includes("Prime") || player.name.includes("Golden") ? "Legend Era" : "Active";
+      const sbAppearances = idx >= 6 ? hashValue(player.id + "sba", 3, 10) : idx >= 4 ? hashValue(player.id + "sba", 0, 4) : hashValue(player.id + "sba", 0, 2);
+      const sbWins = Math.min(sbAppearances, idx >= 6 ? hashValue(player.id + "sbw", 2, 7) : hashValue(player.id + "sbw", 0, 2));
+      const mvp = ["QB", "RB", "WR"].includes(player.position) && idx >= 4 ? hashValue(player.id + "mvp", 0, idx >= 6 ? 5 : 2) : 0;
+      const previous = [player.team, ...nflTeams.filter(t => t.conference === player.conference && t.id !== player.teamId).slice(0, idx >= 5 ? 2 : 1).map(t => t.name)];
+      return {
+        "Current Team": player.team,
+        "Previous Teams": previous.slice(1).join(", ") || "None",
+        "Years Active": `${rookie} - ${yearsEnd}`,
+        "Super Bowl Apps": sbAppearances,
+        "Super Bowl Wins": sbWins,
+        "MVP Awards": mvp,
+        "Hall of Fame": idx >= 5 ? "Yes" : idx >= 4 ? "Future Watch" : "No",
+        "Rookie Year": rookie
+      };
+    }
+
+    function positionStyle(player) {
+      const styles = {
+        QB: "Pocket commander / off-script creator",
+        RB: "Vision runner / open-field finisher",
+        WR: "Route artist / deep threat",
+        TE: "Mismatch target / red-zone wall",
+        LB: "Field general / downhill stopper",
+        EDGE: "Speed rush / power counter",
+        CB: "Island coverage / return threat",
+        S: "Range safety / turnover hunter",
+        DL: "Interior force / pocket crusher"
+      };
+      return styles[player.position] || "Versatile football weapon";
+    }
+
+    function cardDescription(player) {
+      return `${player.name} is a ${player.rarity} ${player.position} card for the ${player.team}, tuned for ${positionStyle(player).toLowerCase()} builds.`;
+    }
+
     function teamCards() {
       return state.team.map(uid => state.inventory.find(card => card.uid === uid)).filter(Boolean);
     }
@@ -1834,8 +2170,8 @@
         const p = playerForCard(card);
         const rarity = rarityByName(p.rarity);
         const equipped = state.team.includes(card.uid);
-        return `<div class="inventory-card" style="--rarity:${rarity.color}; --team-primary:${p.teamPrimary}; --team-secondary:${p.teamSecondary}">
-          <h3 class="small-title">${p.name}</h3>
+        return `<div class="inventory-card" data-preview="${card.uid}" style="--rarity:${rarity.color}; --team-primary:${p.teamPrimary}; --team-secondary:${p.teamSecondary}">
+          <h3 class="small-title">${state.favoriteCards[card.uid] ? "★ " : ""}${state.lockedCards[card.uid] ? "🔒 " : ""}${p.name}</h3>
           <div class="meta"><span class="rarity-text">${p.rarity}</span> · ${p.position} · ${p.overall} OVR</div>
           <div class="meta">${p.team} · ${p.division} · ${p.cardNumber}</div>
           <div class="meta">${p.ability}</div>
@@ -2038,6 +2374,81 @@
       toast(`${team.name} Crate opened.`);
     }
 
+    function openCardPreview(uid) {
+      previewList = [...state.inventory];
+      previewUid = uid;
+      $("previewCard").classList.remove("flipped");
+      $("cardPreviewModal").classList.add("show");
+      renderCardPreview();
+    }
+
+    function closeCardPreview() {
+      $("cardPreviewModal").classList.remove("show");
+      previewUid = null;
+    }
+
+    function movePreview(direction) {
+      if (!previewList.length) return;
+      const index = Math.max(0, previewList.findIndex(card => card.uid === previewUid));
+      const next = (index + direction + previewList.length) % previewList.length;
+      previewUid = previewList[next].uid;
+      $("previewCard").classList.remove("flipped");
+      renderCardPreview();
+    }
+
+    function renderCardPreview() {
+      const card = state.inventory.find(item => item.uid === previewUid);
+      if (!card) {
+        closeCardPreview();
+        return;
+      }
+      const player = playerForCard(card);
+      const rarity = rarityByName(player.rarity);
+      const career = careerInfo(player);
+      const stats = playerStats(player);
+      const shell = $("previewShell");
+      shell.style.setProperty("--rarity", rarity.color);
+      shell.style.setProperty("--team-primary", player.teamPrimary);
+      shell.style.setProperty("--team-secondary", player.teamSecondary);
+      shell.classList.toggle("epic-glow", rarityIndex(player.rarity) >= 3);
+      shell.classList.toggle("goat-shine", rarityIndex(player.rarity) >= 6);
+
+      $("previewName").textContent = player.name;
+      $("previewIcon").textContent = player.icon;
+      $("previewPosition").textContent = player.position;
+      $("previewOverall").textContent = player.overall;
+      $("previewRarity").textContent = player.rarity;
+      $("previewTeam").textContent = player.team;
+      $("previewDivision").textContent = player.division;
+      $("previewNumber").textContent = player.cardNumber;
+      $("previewOwned").textContent = cardsForPlayer(player.id).length;
+      $("favoriteCardBtn").textContent = state.favoriteCards[card.uid] ? "Unfavorite Card" : "Favorite Card";
+      $("lockCardBtn").textContent = state.lockedCards[card.uid] ? "Unlock Card" : "Lock Card";
+
+      $("previewStats").innerHTML = Object.entries(stats).map(([name, value]) => `<div class="stat-line">
+        <span>${name}</span><strong>${value}</strong>
+        <div class="stat-meter"><span style="width:${value}%"></span></div>
+      </div>`).join("");
+
+      $("previewCareer").innerHTML = Object.entries(career).map(([name, value]) => `<div class="career-item">
+        <span>${name}</span><strong>${value}</strong>
+      </div>`).join("");
+
+      $("previewExtra").innerHTML = `
+        <div class="career-item"><span>Favorite Style</span><strong>${positionStyle(player)}</strong></div>
+        <div class="career-item"><span>Special Ability</span><strong>${player.ability}</strong></div>
+        <div class="career-item"><span>Description</span><strong>${cardDescription(player)}</strong></div>
+        <div class="career-item"><span>First Collected</span><strong>${firstPulledDate(player.id)}</strong></div>
+        <div class="career-item"><span>Times Pulled</span><strong>${cardsForPlayer(player.id).length}</strong></div>
+        <div class="career-item"><span>Status</span><strong>${state.favoriteCards[card.uid] ? "Favorite" : "Standard"} · ${state.lockedCards[card.uid] ? "Locked" : "Unlocked"}</strong></div>`;
+
+      const progress = teamProgress(state, player.teamId);
+      $("previewBackSummary").textContent = `${cardDescription(player)} ${player.rarity} cards carry a ${rarity.bonus.toFixed(2)}x power bonus and shine brightest in ${player.division} collections.`;
+      $("previewBackSuperBowls").textContent = `${player.name} card history: ${career["Super Bowl Apps"]} appearances, ${career["Super Bowl Wins"]} wins, ${career["MVP Awards"]} MVP awards.`;
+      $("previewBackTeams").textContent = `Current team: ${player.team}. Previous teams: ${career["Previous Teams"]}. Team set progress: ${progress.owned}/${progress.total} ${player.team} cards.`;
+      $("previewBackLore").textContent = `${player.ability} Lore: ${player.name} enters the dynasty binder as card ${player.cardNumber}, a collectible built for fans chasing every team, every rarity, and every stadium win. Collection progress: ${collectedPercent()}% NFL Dex.`;
+    }
+
     function canPay(cost) {
       return Object.entries(cost).every(([k, v]) => state[k] >= v);
     }
@@ -2180,16 +2591,38 @@
       const areaBtn = event.target.closest("[data-area]");
       const buyBtn = event.target.closest("[data-buy]");
       const crateBtn = event.target.closest("[data-crate]");
+      const previewBtn = event.target.closest("[data-preview]");
       if (equipBtn) equip(equipBtn.dataset.equip);
       if (unequipBtn) unequip(unequipBtn.dataset.unequip);
       if (areaBtn) travel(areaBtn.dataset.area);
       if (buyBtn) buy(buyBtn.dataset.buy);
       if (crateBtn) buyTeamCrate(crateBtn.dataset.crate);
+      if (previewBtn && !event.target.closest("button")) openCardPreview(previewBtn.dataset.preview);
     });
 
     $("battleBtn").addEventListener("click", battle);
     $("nextNpcBtn").addEventListener("click", nextNpc);
     $("teamBattleBtn").addEventListener("click", teamBattle);
+    $("closePreviewBtn").addEventListener("click", closeCardPreview);
+    $("prevCardBtn").addEventListener("click", () => movePreview(-1));
+    $("nextCardBtn").addEventListener("click", () => movePreview(1));
+    $("flipCardBtn").addEventListener("click", () => $("previewCard").classList.toggle("flipped"));
+    $("favoriteCardBtn").addEventListener("click", () => {
+      if (!previewUid) return;
+      state.favoriteCards[previewUid] = !state.favoriteCards[previewUid];
+      if (!state.favoriteCards[previewUid]) delete state.favoriteCards[previewUid];
+      saveState();
+      render();
+      renderCardPreview();
+    });
+    $("lockCardBtn").addEventListener("click", () => {
+      if (!previewUid) return;
+      state.lockedCards[previewUid] = !state.lockedCards[previewUid];
+      if (!state.lockedCards[previewUid]) delete state.lockedCards[previewUid];
+      saveState();
+      render();
+      renderCardPreview();
+    });
 
     render();
   </script>
