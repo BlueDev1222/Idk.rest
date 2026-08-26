@@ -1,1109 +1,493 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Simulator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+<title>THE HACKER EVENT | Dev's Anarchy</title>
+<meta name="description" content="Dev's Anarchy presents: THE HACKER EVENT. Enter the chaos.">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --blue: #00aaff;
+        --bright-blue: #00d9ff;
+        --dark: #03060b;
+        --red: #ff1744;
+    }
+
+    body {
+        background: var(--dark);
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at 20% 20%, rgba(0, 140, 255, 0.14), transparent 30%),
+            radial-gradient(circle at 80% 70%, rgba(0, 217, 255, 0.1), transparent 30%);
+        pointer-events: none;
+        z-index: -2;
+    }
+
+    .grid {
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(0, 170, 255, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 170, 255, 0.06) 1px, transparent 1px);
+        background-size: 50px 50px;
+        transform: perspective(500px) rotateX(55deg) scale(1.5);
+        transform-origin: center bottom;
+        animation: gridMove 8s linear infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    @keyframes gridMove {
+        from { background-position: 0 0; }
+        to { background-position: 0 50px; }
+    }
+
+    /* Navigation */
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 7%;
+        border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(10px);
+    }
+
+    .logo {
+        font-size: 1.2rem;
+        font-weight: 900;
+        letter-spacing: 3px;
+        color: var(--bright-blue);
+        text-shadow: 0 0 20px var(--blue);
+    }
+
+    .status {
+        color: #65ff8a;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #65ff8a;
+        border-radius: 50%;
+        margin-right: 7px;
+        box-shadow: 0 0 10px #65ff8a;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        50% { opacity: 0.3; transform: scale(0.7); }
+    }
+
+    /* Hero */
+    .hero {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .hero-content {
+        max-width: 1000px;
+    }
+
+    .classified {
+        display: inline-block;
+        color: var(--red);
+        border: 1px solid var(--red);
+        padding: 8px 18px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        letter-spacing: 4px;
+        margin-bottom: 25px;
+        box-shadow: 0 0 20px rgba(255, 23, 68, 0.25);
+    }
+
+    .glitch {
+        font-size: clamp(3rem, 10vw, 8rem);
+        font-weight: 1000;
+        letter-spacing: -3px;
+        color: white;
+        text-transform: uppercase;
+        position: relative;
+        text-shadow:
+            4px 0 var(--blue),
+            -4px 0 var(--red),
+            0 0 30px var(--blue);
+        animation: glitch 3s infinite;
+    }
+
+    @keyframes glitch {
+        0%, 90%, 100% {
+            transform: translate(0);
+        }
+        91% {
+            transform: translate(-5px, 2px);
+        }
+        93% {
+            transform: translate(5px, -2px);
+        }
+        95% {
+            transform: translate(-2px, 3px);
+        }
+    }
+
+    .subtitle {
+        margin: 25px auto;
+        max-width: 650px;
+        color: #a9bac8;
+        font-size: 1.1rem;
+        line-height: 1.7;
+    }
+
+    .terminal {
+        max-width: 650px;
+        margin: 35px auto;
+        text-align: left;
+        background: rgba(0, 10, 18, 0.85);
+        border: 1px solid rgba(0, 170, 255, 0.35);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(0, 170, 255, 0.1);
+    }
+
+    .terminal-header {
+        padding: 12px 18px;
+        background: rgba(0, 170, 255, 0.08);
+        color: var(--bright-blue);
+        font-family: monospace;
+        font-size: 0.8rem;
+        border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+    }
+
+    .terminal-body {
+        padding: 20px;
+        min-height: 110px;
+        color: #72ffb2;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+    }
+
+    .cursor {
+        display: inline-block;
+        animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
+
+    .buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 16px 30px;
+        text-decoration: none;
+        font-weight: bold;
+        letter-spacing: 2px;
+        transition: 0.25s;
+        text-transform: uppercase;
+    }
+
+    .btn-primary {
+        background: var(--blue);
+        color: black;
+        box-shadow: 0 0 25px rgba(0, 170, 255, 0.5);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-4px) scale(1.04);
+        box-shadow: 0 0 45px rgba(0, 217, 255, 0.9);
+    }
+
+    .btn-secondary {
+        border: 1px solid rgba(255,255,255,0.35);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--blue);
+        color: var(--bright-blue);
+        box-shadow: 0 0 20px rgba(0, 170, 255, 0.25);
+    }
+
+    /* Event section */
+    .event {
+        max-width: 1100px;
+        margin: auto;
+        padding: 60px 20px 100px;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        letter-spacing: 4px;
+        margin-bottom: 15px;
+    }
+
+    .section-description {
+        text-align: center;
+        color: #8fa2b0;
+        margin-bottom: 40px;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .card {
+        padding: 30px;
+        background: rgba(5, 12, 20, 0.8);
+        border: 1px solid rgba(0, 170, 255, 0.18);
+        transition: 0.3s;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        border-color: var(--blue);
+        box-shadow: 0 10px 40px rgba(0, 170, 255, 0.12);
+    }
+
+    .card-number {
+        color: var(--bright-blue);
+        font-family: monospace;
+        font-size: 0.8rem;
+        margin-bottom: 15px;
+    }
+
+    .card h3 {
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+    }
+
+    .card p {
+        color: #8fa2b0;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    /* Server IP */
+    .server-box {
+        max-width: 700px;
+        margin: 40px auto 0;
+        text-align: center;
+        padding: 30px;
+        border: 1px solid rgba(0, 170, 255, 0.3);
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .server-ip {
+        font-family: monospace;
+        font-size: clamp(1.4rem, 4vw, 2.5rem);
+        color: var(--bright-blue);
+        margin-top: 10px;
+        text-shadow: 0 0 20px var(--blue);
+        cursor: pointer;
+    }
+
+    .copy-message {
+        color: #65ff8a;
+        margin-top: 12px;
+        font-size: 0.8rem;
+        min-height: 20px;
+    }
+
+    footer {
+        padding: 30px;
+        text-align: center;
+        color: #50606d;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 700px) {
+        nav {
+            padding: 18px 20px;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #0d1117;
-            color: #fff;
-            min-height: 100vh;
+        .status {
+            font-size: 0.65rem;
         }
 
-        header {
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
-            padding: 20px;
-            text-align: center;
+        .cards {
+            grid-template-columns: 1fr;
         }
 
-        header h1 {
-            font-size: 30px;
+        .hero {
+            min-height: 75vh;
         }
-
-        header p {
-            color: #8b949e;
-            margin-top: 5px;
-        }
-
-        .container {
-            width: min(1100px, 94%);
-            margin: 30px auto;
-        }
-
-        .top-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: #238636;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-        }
-
-        .profile h2 {
-            margin-bottom: 6px;
-        }
-
-        .muted {
-            color: #8b949e;
-        }
-
-        .money {
-            color: #3fb950;
-            font-size: 30px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .stat {
-            background: #0d1117;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .stat-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .bar {
-            height: 8px;
-            background: #30363d;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            width: 50%;
-            background: #58a6ff;
-            transition: width 0.3s;
-        }
-
-        .game {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 20px;
-        }
-
-        .event {
-            min-height: 180px;
-        }
-
-        .event h2 {
-            margin-bottom: 12px;
-        }
-
-        .event-text {
-            color: #c9d1d9;
-            line-height: 1.6;
-            font-size: 17px;
-        }
-
-        .choices {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        button {
-            border: 1px solid #30363d;
-            background: #21262d;
-            color: white;
-            padding: 13px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #30363d;
-            transform: translateY(-1px);
-        }
-
-        button.primary {
-            background: #238636;
-            border-color: #2ea043;
-        }
-
-        button.primary:hover {
-            background: #2ea043;
-        }
-
-        button.danger {
-            background: #da3633;
-            border-color: #f85149;
-        }
-
-        .actions {
-            display: grid;
-            gap: 10px;
-        }
-
-        .actions button {
-            text-align: left;
-        }
-
-        .job {
-            margin-top: 15px;
-            padding: 15px;
-            background: #0d1117;
-            border-radius: 8px;
-        }
-
-        .job strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .log {
-            margin-top: 20px;
-        }
-
-        .log-list {
-            max-height: 250px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .log-entry {
-            padding: 10px;
-            border-bottom: 1px solid #21262d;
-            color: #8b949e;
-        }
-
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 100;
-        }
-
-        .game-over {
-            width: min(500px, 100%);
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .game-over h1 {
-            font-size: 35px;
-            margin-bottom: 15px;
-        }
-
-        .final-stats {
-            text-align: left;
-            margin: 20px 0;
-        }
-
-        .final-stats div {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #30363d;
-        }
-
-        @media (max-width: 800px) {
-            .top-grid,
-            .game {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>
 
-<header>
-    <h1>Life Simulator</h1>
-    <p>Every decision changes your life.</p>
-</header>
+<div class="grid"></div>
 
-<div class="container">
+<nav>
+    <div class="logo">DEV'S ANARCHY</div>
+    <div class="status"><span class="dot"></span>EVENT SIGNAL ACTIVE</div>
+</nav>
 
-    <div class="top-grid">
+<main>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="classified">⚠ SPECIAL SERVER EVENT ⚠</div>
 
-        <div class="card">
-            <div class="profile">
-                <div class="avatar">👤</div>
+            <h1 class="glitch">THE HACKER<br>EVENT</h1>
 
-                <div>
-                    <h2 id="playerName">Alex</h2>
-                    <p class="muted">
-                        Age <span id="age">18</span>
-                    </p>
+            <p class="subtitle">
+                The signal has been detected. The server is changing.
+                Prepare for an event unlike anything Dev's Anarchy has seen before.
+            </p>
+
+            <div class="terminal">
+                <div class="terminal-header">devs@anarchy:~/event_protocol</div>
+                <div class="terminal-body">
+                    <span id="terminalText"></span><span class="cursor">█</span>
                 </div>
             </div>
 
-            <div class="money">
-                $<span id="money">1,000</span>
-            </div>
-
-            <div class="job">
-                <strong>💼 <span id="jobName">Unemployed</span></strong>
-                <span class="muted">
-                    Income: $<span id="income">0</span>/day
-                </span>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Statistics</h2>
-
-            <div class="stats">
-
-                <div class="stat">
-                    <div class="stat-top">
-                        <span>❤️ Health</span>
-                        <span id="healthValue">75</span>
-                    </div>
-                    <div class="bar">
-                        <div class="bar-fill" id="healthBar"></div>
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-top">
-                        <span>😊 Happiness</span>
-                        <span id="happinessValue">75</span>
-                    </div>
-                    <div class="bar">
-                        <div class="bar-fill" id="happinessBar"></div>
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-top">
-                        <span>🧠 Intelligence</span>
-                        <span id="intelligenceValue">50</span>
-                    </div>
-                    <div class="bar">
-                        <div class="bar-fill" id="intelligenceBar"></div>
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-top">
-                        <span>⚡ Energy</span>
-                        <span id="energyValue">80</span>
-                    </div>
-                    <div class="bar">
-                        <div class="bar-fill" id="energyBar"></div>
-                    </div>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-top">
-                        <span>⭐ Reputation</span>
-                        <span id="reputationValue">20</span>
-                    </div>
-                    <div class="bar">
-                        <div class="bar-fill" id="reputationBar"></div>
-                    </div>
-                </div>
-
+            <div class="buttons">
+                <a href="#join" class="btn btn-primary">ENTER THE EVENT</a>
+                <a href="#details" class="btn btn-secondary">VIEW INTEL</a>
             </div>
         </div>
+    </section>
 
-    </div>
-
-    <div class="game">
-
-        <div>
-
-            <div class="card event">
-
-                <h2 id="eventTitle">Welcome to Life</h2>
-
-                <p class="event-text" id="eventText">
-                    You are 18 years old with your entire life ahead of you.
-                    What will you do?
-                </p>
-
-                <div class="choices" id="choices">
-
-                    <button class="primary" onclick="nextDay()">
-                        Start Your Day
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div class="card log">
-
-                <h2>Life Log</h2>
-
-                <div class="log-list" id="logList">
-                    <div class="log-entry">
-                        You started your life with $1,000.
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div>
-
-            <div class="card">
-
-                <h2>Daily Actions</h2>
-
-                <div class="actions">
-
-                    <button onclick="work()">
-                        💼 Work
-                    </button>
-
-                    <button onclick="study()">
-                        📚 Study
-                    </button>
-
-                    <button onclick="exercise()">
-                        🏃 Exercise
-                    </button>
-
-                    <button onclick="relax()">
-                        🎮 Relax
-                    </button>
-
-                    <button onclick="shop()">
-                        🛒 Go Shopping
-                    </button>
-
-                    <button onclick="nextDay()">
-                        🌅 End Day
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div class="overlay" id="gameOver">
-
-    <div class="game-over">
-
-        <h1>Life Complete</h1>
-
-        <p class="muted">
-            Your life has come to an end.
+    <section class="event" id="details">
+        <h2 class="section-title">EVENT INTEL</h2>
+        <p class="section-description">
+            The system is unstable. Chaos is approaching.
         </p>
 
-        <div class="final-stats">
-
-            <div>
-                <span>Age</span>
-                <strong id="finalAge">0</strong>
+        <div class="cards">
+            <div class="card">
+                <div class="card-number">[ 01 ]</div>
+                <h3>THE SIGNAL</h3>
+                <p>A mysterious transmission has appeared across Dev's Anarchy. Something big is coming.</p>
             </div>
 
-            <div>
-                <span>Money</span>
-                <strong>$<span id="finalMoney">0</span></strong>
+            <div class="card">
+                <div class="card-number">[ 02 ]</div>
+                <h3>THE CHAOS</h3>
+                <p>Players will need to explore, survive, and uncover what happens when the event begins.</p>
             </div>
 
-            <div>
-                <span>Health</span>
-                <strong id="finalHealth">0</strong>
+            <div class="card">
+                <div class="card-number">[ 03 ]</div>
+                <h3>THE AFTERMATH</h3>
+                <p>Once the event is over, Dev's Anarchy may never look the same again.</p>
             </div>
-
-            <div>
-                <span>Happiness</span>
-                <strong id="finalHappiness">0</strong>
-            </div>
-
-            <div>
-                <span>Reputation</span>
-                <strong id="finalReputation">0</strong>
-            </div>
-
         </div>
 
-        <button class="primary" onclick="restartGame()">
-            🔄 Start a New Life
-        </button>
+        <div class="server-box" id="join">
+            <div style="letter-spacing: 3px; color: #8fa2b0;">MINECRAFT SERVER ADDRESS</div>
 
-    </div>
+            <!-- CHANGE YOUR SERVER IP HERE -->
+            <div class="server-ip" id="serverIP">play.devsanarchy.net</div>
 
-</div>
+            <div class="copy-message" id="copyMessage">
+                Click the server IP to copy it
+            </div>
+        </div>
+    </section>
+</main>
 
+<footer>
+    DEV'S ANARCHY © 2026 — THE HACKER EVENT
+</footer>
 
 <script>
+    // ============================================================
+    // CHANGE THE SERVER IP ABOVE IN THE HTML:
+    // <div class="server-ip" id="serverIP">YOUR-IP-HERE</div>
+    // ============================================================
 
-    let player = {
-        name: randomName(),
-        age: 18,
-        money: 1000,
-
-        health: 75,
-        happiness: 75,
-        intelligence: 50,
-        energy: 80,
-        reputation: 20,
-
-        job: "Unemployed",
-        income: 0,
-
-        alive: true
-    };
-
-
-    const jobs = [
-        {
-            name: "Fast Food Worker",
-            income: 60,
-            intelligence: 20
-        },
-
-        {
-            name: "Retail Worker",
-            income: 75,
-            intelligence: 30
-        },
-
-        {
-            name: "Construction Worker",
-            income: 110,
-            intelligence: 35
-        },
-
-        {
-            name: "Programmer",
-            income: 200,
-            intelligence: 70
-        },
-
-        {
-            name: "Doctor",
-            income: 350,
-            intelligence: 90
-        }
+    const lines = [
+        "INITIALIZING EVENT_PROTOCOL...",
+        "CONNECTING TO DEV'S ANARCHY...",
+        "SIGNAL DETECTED.",
+        "WARNING: UNUSUAL ACTIVITY FOUND.",
+        "EVENT STATUS: READY.",
+        "AWAITING PLAYERS..."
     ];
 
-
-    const randomEvents = [
-
-        {
-            title: "You Found Money",
-            text: "You were walking down the street and found $200 on the ground.",
-            action: () => {
-                player.money += 200;
-                log("You found $200 on the ground.");
-            }
-        },
-
-        {
-            title: "Car Trouble",
-            text: "Your car broke down. Repairs will cost you $300.",
-            action: () => {
-                if (player.money >= 300) {
-                    player.money -= 300;
-                    log("You paid $300 to repair your car.");
-                } else {
-                    player.happiness -= 10;
-                    log("You couldn't afford to repair your car.");
-                }
-            }
-        },
-
-        {
-            title: "Good News!",
-            text: "Your boss noticed your hard work and gave you a bonus.",
-            action: () => {
-                const bonus = 250;
-                player.money += bonus;
-                player.reputation += 5;
-                log("You received a $250 work bonus.");
-            }
-        },
-
-        {
-            title: "Feeling Sick",
-            text: "You aren't feeling very well today.",
-            action: () => {
-                player.health -= 10;
-                player.energy -= 15;
-                log("You became sick.");
-            }
-        },
-
-        {
-            title: "Lottery",
-            text: "You bought a lottery ticket yesterday. You won $1,000!",
-            action: () => {
-                player.money += 1000;
-                player.happiness += 15;
-                log("You won $1,000 in the lottery!");
-            }
-        },
-
-        {
-            title: "Promotion",
-            text: "Your employer offered you a promotion.",
-            action: () => {
-                player.income += 40;
-                player.reputation += 10;
-                log("You received a promotion.");
-            }
-        }
-
-    ];
-
-
-    function randomName() {
-
-        const names = [
-            "Alex",
-            "Jordan",
-            "Taylor",
-            "Chris",
-            "Jamie",
-            "Morgan",
-            "Cameron",
-            "Riley",
-            "Avery",
-            "Dylan"
-        ];
-
-        return names[Math.floor(Math.random() * names.length)];
-    }
-
-
-    function clampStats() {
-
-        player.health = Math.max(0, Math.min(100, player.health));
-
-        player.happiness =
-            Math.max(0, Math.min(100, player.happiness));
-
-        player.intelligence =
-            Math.max(0, Math.min(100, player.intelligence));
-
-        player.energy =
-            Math.max(0, Math.min(100, player.energy));
-
-        player.reputation =
-            Math.max(0, Math.min(100, player.reputation));
-
-    }
-
-
-    function updateUI() {
-
-        document.getElementById("playerName").textContent =
-            player.name;
-
-        document.getElementById("age").textContent =
-            player.age;
-
-        document.getElementById("money").textContent =
-            player.money.toLocaleString();
-
-        document.getElementById("jobName").textContent =
-            player.job;
-
-        document.getElementById("income").textContent =
-            player.income;
-
-
-        updateStat("health");
-        updateStat("happiness");
-        updateStat("intelligence");
-        updateStat("energy");
-        updateStat("reputation");
-
-    }
-
-
-    function updateStat(stat) {
-
-        const value = Math.round(player[stat]);
-
-        document.getElementById(stat + "Value")
-            .textContent = value;
-
-        document.getElementById(stat + "Bar")
-            .style.width = value + "%";
-
-    }
-
-
-    function log(message) {
-
-        const list = document.getElementById("logList");
-
-        const entry = document.createElement("div");
-
-        entry.className = "log-entry";
-
-        entry.textContent =
-            `Age ${player.age}: ${message}`;
-
-        list.prepend(entry);
-
-    }
-
-
-    function setEvent(title, text, buttons = []) {
-
-        document.getElementById("eventTitle")
-            .textContent = title;
-
-        document.getElementById("eventText")
-            .textContent = text;
-
-        const choices =
-            document.getElementById("choices");
-
-        choices.innerHTML = "";
-
-        buttons.forEach(button => {
-
-            const btn =
-                document.createElement("button");
-
-            btn.textContent = button.text;
-
-            if (button.primary) {
-                btn.className = "primary";
-            }
-
-            btn.onclick = button.action;
-
-            choices.appendChild(btn);
-
-        });
-
-    }
-
-
-    function work() {
-
-        if (!player.alive) return;
-
-        if (player.job === "Unemployed") {
-
-            findJob();
-
+    const terminalText = document.getElementById("terminalText");
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeTerminal() {
+        if (lineIndex >= lines.length) {
+            setTimeout(() => {
+                terminalText.innerHTML = "";
+                lineIndex = 0;
+                charIndex = 0;
+                typeTerminal();
+            }, 3000);
             return;
         }
 
-        if (player.energy < 15) {
-
-            setEvent(
-                "Too Tired",
-                "You're too tired to work today."
-            );
-
-            return;
-        }
-
-        player.money += player.income;
-
-        player.energy -= 15;
-
-        player.happiness -= 3;
-
-        player.reputation += 1;
-
-        log(
-            `You worked and earned $${player.income}.`
-        );
-
-        checkJobPromotion();
-
-        clampStats();
-
-        updateUI();
-
-    }
-
-
-    function findJob() {
-
-        const available =
-            jobs.filter(job =>
-                player.intelligence >= job.intelligence
-            );
-
-        if (available.length === 0) {
-
-            setEvent(
-                "No Jobs Available",
-                "You don't currently have the intelligence required for the available jobs."
-            );
-
-            return;
-        }
-
-        const job =
-            available[
-                Math.floor(Math.random() * available.length)
-            ];
-
-        player.job = job.name;
-
-        player.income = job.income;
-
-        player.reputation += 2;
-
-        log(
-            `You got a job as a ${job.name}.`
-        );
-
-        setEvent(
-            "New Job!",
-            `You got a job as a ${job.name}, earning $${job.income} per day.`,
-            [
-                {
-                    text: "Continue",
-                    primary: true,
-                    action: nextDay
-                }
-            ]
-        );
-
-        updateUI();
-
-    }
-
-
-    function checkJobPromotion() {
-
-        if (Math.random() < 0.05) {
-
-            player.income += 25;
-
-            player.reputation += 5;
-
-            log(
-                "You received a promotion and now earn $25 more per day."
-            );
-
-        }
-
-    }
-
-
-    function study() {
-
-        if (player.energy < 15) {
-
-            setEvent(
-                "Too Tired",
-                "You're too tired to study."
-            );
-
-            return;
-        }
-
-        player.intelligence += 4;
-
-        player.energy -= 15;
-
-        player.happiness -= 2;
-
-        log(
-            "You studied and improved your intelligence."
-        );
-
-        clampStats();
-
-        updateUI();
-
-    }
-
-
-    function exercise() {
-
-        if (player.energy < 20) {
-
-            setEvent(
-                "Too Tired",
-                "You're too tired to exercise."
-            );
-
-            return;
-        }
-
-        player.health += 5;
-
-        player.energy -= 20;
-
-        player.happiness += 3;
-
-        log(
-            "You exercised and improved your health."
-        );
-
-        clampStats();
-
-        updateUI();
-
-    }
-
-
-    function relax() {
-
-        player.happiness += 8;
-
-        player.energy += 10;
-
-        log(
-            "You relaxed and recovered some energy."
-        );
-
-        clampStats();
-
-        updateUI();
-
-    }
-
-
-    function shop() {
-
-        const cost = 100;
-
-        if (player.money < cost) {
-
-            setEvent(
-                "Not Enough Money",
-                "You don't have enough money to go shopping."
-            );
-
-            return;
-        }
-
-        player.money -= cost;
-
-        player.happiness += 12;
-
-        log(
-            "You spent $100 shopping and had a great time."
-        );
-
-        clampStats();
-
-        updateUI();
-
-    }
-
-
-    function nextDay() {
-
-        if (!player.alive) return;
-
-        player.age++;
-
-        player.energy = 80;
-
-        if (player.job !== "Unemployed") {
-
-            player.money += player.income;
-
-        }
-
-        // Natural aging
-        if (player.age > 50) {
-            player.health -= 1;
-        }
-
-        if (player.age > 65) {
-            player.health -= 2;
-        }
-
-        // Random event
-        if (Math.random() < 0.45) {
-
-            const event =
-                randomEvents[
-                    Math.floor(
-                        Math.random() *
-                        randomEvents.length
-                    )
-                ];
-
-            event.action();
-
-            setEvent(
-                event.title,
-                event.text,
-                [
-                    {
-                        text: "Continue",
-                        primary: true,
-                        action: () => {}
-                    }
-                ]
-            );
-
+        const currentLine = lines[lineIndex];
+
+        if (charIndex < currentLine.length) {
+            terminalText.innerHTML += currentLine.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeTerminal, 35);
         } else {
+            terminalText.innerHTML += "<br>";
+            lineIndex++;
+            charIndex = 0;
+            setTimeout(typeTerminal, 400);
+        }
+    }
 
-            setEvent(
-                `Day ${player.age - 17}`,
-                "Another day begins. What will you do?",
-                [
-                    {
-                        text: "Continue",
-                        primary: true,
-                        action: () => {}
-                    }
-                ]
-            );
+    typeTerminal();
 
+    // Copy server IP
+    document.getElementById("serverIP").addEventListener("click", async () => {
+        const ip = document.getElementById("serverIP").textContent;
+        const message = document.getElementById("copyMessage");
+
+        try {
+            await navigator.clipboard.writeText(ip);
+            message.textContent = "✓ SERVER IP COPIED!";
+        } catch {
+            message.textContent = "Copy this IP: " + ip;
         }
 
-        clampStats();
-
-        updateUI();
-
-        checkDeath();
-
-    }
-
-
-    function checkDeath() {
-
-        if (player.health <= 0 || player.age >= 100) {
-
-            player.alive = false;
-
-            document.getElementById("finalAge")
-                .textContent = player.age;
-
-            document.getElementById("finalMoney")
-                .textContent =
-                player.money.toLocaleString();
-
-            document.getElementById("finalHealth")
-                .textContent =
-                Math.round(player.health);
-
-            document.getElementById("finalHappiness")
-                .textContent =
-                Math.round(player.happiness);
-
-            document.getElementById("finalReputation")
-                .textContent =
-                Math.round(player.reputation);
-
-            document.getElementById("gameOver")
-                .style.display = "flex";
-
-        }
-
-    }
-
-
-    function restartGame() {
-
-        player = {
-
-            name: randomName(),
-
-            age: 18,
-
-            money: 1000,
-
-            health: 75,
-
-            happiness: 75,
-
-            intelligence: 50,
-
-            energy: 80,
-
-            reputation: 20,
-
-            job: "Unemployed",
-
-            income: 0,
-
-            alive: true
-
-        };
-
-        document.getElementById("gameOver")
-            .style.display = "none";
-
-        document.getElementById("logList")
-            .innerHTML =
-            `<div class="log-entry">
-                You started a new life with $1,000.
-            </div>`;
-
-        setEvent(
-            "Welcome to Life",
-            "You are 18 years old with your entire life ahead of you. What will you do?",
-            [
-                {
-                    text: "Start Your Life",
-                    primary: true,
-                    action: nextDay
-                }
-            ]
-        );
-
-        updateUI();
-
-    }
-
-
-    updateUI();
-
+        setTimeout(() => {
+            message.textContent = "Click the server IP to copy it";
+        }, 2500);
+    });
 </script>
 
 </body>
