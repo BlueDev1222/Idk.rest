@@ -6,11 +6,11 @@ The website is plain HTML/CSS with bundled images. It has no analytics, external
 
 ## Download
 
-[CraftNode 0.2.0 for Windows x64](https://github.com/BlueDev1222/Idk.rest/releases/download/craftnode-v0.2.0/CraftNode-Setup-0.2.0.exe)
+[CraftNode 0.3.0 for Windows x64](https://github.com/BlueDev1222/Idk.rest/releases/download/craftnode-v0.3.0/CraftNode-Setup-0.3.0.exe)
 
-[Release notes](https://github.com/BlueDev1222/Idk.rest/releases/tag/craftnode-v0.2.0) · [SHA-256 checksum](https://github.com/BlueDev1222/Idk.rest/releases/download/craftnode-v0.2.0/SHA256SUMS.txt)
+[Release notes](https://github.com/BlueDev1222/Idk.rest/releases/tag/craftnode-v0.3.0) · [SHA-256 checksum](https://github.com/BlueDev1222/Idk.rest/releases/download/craftnode-v0.3.0/SHA256SUMS.txt)
 
-This is an **unsigned preview**. Java must be installed separately. Clean-machine installer and full Minecraft gameplay validation are still pending. Keep independent backups and use test worlds when evaluating the preview.
+This is an **unsigned preview**. Minecraft requires Java; Terraria requires Microsoft XNA Framework 4.0 Refresh. Both are separate prerequisites. Clean-machine installation and full gameplay validation, including real Terraria world generation/saving, remain pending. Keep independent backups and use test worlds when evaluating the preview.
 
 ## Website deployment
 
@@ -20,6 +20,6 @@ To update a download, upload the new installer and its checksum to a GitHub Rele
 
 CraftNode is independent software and is not approved by or associated with Mojang or Microsoft.
 
-## Version 0.2.0
+## Version 0.3.0
 
-The download now includes opt-in public-server setup for supported UPnP home routers and release notifications. Public access requires risk acknowledgement and Windows permission. The unsigned preview has simulated networking coverage; real-router interoperability remains unverified. Users of 0.1.0 install 0.2.0 manually once to enable future update alerts.
+Multi-game nodes for Minecraft Java and Terraria, an eight-step creation wizard, live PC and node resource monitoring, storage breakdowns, memory reserve controls, console improvements, and safe migration of existing Minecraft metadata. Minecraft retains its opt-in public-access setup and update notifications. Users with preview update checks enabled will be offered this release; installation remains manual.
